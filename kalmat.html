@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق حفظ الكلمات الإنجليزية</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --background-dark: #121212;
+            --card-dark: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #333;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --info-color: #2196f3;
+        }
+
+        .light-theme {
+            --background-dark: #f5f5f5;
+            --card-dark: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --primary-color: #166088;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--card-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+        }
+
+        .card {
+            background-color: var(--card-dark);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--card-dark);
+            color: var(--text-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .word-card {
+            position: relative;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .word-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .word-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            text-align: right;
+        }
+
+        .word-card p {
+            margin-bottom: 5px;
+            text-align: right;
+        }
+
+        .word-english {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .word-arabic {
+            font-size: 20px;
+            color: var(--success-color);
+        }
+
+        .word-example {
+            font-style: italic;
+            color: #aaa;
+        }
+
+        .word-date {
+            font-size: 12px;
+            color: #777;
+            text-align: left;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--card-dark);
+            flex: 1;
+            margin: 5px;
+            min-width: 120px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .stat-card h3 {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .review-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .review-word {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .review-translation {
+            font-size: 28px;
+            color: var(--success-color);
+            margin-bottom: 30px;
+            min-height: 40px;
+        }
+
+        .review-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .review-btn {
+            padding: 10px 25px;
+            font-size: 18px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .difficulty-easy {
+            color: var(--success-color);
+        }
+
+        .difficulty-medium {
+            color: var(--warning-color);
+        }
+
+        .difficulty-hard {
+            color: var(--danger-color);
+        }
+
+        .word-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .pronounce-btn {
+            background: none;
+            border: none;
+            color: var(--info-color);
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .test-container {
+            margin-top: 20px;
+        }
+
+        .test-question {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .test-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .test-option {
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .test-option:hover {
+            background-color: var(--card-dark);
+        }
+
+        .test-option.correct {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .test-option.wrong {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+            color: white;
+        }
+
+        .test-result {
+            margin-top: 20px;
+            font-size: 20px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .test-result.show {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .test-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            background-color: var(--secondary-color);
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .topic-filter {
+            margin-bottom: 15px;
+        }
+
+        /* تأثيرات النجاح */
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: confetti 3s ease-out forwards;
+            z-index: 999;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: var(--success-color);
+            opacity: 0;
+            animation: zoomIn 1s ease-out forwards;
+            z-index: 1000;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        @keyframes zoomIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+        }
+
+        /* واجهة المزامنة */
+        .sync-section {
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        .auth-status {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .sync-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .sync-message.success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success-color);
+        }
+
+        .sync-message.error {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--danger-color);
+        }
+
+        .flex {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                flex-direction: column;
+            }
+            
+            .stat-card {
+                margin: 5px 0;
+                min-width: 100%;
+            }
+            
+            .review-actions {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>تطبيق حفظ الكلمات الإنجليزية</h1>
+            <button id="toggle-theme" class="btn btn-secondary">وضع النهار</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>إجمالي الكلمات</h3>
+                <p id="total-words">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>الكلمات المضافة اليوم</h3>
+                <p id="today-words">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>الكلمات التي تحتاج مراجعة</h3>
+                <p id="review-words">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>المواضيع</h3>
+                <p id="total-topics">0</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="words-list">قائمة الكلمات</div>
+            <div class="tab" data-tab="add-word">إضافة كلمة جديدة</div>
+            <div class="tab" data-tab="review">مراجعة الكلمات</div>
+            <div class="tab" data-tab="test">اختبار كتابي</div>
+            <div class="tab" data-tab="sync">المزامنة</div>
+        </div>
+
+        <div class="tab-content active" id="words-list">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="ابحث عن كلمة...">
+            </div>
+            <div class="topic-filter">
+                <select id="topic-filter">
+                    <option value="">جميع المواضيع</option>
+                </select>
+            </div>
+            <div id="words-container"></div>
+        </div>
+
+        <div class="tab-content" id="add-word">
+            <div class="card">
+                <h2>إضافة كلمة جديدة</h2>
+                <form id="add-word-form">
+                    <div class="form-group">
+                        <label for="english-word">الكلمة الإنجليزية</label>
+                        <input type="text" id="english-word" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="arabic-meaning">المعنى العربي</label>
+                        <input type="text" id="arabic-meaning" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="example-sentence">مثال (اختياري)</label>
+                        <textarea id="example-sentence"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty">مستوى الصعوبة</label>
+                        <select id="difficulty">
+                            <option value="easy">سهلة</option>
+                            <option value="medium">متوسطة</option>
+                            <option value="hard">صعبة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="word-topics">المواضيع (افصل بينها بفاصلة)</label>
+                        <input type="text" id="word-topics" placeholder="مثال: أعمال, سفر, تكنولوجيا">
+                    </div>
+                    <button type="submit" class="btn">حفظ الكلمة</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-content" id="review">
+            <div class="card review-card">
+                <div class="review-word" id="review-word">...</div>
+                <div class="review-translation hidden" id="review-translation">...</div>
+                <div class="review-actions">
+                    <button class="btn btn-success review-btn hidden" id="show-translation">إظهار الترجمة</button>
+                    <button class="btn btn-success review-btn hidden" id="next-word">كلمة تالية</button>
+                    <button class="btn btn-warning review-btn" id="start-review">بدء المراجعة</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="test">
+            <div class="card">
+                <h2>اختبار كتابي</h2>
+                <div class="test-settings">
+                    <div class="form-group">
+                        <label for="test-topic">اختر موضوع (اختياري)</label>
+                        <select id="test-topic">
+                            <option value="">جميع المواضيع</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="test-difficulty">مستوى الصعوبة (اختياري)</label>
+                        <select id="test-difficulty">
+                            <option value="">جميع المستويات</option>
+                            <option value="easy">سهلة فقط</option>
+                            <option value="medium">متوسطة فقط</option>
+                            <option value="hard">صعبة فقط</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="test-questions-num">عدد الأسئلة</label>
+                        <select id="test-questions-num">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                    <button class="btn" id="start-test">بدء الاختبار</button>
+                </div>
+
+                <div class="test-container hidden" id="test-container">
+                    <div class="test-question" id="test-question"></div>
+                    <div class="test-options" id="test-options"></div>
+                    <div class="test-result hidden" id="test-result">
+                        <p>نتيجة الاختبار: <span class="test-score" id="test-score">0</span>/<span id="test-total">0</span></p>
+                        <button class="btn" id="retry-test">إعادة الاختبار</button>
+                        <button class="btn btn-secondary" id="new-test">اختبار جديد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="sync">
+            <div class="card sync-section">
+                <h3>المزامنة مع السحابة</h3>
+                <div id="auth-status" class="auth-status">غير مسجل الدخول</div>
+                
+                <div id="login-form">
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">كلمة المرور</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me" style="margin-bottom: 0;">تذكرني</label>
+                    </div>
+                    <button id="login-btn" class="btn">
+                        <span id="login-text">تسجيل الدخول / تسجيل جديد</span>
+                        <span id="login-spinner" class="loading hidden"></span>
+                    </button>
+                </div>
+                
+                <div id="sync-controls" class="hidden">
+                    <button id="sync-now" class="btn">
+                        <span id="sync-text">مزامنة الآن</span>
+                        <span id="sync-spinner" class="loading hidden"></span>
+                    </button>
+                    <button id="logout" class="btn btn-secondary">تسجيل الخروج</button>
+                </div>
+                
+                <div id="sync-message" class="sync-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // تكوين Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyBMXP-TAS2eBKq8C-dRlPJ2N2He5mTsRpo",
+                authDomain: "kalmat-264f2.firebaseapp.com",
+                databaseURL: "https://kalmat-264f2-default-rtdb.firebaseio.com",
+                projectId: "kalmat-264f2",
+                storageBucket: "kalmat-264f2.appspot.com",
+                messagingSenderId: "654701224401",
+                appId: "1:654701224401:web:671bd7619ac622a75f80f0",
+                measurementId: "G-BRK3MGXZT1"
+            };
+
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+
+            // عناصر DOM
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const addWordForm = document.getElementById('add-word-form');
+            const wordsContainer = document.getElementById('words-container');
+            const searchInput = document.getElementById('search-input');
+            const toggleThemeBtn = document.getElementById('toggle-theme');
+            const startReviewBtn = document.getElementById('start-review');
+            const showTranslationBtn = document.getElementById('show-translation');
+            const nextWordBtn = document.getElementById('next-word');
+            const reviewWordEl = document.getElementById('review-word');
+            const reviewTranslationEl = document.getElementById('review-translation');
+            const totalWordsEl = document.getElementById('total-words');
+            const todayWordsEl = document.getElementById('today-words');
+            const reviewWordsEl = document.getElementById('review-words');
+            const totalTopicsEl = document.getElementById('total-topics');
+            const topicFilter = document.getElementById('topic-filter');
+            const testTopic = document.getElementById('test-topic');
+            const startTestBtn = document.getElementById('start-test');
+            const testContainer = document.getElementById('test-container');
+            const testQuestion = document.getElementById('test-question');
+            const testOptions = document.getElementById('test-options');
+            const testResult = document.getElementById('test-result');
+            const testScore = document.getElementById('test-score');
+            const testTotal = document.getElementById('test-total');
+            const retryTestBtn = document.getElementById('retry-test');
+            const newTestBtn = document.getElementById('new-test');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const rememberMe = document.getElementById('remember-me');
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            const syncNowBtn = document.getElementById('sync-now');
+            const syncText = document.getElementById('sync-text');
+            const syncSpinner = document.getElementById('sync-spinner');
+            const logoutBtn = document.getElementById('logout');
+            const authStatus = document.getElementById('auth-status');
+            const loginForm = document.getElementById('login-form');
+            const syncControls = document.getElementById('sync-controls');
+            const syncMessage = document.getElementById('sync-message');
+
+            // بيانات التطبيق
+            let words = JSON.parse(localStorage.getItem('englishWords')) || [];
+            let topics = JSON.parse(localStorage.getItem('wordTopics')) || ['عام', 'أعمال', 'سفر', 'تكنولوجيا'];
+            let currentReviewIndex = 0;
+            let reviewWords = [];
+            let currentTest = null;
+            let currentQuestionIndex = 0;
+            let testScoreCount = 0;
+            let currentUser = null;
+            let isSyncing = false;
+
+            // تهيئة التطبيق
+            loadThemePreference();
+            updateStats();
+            renderWords();
+            updateTopicFilters();
+            loadAuthState();
+
+            // أحداث التبويبات
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                    
+                    if (tab.dataset.tab === 'test') {
+                        updateTopicFilters('test-topic');
+                    }
+                });
+            });
+
+            // حدث إضافة كلمة جديدة
+            addWordForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const englishWord = document.getElementById('english-word').value.trim();
+                const arabicMeaning = document.getElementById('arabic-meaning').value.trim();
+                const exampleSentence = document.getElementById('example-sentence').value.trim();
+                const difficulty = document.getElementById('difficulty').value;
+                const wordTopics = document.getElementById('word-topics').value.split(',').map(t => t.trim()).filter(t => t);
+                
+                const newWord = {
+                    id: Date.now(),
+                    english: englishWord,
+                    arabic: arabicMeaning,
+                    example: exampleSentence,
+                    difficulty: difficulty,
+                    topics: wordTopics,
+                    dateAdded: new Date().toISOString(),
+                    lastReviewed: null,
+                    reviewCount: 0,
+                    correctAnswers: 0
+                };
+                
+                // إضافة أي مواضيع جديدة إلى قائمة المواضيع
+                wordTopics.forEach(topic => {
+                    if (!topics.includes(topic)) {
+                        topics.push(topic);
+                    }
+                });
+                
+                saveTopics();
+                words.unshift(newWord);
+                saveWords();
+                addWordForm.reset();
+                
+                // الانتقال إلى قائمة الكلمات
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                document.querySelector('.tab[data-tab="words-list"]').classList.add('active');
+                document.getElementById('words-list').classList.add('active');
+                
+                renderWords();
+                updateStats();
+                updateTopicFilters();
+
+                // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                if (currentUser) {
+                    debouncedSync();
+                }
+            });
+
+            // حدث البحث
+            searchInput.addEventListener('input', function() {
+                renderWords(this.value.toLowerCase(), topicFilter.value);
+            });
+
+            // حدث تصفية المواضيع
+            topicFilter.addEventListener('change', function() {
+                renderWords(searchInput.value.toLowerCase(), this.value);
+            });
+
+            // تبديل الثيم
+            toggleThemeBtn.addEventListener('click', function() {
+                document.body.classList.toggle('light-theme');
+                const isLightMode = document.body.classList.contains('light-theme');
+                this.textContent = isLightMode ? 'الوضع الليلي' : 'وضع النهار';
+                localStorage.setItem('themePreference', isLightMode ? 'light' : 'dark');
+            });
+
+            // أحداث المراجعة
+            startReviewBtn.addEventListener('click', startReview);
+            showTranslationBtn.addEventListener('click', showTranslation);
+            nextWordBtn.addEventListener('click', nextReviewWord);
+
+            // أحداث الاختبار
+            startTestBtn.addEventListener('click', startTest);
+            retryTestBtn.addEventListener('click', retryTest);
+            newTestBtn.addEventListener('click', newTest);
+
+            // أحداث المزامنة
+            loginBtn.addEventListener('click', handleLogin);
+            syncNowBtn.addEventListener('click', syncData);
+            logoutBtn.addEventListener('click', logout);
+
+            // مراقبة حالة المصادقة
+            firebase.auth().onAuthStateChanged(user => {
+                currentUser = user;
+                if (user) {
+                    authStatus.textContent = `مرحباً، ${user.email}`;
+                    loginForm.classList.add('hidden');
+                    syncControls.classList.remove('hidden');
+                    
+                    // تلقائيًا مزامنة البيانات عند تسجيل الدخول
+                    syncData();
+                } else {
+                    authStatus.textContent = 'غير مسجل الدخول';
+                    loginForm.classList.remove('hidden');
+                    syncControls.classList.add('hidden');
+                }
+            });
+
+            // وظائف التطبيق
+            function loadThemePreference() {
+                const savedTheme = localStorage.getItem('themePreference') || 'dark';
+                if (savedTheme === 'light') {
+                    document.body.classList.add('light-theme');
+                    toggleThemeBtn.textContent = 'الوضع الليلي';
+                }
+            }
+
+            async function renderWords(searchTerm = '', topic = '') {
+                // تأخير عرض البيانات أثناء المزامنة
+                if (isSyncing) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+                
+                wordsContainer.innerHTML = '';
+                
+                const filteredWords = words.filter(word => {
+                    const matchesSearch = searchTerm 
+                        ? word.english.toLowerCase().includes(searchTerm) || 
+                          word.arabic.toLowerCase().includes(searchTerm)
+                        : true;
+                    
+                    const matchesTopic = topic 
+                        ? word.topics && word.topics.includes(topic)
+                        : true;
+                    
+                    return matchesSearch && matchesTopic;
+                });
+                
+                if (filteredWords.length === 0) {
+                    wordsContainer.innerHTML = '<div class="card">لا توجد كلمات متطابقة مع بحثك</div>';
+                    return;
+                }
+                
+                // عرض الكلمات مع تأثير تدريجي
+                for (let i = 0; i < filteredWords.length; i++) {
+                    const word = filteredWords[i];
+                    await renderWordCard(word);
+                    if (i % 10 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            }
+            
+            async function renderWordCard(word) {
+                return new Promise(resolve => {
+                    const wordCard = document.createElement('div');
+                    wordCard.className = 'card word-card';
+                    wordCard.style.opacity = '0';
+                    wordCard.style.transition = 'opacity 0.3s';
+                    
+                    const topicsHTML = word.topics && word.topics.length > 0 
+                        ? `<div class="tags-container">${word.topics.map(t => `<span class="tag">${t}</span>`).join('')}</div>`
+                        : '';
+                    
+                    wordCard.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h3 class="word-english">${word.english}</h3>
+                            <button class="pronounce-btn" data-word="${word.english}">🔊</button>
+                        </div>
+                        <p class="word-arabic">${word.arabic}</p>
+                        ${word.example ? `<p class="word-example">مثال: ${word.example}</p>` : ''}
+                        ${topicsHTML}
+                        <p class="word-date">أضيفت في: ${formatDate(word.dateAdded)}</p>
+                        <div class="word-details hidden">
+                            <p>مستوى الصعوبة: <span class="difficulty-${word.difficulty}">${getDifficultyText(word.difficulty)}</span></p>
+                            <p>عدد المراجعات: ${word.reviewCount}</p>
+                            <p>الإجابات الصحيحة: ${word.correctAnswers}</p>
+                            ${word.lastReviewed ? `<p>آخر مراجعة: ${formatDate(word.lastReviewed)}</p>` : '<p>لم تتم مراجعتها بعد</p>'}
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-secondary toggle-details" data-id="${word.id}">تفاصيل</button>
+                            <button class="btn btn-secondary delete-word" data-id="${word.id}">حذف</button>
+                        </div>
+                    `;
+                    
+                    wordsContainer.appendChild(wordCard);
+                    
+                    setTimeout(() => {
+                        wordCard.style.opacity = '1';
+                        resolve();
+                    }, 0);
+                    
+                    // إضافة الأحداث بعد عرض العنصر
+                    setTimeout(() => {
+                        // حدث تفاصيل الكلمة
+                        wordCard.querySelector('.toggle-details').addEventListener('click', function() {
+                            const wordId = parseInt(this.dataset.id);
+                            const details = wordCard.querySelector('.word-details');
+                            details.classList.toggle('hidden');
+                            this.textContent = details.classList.contains('hidden') ? 'تفاصيل' : 'إخفاء التفاصيل';
+                        });
+                        
+                        // حدث حذف الكلمة
+                        wordCard.querySelector('.delete-word').addEventListener('click', async function() {
+                            if (confirm('هل أنت متأكد من حذف هذه الكلمة؟')) {
+                                const wordId = parseInt(this.dataset.id);
+                                words = words.filter(word => word.id !== wordId);
+                                await saveWords();
+                                wordCard.style.opacity = '0';
+                                setTimeout(() => wordCard.remove(), 300);
+                                updateStats();
+                                
+                                // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                                if (currentUser) {
+                                    debouncedSync();
+                                }
+                            }
+                        });
+                        
+                        // حدث نطق الكلمة
+                        wordCard.querySelector('.pronounce-btn').addEventListener('click', function() {
+                            const word = this.dataset.word;
+                            pronounceWord(word);
+                        });
+                    }, 10);
+                });
+            }
+            
+            async function saveWords() {
+                localStorage.setItem('englishWords', JSON.stringify(words));
+                
+                // إذا كان هناك مزامنة قيد التنفيذ، انتظر حتى تنتهي
+                while (isSyncing) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+            
+            function saveTopics() {
+                localStorage.setItem('wordTopics', JSON.stringify(topics));
+            }
+            
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('ar-EG');
+            }
+            
+            function getDifficultyText(difficulty) {
+                const difficulties = {
+                    easy: 'سهلة',
+                    medium: 'متوسطة',
+                    hard: 'صعبة'
+                };
+                return difficulties[difficulty];
+            }
+            
+            function updateStats() {
+                totalWordsEl.textContent = words.length;
+                
+                const today = new Date().toLocaleDateString();
+                const todayWords = words.filter(word => 
+                    new Date(word.dateAdded).toLocaleDateString() === today).length;
+                todayWordsEl.textContent = todayWords;
+                
+                // كلمات لم تتم مراجعتها أو مراجعتها منذ أكثر من 3 أيام
+                const reviewNeededWords = words.filter(word => {
+                    if (!word.lastReviewed) return true;
+                    const lastReviewed = new Date(word.lastReviewed);
+                    const threeDaysAgo = new Date();
+                    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                    return lastReviewed < threeDaysAgo;
+                }).length;
+                reviewWordsEl.textContent = reviewNeededWords;
+                
+                // عدد المواضيع الفريدة
+                const allTopics = new Set();
+                words.forEach(word => {
+                    if (word.topics) {
+                        word.topics.forEach(topic => allTopics.add(topic));
+                    }
+                });
+                totalTopicsEl.textContent = allTopics.size;
+            }
+            
+            function updateTopicFilters(target = 'topic-filter') {
+                const allTopics = new Set();
+                words.forEach(word => {
+                    if (word.topics) {
+                        word.topics.forEach(topic => allTopics.add(topic));
+                    }
+                });
+                
+                const topicSelect = document.getElementById(target);
+                // حفظ القيمة المحددة حالياً
+                const currentValue = topicSelect.value;
+                
+                // إزالة جميع الخيارات عدا الأول
+                while (topicSelect.options.length > 1) {
+                    topicSelect.remove(1);
+                }
+                
+                // إضافة المواضيع
+                Array.from(allTopics).sort().forEach(topic => {
+                    const option = document.createElement('option');
+                    option.value = topic;
+                    option.textContent = topic;
+                    topicSelect.appendChild(option);
+                });
+                
+                // استعادة القيمة المحددة إذا كانت لا تزال موجودة
+                if (currentValue && Array.from(allTopics).includes(currentValue)) {
+                    topicSelect.value = currentValue;
+                }
+            }
+            
+            function startReview() {
+                // تحضير قائمة الكلمات للمراجعة (الكلمات التي تحتاج مراجعة)
+                const now = new Date();
+                const threeDaysAgo = new Date(now);
+                threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                
+                reviewWords = words.filter(word => {
+                    if (!word.lastReviewed) return true;
+                    const lastReviewed = new Date(word.lastReviewed);
+                    return lastReviewed < threeDaysAgo;
+                }).sort(() => Math.random() - 0.5);
+                
+                currentReviewIndex = 0;
+                
+                if (reviewWords.length === 0) {
+                    reviewWordEl.textContent = 'لا توجد كلمات تحتاج مراجعة!';
+                    startReviewBtn.classList.remove('hidden');
+                    showTranslationBtn.classList.add('hidden');
+                    nextWordBtn.classList.add('hidden');
+                    reviewTranslationEl.classList.add('hidden');
+                    return;
+                }
+                
+                showNextReviewWord();
+                startReviewBtn.classList.add('hidden');
+                showTranslationBtn.classList.remove('hidden');
+                nextWordBtn.classList.add('hidden');
+            }
+            
+            function showNextReviewWord() {
+                if (currentReviewIndex >= reviewWords.length) {
+                    reviewWordEl.textContent = 'تمت مراجعة جميع الكلمات!';
+                    reviewTranslationEl.classList.add('hidden');
+                    startReviewBtn.classList.remove('hidden');
+                    showTranslationBtn.classList.add('hidden');
+                    nextWordBtn.classList.add('hidden');
+                    return;
+                }
+                
+                const currentWord = reviewWords[currentReviewIndex];
+                reviewWordEl.textContent = currentWord.english;
+                reviewTranslationEl.textContent = currentWord.arabic;
+                reviewTranslationEl.classList.add('hidden');
+                showTranslationBtn.classList.remove('hidden');
+                nextWordBtn.classList.add('hidden');
+            }
+            
+            function showTranslation() {
+                reviewTranslationEl.classList.remove('hidden');
+                showTranslationBtn.classList.add('hidden');
+                nextWordBtn.classList.remove('hidden');
+                
+                // تحديث بيانات المراجعة
+                const currentWordId = reviewWords[currentReviewIndex].id;
+                const wordIndex = words.findIndex(word => word.id === currentWordId);
+                
+                if (wordIndex !== -1) {
+                    words[wordIndex].lastReviewed = new Date().toISOString();
+                    words[wordIndex].reviewCount = (words[wordIndex].reviewCount || 0) + 1;
+                    saveWords();
+                    updateStats();
+                    
+                    // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                    if (currentUser) {
+                        debouncedSync();
+                    }
+                }
+            }
+            
+            function nextReviewWord() {
+                currentReviewIndex++;
+                showNextReviewWord();
+            }
+            
+            function pronounceWord(word) {
+                // استخدام Web Speech API لنطق الكلمة
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(word);
+                    utterance.lang = 'en-US';
+                    speechSynthesis.speak(utterance);
+                } else {
+                    alert('متصفحك لا يدود ميزة النطق. جرب استخدام متصفح حديث مثل Chrome أو Edge');
+                }
+            }
+            
+            function startTest() {
+                const selectedTopic = document.getElementById('test-topic').value;
+                const selectedDifficulty = document.getElementById('test-difficulty').value;
+                const questionsNum = parseInt(document.getElementById('test-questions-num').value);
+                
+                // تصفية الكلمات حسب الموضوع ومستوى الصعوبة
+                let testWords = [...words];
+                
+                if (selectedTopic) {
+                    testWords = testWords.filter(word => word.topics && word.topics.includes(selectedTopic));
+                }
+                
+                if (selectedDifficulty) {
+                    testWords = testWords.filter(word => word.difficulty === selectedDifficulty);
+                }
+                
+                if (testWords.length < 5) {
+                    alert('لا يوجد عدد كافٍ من الكلمات للاختبار. أضف المزيد من الكلمات أولاً.');
+                    return;
+                }
+                
+                // اختيار عدد عشوائي من الكلمات للاختبار
+                testWords = testWords.sort(() => Math.random() - 0.5).slice(0, Math.min(questionsNum, testWords.length));
+                
+                // إنشاء أسئلة الاختبار
+                currentTest = testWords.map(word => {
+                    // إنشاء خيارات عشوائية
+                    let options = [word.arabic];
+                    const otherWords = words.filter(w => w.id !== word.id && w.arabic !== word.arabic);
+                    
+                    while (options.length < 4 && otherWords.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * otherWords.length);
+                        const randomOption = otherWords[randomIndex].arabic;
+                        if (!options.includes(randomOption)) {
+                            options.push(randomOption);
+                        }
+                        otherWords.splice(randomIndex, 1);
+                    }
+                    
+                    // خلط الخيارات
+                    options = options.sort(() => Math.random() - 0.5);
+                    
+                    return {
+                        question: word.english,
+                        correctAnswer: word.arabic,
+                        options: options,
+                        wordId: word.id
+                    };
+                });
+                
+                currentQuestionIndex = 0;
+                testScoreCount = 0;
+                
+                // إظهار واجهة الاختبار
+                document.querySelector('.test-settings').classList.add('hidden');
+                testContainer.classList.remove('hidden');
+                testResult.classList.add('hidden');
+                
+                showTestQuestion();
+            }
+            
+            function showTestQuestion() {
+                if (!currentTest || currentQuestionIndex >= currentTest.length) {
+                    finishTest();
+                    return;
+                }
+                
+                const question = currentTest[currentQuestionIndex];
+                testQuestion.textContent = question.question;
+                
+                testOptions.innerHTML = '';
+                question.options.forEach((option, index) => {
+                    const optionEl = document.createElement('div');
+                    optionEl.className = 'test-option';
+                    optionEl.textContent = option;
+                    optionEl.dataset.index = index;
+                    optionEl.addEventListener('click', () => checkTestAnswer(option));
+                    testOptions.appendChild(optionEl);
+                });
+            }
+            
+            function checkTestAnswer(selectedAnswer) {
+                const question = currentTest[currentQuestionIndex];
+                const isCorrect = selectedAnswer === question.correctAnswer;
+                
+                // تحديث النتيجة
+                if (isCorrect) {
+                    testScoreCount++;
+                    
+                    // تحديث عدد الإجابات الصحيحة للكلمة
+                    const wordIndex = words.findIndex(w => w.id === question.wordId);
+                    if (wordIndex !== -1) {
+                        words[wordIndex].correctAnswers = (words[wordIndex].correctAnswers || 0) + 1;
+                        saveWords();
+                        
+                        // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                        if (currentUser) {
+                            debouncedSync();
+                        }
+                    }
+                }
+                
+                // تلوين الخيارات
+                const optionEls = document.querySelectorAll('.test-option');
+                optionEls.forEach(el => {
+                    if (el.textContent === question.correctAnswer) {
+                        el.classList.add('correct');
+                    } else if (el.textContent === selectedAnswer && !isCorrect) {
+                        el.classList.add('wrong');
+                    }
+                    el.style.pointerEvents = 'none';
+                });
+                
+                // الانتقال إلى السؤال التالي بعد تأخير
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    showTestQuestion();
+                }, 1500);
+            }
+            
+            function finishTest() {
+                testTotal.textContent = currentTest.length;
+                testScore.textContent = testScoreCount;
+                testResult.classList.remove('hidden');
+                
+                // إضافة تأثيرات النجاح
+                createConfetti();
+                showCelebration();
+                
+                // إضافة تأثير للنتيجة
+                setTimeout(() => {
+                    testResult.classList.add('show');
+                }, 100);
+            }
+            
+            function createConfetti() {
+                const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+                
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                    document.body.appendChild(confetti);
+                    
+                    // إزالة الكونفيتي بعد الانتهاء
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+            
+            function showCelebration() {
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration';
+                
+                // اختيار رسالة مختلفة حسب النتيجة
+                const percentage = (testScoreCount / currentTest.length) * 100;
+                let message = '';
+                
+                if (percentage >= 90) message = '🎉 ممتاز!';
+                else if (percentage >= 70) message = '👏 جيد جداً!';
+                else if (percentage >= 50) message = '👍 ليس سيئاً!';
+                else message = '💪 يمكنك التحسن!';
+                
+                celebration.textContent = message;
+                document.body.appendChild(celebration);
+                
+                // إزالة الرسالة بعد 2 ثانية
+                setTimeout(() => {
+                    celebration.remove();
+                }, 2000);
+            }
+            
+            function retryTest() {
+                currentQuestionIndex = 0;
+                testScoreCount = 0;
+                testResult.classList.add('hidden');
+                showTestQuestion();
+            }
+            
+            function newTest() {
+                document.querySelector('.test-settings').classList.remove('hidden');
+                testContainer.classList.add('hidden');
+                testResult.classList.add('hidden');
+            }
+            
+            // وظائف المزامنة
+            function loadAuthState() {
+                const savedEmail = localStorage.getItem('savedEmail');
+                if (savedEmail) {
+                    emailInput.value = savedEmail;
+                    rememberMe.checked = true;
+                }
+            }
+            
+            async function handleLogin() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                if (!email || !password) {
+                    showSyncMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                    return;
+                }
+                
+                try {
+                    loginText.classList.add('hidden');
+                    loginSpinner.classList.remove('hidden');
+                    
+                    let userCredential;
+                    try {
+                        userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                    } catch (loginError) {
+                        userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                    }
+                    
+                    currentUser = userCredential.user;
+                    
+                    if (rememberMe.checked) {
+                        localStorage.setItem('savedEmail', email);
+                    } else {
+                        localStorage.removeItem('savedEmail');
+                    }
+                    
+                    showSyncMessage('تم تسجيل الدخول بنجاح', 'success');
+                } catch (error) {
+                    console.error('Authentication error:', error);
+                    showSyncMessage(`خطأ في المصادقة: ${error.message}`, 'error');
+                } finally {
+                    loginText.classList.remove('hidden');
+                    loginSpinner.classList.add('hidden');
+                }
+            }
+            
+            // ديبونس للمزامنة لتجنب الطلبات الكثيرة
+            let syncTimeout = null;
+            function debouncedSync() {
+                if (syncTimeout) clearTimeout(syncTimeout);
+                syncTimeout = setTimeout(() => {
+                    syncData();
+                }, 2000);
+            }
+            
+            async function syncData() {
+                if (!currentUser || isSyncing) return;
+                
+                try {
+                    isSyncing = true;
+                    syncText.classList.add('hidden');
+                    syncSpinner.classList.remove('hidden');
+                    
+                    // جلب البيانات من السحابة
+                    const snapshot = await database.ref(`users/${currentUser.uid}/data`).once('value');
+                    const cloudData = snapshot.val() || { words: [], topics: [] };
+                    
+                    // دمج البيانات المحلية مع السحابة
+                    const localData = {
+                        words: JSON.parse(localStorage.getItem('englishWords')) || [],
+                        topics: JSON.parse(localStorage.getItem('wordTopics')) || []
+                    };
+                    
+                    const mergedData = {
+                        words: mergeItems(localData.words, cloudData.words),
+                        topics: [...new Set([...localData.topics, ...cloudData.topics])]
+                    };
+                    
+                    // حفظ البيانات المدمجة
+                    localStorage.setItem('englishWords', JSON.stringify(mergedData.words));
+                    localStorage.setItem('wordTopics', JSON.stringify(mergedData.topics));
+                    
+                    // تحديث المتغيرات المحلية
+                    words = mergedData.words;
+                    topics = mergedData.topics;
+                    
+                    // رفع البيانات المدمجة إلى السحابة
+                    await database.ref(`users/${currentUser.uid}/data`).set(mergedData);
+                    
+                    showSyncMessage('تمت المزامنة بنجاح', 'success');
+                    
+                    // تحديث الواجهة
+                    updateStats();
+                    renderWords();
+                    updateTopicFilters();
+                } catch (error) {
+                    console.error('Sync error:', error);
+                    showSyncMessage(`خطأ في المزامنة: ${error.message}`, 'error');
+                } finally {
+                    syncText.classList.remove('hidden');
+                    syncSpinner.classList.add('hidden');
+                    isSyncing = false;
+                }
+            }
+            
+            function mergeItems(localItems, cloudItems) {
+                const merged = [...localItems];
+                const localIds = localItems.map(item => item.id);
+                
+                cloudItems.forEach(cloudItem => {
+                    if (!localIds.includes(cloudItem.id)) {
+                        merged.push(cloudItem);
+                    } else {
+                        // تحديث العنصر المحلي إذا كان أحدث
+                        const localIndex = localIds.indexOf(cloudItem.id);
+                        const localItem = localItems[localIndex];
+                        
+                        // احتفظ بالعنصر الأحدث بناءً على تاريخ التعديل
+                        const localDate = new Date(localItem.lastReviewed || localItem.dateAdded);
+                        const cloudDate = new Date(cloudItem.lastReviewed || cloudItem.dateAdded);
+                        
+                        if (cloudDate > localDate) {
+                            merged[localIndex] = cloudItem;
+                        }
+                    }
+                });
+                
+                return merged;
+            }
+            
+            function logout() {
+                firebase.auth().signOut();
+                showSyncMessage('تم تسجيل الخروج', 'success');
+            }
+            
+            function showSyncMessage(message, type) {
+                syncMessage.textContent = message;
+                syncMessage.className = 'sync-message';
+                syncMessage.classList.add(type);
+                
+                setTimeout(() => {
+                    syncMessage.textContent = '';
+                    syncMessage.className = 'sync-message';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
