@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تطبيق حفظ الكلمات الإنجليزية</title>
     <style>
         :root {
@@ -31,6 +31,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-text-size-adjust: 100%;
         }
 
         body {
@@ -39,6 +40,7 @@
             line-height: 1.6;
             padding: 20px;
             transition: background-color 0.3s, color 0.3s;
+            touch-action: manipulation;
         }
 
         .container {
@@ -125,6 +127,8 @@
             background-color: var(--card-dark);
             color: var(--text-color);
             transition: background-color 0.3s, border-color 0.3s;
+            font-size: 16px !important;
+            transform: none !important;
         }
 
         textarea {
