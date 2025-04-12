@@ -149,7 +149,7 @@
 
         .word-card {
             position: relative;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
 
@@ -197,6 +197,8 @@
 
         .hidden {
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .tabs {
@@ -564,6 +566,13 @@
             cursor: pointer;
             font-size: 20px;
         }
+
+        /* تأثيرات الحذف */
+        .word-card.deleting {
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -882,6 +891,9 @@
                     if (tab.dataset.tab === 'test') {
                         updateTopicFilters('test-topic');
                     }
+                    
+                    // تشغيل صوت النقر
+                    sounds.click.play();
                 });
             });
 
@@ -1116,6 +1128,7 @@
                 return new Promise(resolve => {
                     const wordCard = document.createElement('div');
                     wordCard.className = 'card word-card';
+                    wordCard.dataset.id = word.id;
                     wordCard.style.opacity = '0';
                     wordCard.style.transition = 'opacity 0.3s';
                     
@@ -1168,23 +1181,30 @@
                         wordCard.querySelector('.delete-word').addEventListener('click', async function() {
                             if (confirm('هل أنت متأكد من حذف هذه الكلمة؟')) {
                                 const wordId = parseInt(this.dataset.id);
-                                words = words.filter(word => word.id !== wordId);
-                                await saveWords();
                                 
                                 // تشغيل صوت النقر
                                 sounds.click.play();
                                 
-                                // إخفاء الكلمة بسلاسة
-                                wordCard.style.opacity = '0';
-                                setTimeout(() => {
-                                    wordCard.remove();
-                                    updateStats();
-                                }, 300);
+                                // إضافة تأثير الحذف
+                                wordCard.classList.add('deleting');
                                 
-                                // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
-                                if (currentUser) {
-                                    debouncedSync();
-                                }
+                                // الانتظار حتى يكتمل تأثير الحذف
+                                setTimeout(async () => {
+                                    // إزالة الكلمة من المصفوفة
+                                    words = words.filter(word => word.id !== wordId);
+                                    await saveWords();
+                                    
+                                    // إزالة العنصر من DOM
+                                    wordCard.remove();
+                                    
+                                    // تحديث الإحصائيات
+                                    updateStats();
+                                    
+                                    // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                                    if (currentUser) {
+                                        debouncedSync();
+                                    }
+                                }, 300);
                             }
                         });
                         
@@ -1568,7 +1588,7 @@
                 celebration.textContent = message;
                 document.body.appendChild(celebration);
                 
-                // إزالة الرسالة بعد 2 ثانية
+                // إزالة الرسالة بعد 2 ثواني
                 setTimeout(() => {
                     celebration.remove();
                 }, 2000);
