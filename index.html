@@ -24,6 +24,7 @@
             --text-color: #333333;
             --border-color: #e0e0e0;
             --primary-color: #166088;
+            --secondary-color: #4a6fa5;
         }
 
         * {
@@ -74,6 +75,10 @@
             transition: background-color 0.3s;
         }
 
+        .light-theme .btn {
+            color: white !important;
+        }
+
         .btn:hover {
             background-color: var(--secondary-color);
         }
@@ -81,6 +86,11 @@
         .btn-secondary {
             background-color: var(--card-dark);
             border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .light-theme .btn-secondary {
+            color: #333 !important;
         }
 
         .btn-success {
@@ -117,6 +127,7 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: var(--text-color);
         }
 
         input, textarea, select {
@@ -200,6 +211,7 @@
             cursor: pointer;
             border-bottom: 3px solid transparent;
             transition: border-color 0.3s;
+            color: var(--text-color);
         }
 
         .tab.active {
@@ -536,6 +548,22 @@
                 font-size: 14px;
             }
         }
+
+        /* مؤثرات صوتية */
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .audio-btn {
+            background: none;
+            border: none;
+            color: var(--info-color);
+            cursor: pointer;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -646,6 +674,9 @@
             <div class="card review-card">
                 <div class="review-word" id="review-word">...</div>
                 <div class="review-translation hidden" id="review-translation">...</div>
+                <div class="audio-controls">
+                    <button class="audio-btn" id="pronounce-review-word">🔊 نطق الكلمة</button>
+                </div>
                 <div class="review-actions">
                     <button class="btn btn-success review-btn hidden" id="show-translation">إظهار الترجمة</button>
                     <button class="btn btn-success review-btn hidden" id="next-word">كلمة تالية</button>
@@ -687,6 +718,9 @@
 
                 <div class="test-container hidden" id="test-container">
                     <div class="test-question" id="test-question"></div>
+                    <div class="audio-controls">
+                        <button class="audio-btn" id="pronounce-test-word">🔊 نطق السؤال</button>
+                    </div>
                     <div class="test-options" id="test-options"></div>
                     <div class="test-result hidden" id="test-result">
                         <p>نتيجة الاختبار: <span class="test-score" id="test-score">0</span>/<span id="test-total">0</span></p>
@@ -738,6 +772,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <!-- مكتبة Howler.js للمؤثرات الصوتية -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
@@ -804,6 +841,8 @@
             const progressBar = document.querySelector('.progress-bar');
             const exportJsonBtn = document.getElementById('export-json');
             const exportCsvBtn = document.getElementById('export-csv');
+            const pronounceReviewBtn = document.getElementById('pronounce-review-word');
+            const pronounceTestBtn = document.getElementById('pronounce-test-word');
 
             // بيانات التطبيق
             let words = JSON.parse(localStorage.getItem('englishWords')) || [];
@@ -815,6 +854,14 @@
             let testScoreCount = 0;
             let currentUser = null;
             let isSyncing = false;
+
+            // مؤثرات صوتية
+            const sounds = {
+                correct: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3'] }),
+                wrong: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3'] }),
+                success: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3'] }),
+                click: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3'] })
+            };
 
             // تهيئة التطبيق
             loadThemePreference();
@@ -873,6 +920,9 @@
                 saveWords();
                 addWordForm.reset();
                 
+                // تشغيل صوت النجاح
+                sounds.success.play();
+                
                 // الانتقال إلى قائمة الكلمات
                 tabs.forEach(t => t.classList.remove('active'));
                 tabContents.forEach(c => c.classList.remove('active'));
@@ -905,17 +955,30 @@
                 const isLightMode = document.body.classList.contains('light-theme');
                 this.textContent = isLightMode ? 'الوضع الليلي' : 'وضع النهار';
                 localStorage.setItem('themePreference', isLightMode ? 'light' : 'dark');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             });
 
             // أحداث المراجعة
             startReviewBtn.addEventListener('click', startReview);
             showTranslationBtn.addEventListener('click', showTranslation);
             nextWordBtn.addEventListener('click', nextReviewWord);
+            pronounceReviewBtn.addEventListener('click', () => {
+                if (reviewWordEl.textContent && reviewWordEl.textContent !== '...') {
+                    pronounceWord(reviewWordEl.textContent);
+                }
+            });
 
             // أحداث الاختبار
             startTestBtn.addEventListener('click', startTest);
             retryTestBtn.addEventListener('click', retryTest);
             newTestBtn.addEventListener('click', newTest);
+            pronounceTestBtn.addEventListener('click', () => {
+                if (testQuestion.textContent) {
+                    pronounceWord(testQuestion.textContent);
+                }
+            });
 
             // أحداث المزامنة
             loginBtn.addEventListener('click', handleLogin);
@@ -956,6 +1019,9 @@
                     uploadStatus.textContent = `تمت إضافة ${wordsToAdd.length} كلمة بنجاح!`;
                     uploadProgress.style.width = '100%';
                     
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
+                    
                     // تحديث الواجهة
                     renderWords();
                     updateStats();
@@ -976,6 +1042,9 @@
                     console.error('Error processing file:', error);
                     uploadStatus.textContent = `خطأ: ${error.message}`;
                     uploadProgress.style.backgroundColor = 'var(--danger-color)';
+                    
+                    // تشغيل صوت الخطأ
+                    sounds.wrong.play();
                 }
             });
 
@@ -1071,7 +1140,7 @@
                         </div>
                         <div class="actions">
                             <button class="btn btn-secondary toggle-details" data-id="${word.id}">تفاصيل</button>
-                            <button class="btn btn-secondary delete-word" data-id="${word.id}">حذف</button>
+                            <button class="btn btn-danger delete-word" data-id="${word.id}">حذف</button>
                         </div>
                     `;
                     
@@ -1090,6 +1159,9 @@
                             const details = wordCard.querySelector('.word-details');
                             details.classList.toggle('hidden');
                             this.textContent = details.classList.contains('hidden') ? 'تفاصيل' : 'إخفاء التفاصيل';
+                            
+                            // تشغيل صوت النقر
+                            sounds.click.play();
                         });
                         
                         // حدث حذف الكلمة
@@ -1098,9 +1170,16 @@
                                 const wordId = parseInt(this.dataset.id);
                                 words = words.filter(word => word.id !== wordId);
                                 await saveWords();
+                                
+                                // تشغيل صوت النقر
+                                sounds.click.play();
+                                
+                                // إخفاء الكلمة بسلاسة
                                 wordCard.style.opacity = '0';
-                                setTimeout(() => wordCard.remove(), 300);
-                                updateStats();
+                                setTimeout(() => {
+                                    wordCard.remove();
+                                    updateStats();
+                                }, 300);
                                 
                                 // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
                                 if (currentUser) {
@@ -1113,6 +1192,9 @@
                         wordCard.querySelector('.pronounce-btn').addEventListener('click', function() {
                             const word = this.dataset.word;
                             pronounceWord(word);
+                            
+                            // تشغيل صوت النقر
+                            sounds.click.play();
                         });
                     }, 10);
                 });
@@ -1231,6 +1313,9 @@
                 startReviewBtn.classList.add('hidden');
                 showTranslationBtn.classList.remove('hidden');
                 nextWordBtn.classList.add('hidden');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             }
             
             function showNextReviewWord() {
@@ -1249,12 +1334,18 @@
                 reviewTranslationEl.classList.add('hidden');
                 showTranslationBtn.classList.remove('hidden');
                 nextWordBtn.classList.add('hidden');
+                
+                // نطق الكلمة تلقائياً
+                pronounceWord(currentWord.english);
             }
             
             function showTranslation() {
                 reviewTranslationEl.classList.remove('hidden');
                 showTranslationBtn.classList.add('hidden');
                 nextWordBtn.classList.remove('hidden');
+                
+                // تشغيل صوت النجاح
+                sounds.correct.play();
                 
                 // تحديث بيانات المراجعة
                 const currentWordId = reviewWords[currentReviewIndex].id;
@@ -1276,6 +1367,9 @@
             function nextReviewWord() {
                 currentReviewIndex++;
                 showNextReviewWord();
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             }
             
             function pronounceWord(word) {
@@ -1348,6 +1442,9 @@
                 testResult.classList.add('hidden');
                 
                 showTestQuestion();
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             }
             
             function showTestQuestion() {
@@ -1368,11 +1465,21 @@
                     optionEl.addEventListener('click', () => checkTestAnswer(option));
                     testOptions.appendChild(optionEl);
                 });
+                
+                // نطق السؤال تلقائياً
+                pronounceWord(question.question);
             }
             
             function checkTestAnswer(selectedAnswer) {
                 const question = currentTest[currentQuestionIndex];
                 const isCorrect = selectedAnswer === question.correctAnswer;
+                
+                // تشغيل الصوت المناسب
+                if (isCorrect) {
+                    sounds.correct.play();
+                } else {
+                    sounds.wrong.play();
+                }
                 
                 // تحديث النتيجة
                 if (isCorrect) {
@@ -1413,6 +1520,9 @@
                 testTotal.textContent = currentTest.length;
                 testScore.textContent = testScoreCount;
                 testResult.classList.remove('hidden');
+                
+                // تشغيل صوت النجاح
+                sounds.success.play();
                 
                 // إضافة تأثيرات النجاح
                 createConfetti();
@@ -1469,12 +1579,18 @@
                 testScoreCount = 0;
                 testResult.classList.add('hidden');
                 showTestQuestion();
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             }
             
             function newTest() {
                 document.querySelector('.test-settings').classList.remove('hidden');
                 testContainer.classList.add('hidden');
                 testResult.classList.add('hidden');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             }
             
             // وظائف المزامنة
@@ -1515,9 +1631,15 @@
                     }
                     
                     showSyncMessage('تم تسجيل الدخول بنجاح', 'success');
+                    
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
                 } catch (error) {
                     console.error('Authentication error:', error);
                     showSyncMessage(`خطأ في المصادقة: ${error.message}`, 'error');
+                    
+                    // تشغيل صوت الخطأ
+                    sounds.wrong.play();
                 } finally {
                     loginText.classList.remove('hidden');
                     loginSpinner.classList.add('hidden');
@@ -1569,6 +1691,9 @@
                     
                     showSyncMessage('تمت المزامنة بنجاح', 'success');
                     
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
+                    
                     // تحديث الواجهة
                     updateStats();
                     renderWords();
@@ -1576,6 +1701,9 @@
                 } catch (error) {
                     console.error('Sync error:', error);
                     showSyncMessage(`خطأ في المزامنة: ${error.message}`, 'error');
+                    
+                    // تشغيل صوت الخطأ
+                    sounds.wrong.play();
                 } finally {
                     syncText.classList.remove('hidden');
                     syncSpinner.classList.add('hidden');
@@ -1611,6 +1739,9 @@
             function logout() {
                 firebase.auth().signOut();
                 showSyncMessage('تم تسجيل الخروج', 'success');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             }
             
             function showSyncMessage(message, type) {
@@ -1784,6 +1915,9 @@
                 a.download = `english_words_${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
                 
+                // تشغيل صوت النجاح
+                sounds.success.play();
+                
                 URL.revokeObjectURL(url);
             }
             
@@ -1809,6 +1943,9 @@
                 a.href = url;
                 a.download = `english_words_${new Date().toISOString().split('T')[0]}.csv`;
                 a.click();
+                
+                // تشغيل صوت النجاح
+                sounds.success.play();
                 
                 URL.revokeObjectURL(url);
             }
