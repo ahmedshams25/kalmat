@@ -531,6 +531,43 @@
             border-top: 1px solid var(--border-color);
         }
 
+        /* قائمة الكلمات المحذوفة */
+        .deleted-words-container {
+            margin-top: 20px;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .deleted-words-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .deleted-word-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .deleted-word-item:last-child {
+            border-bottom: none;
+        }
+
+        .restore-btn {
+            background-color: var(--info-color);
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
         @media (max-width: 600px) {
             .stats {
                 flex-direction: column;
@@ -619,6 +656,12 @@
                 </select>
             </div>
             <div id="words-container"></div>
+            
+            <!-- قسم الكلمات المحذوفة -->
+            <div class="deleted-words-container hidden" id="deleted-words-section">
+                <h3>الكلمات المحذوفة</h3>
+                <div class="deleted-words-list" id="deleted-words-list"></div>
+            </div>
         </div>
 
         <div class="tab-content" id="add-word">
@@ -683,6 +726,7 @@
             <div class="card review-card">
                 <div class="review-word" id="review-word">...</div>
                 <div class="review-translation hidden" id="review-translation">...</div>
+                <div class="word-example hidden" id="review-example"></div>
                 <div class="audio-controls">
                     <button class="audio-btn" id="pronounce-review-word">🔊 نطق الكلمة</button>
                 </div>
@@ -714,19 +758,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="test-questions-num">عدد الأسئلة</label>
-                        <select id="test-questions-num">
-                            <option value="5">5</option>
-                            <option value="10" selected>10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                        </select>
+                        <label for="test-questions-num">عدد الأسئلة (حد أقصى 100)</label>
+                        <input type="number" id="test-questions-num" min="1" max="100" value="10">
                     </div>
                     <button class="btn" id="start-test">بدء الاختبار</button>
                 </div>
 
                 <div class="test-container hidden" id="test-container">
                     <div class="test-question" id="test-question"></div>
+                    <div class="word-example hidden" id="test-example"></div>
                     <div class="audio-controls">
                         <button class="audio-btn" id="pronounce-test-word">🔊 نطق السؤال</button>
                     </div>
@@ -815,6 +855,7 @@
             const nextWordBtn = document.getElementById('next-word');
             const reviewWordEl = document.getElementById('review-word');
             const reviewTranslationEl = document.getElementById('review-translation');
+            const reviewExampleEl = document.getElementById('review-example');
             const totalWordsEl = document.getElementById('total-words');
             const todayWordsEl = document.getElementById('today-words');
             const reviewWordsEl = document.getElementById('review-words');
@@ -852,9 +893,13 @@
             const exportCsvBtn = document.getElementById('export-csv');
             const pronounceReviewBtn = document.getElementById('pronounce-review-word');
             const pronounceTestBtn = document.getElementById('pronounce-test-word');
+            const testExampleEl = document.getElementById('test-example');
+            const deletedWordsSection = document.getElementById('deleted-words-section');
+            const deletedWordsList = document.getElementById('deleted-words-list');
 
             // بيانات التطبيق
             let words = JSON.parse(localStorage.getItem('englishWords')) || [];
+            let deletedWords = JSON.parse(localStorage.getItem('deletedWords')) || [];
             let topics = JSON.parse(localStorage.getItem('wordTopics')) || ['عام', 'أعمال', 'سفر', 'تكنولوجيا'];
             let currentReviewIndex = 0;
             let reviewWords = [];
@@ -863,6 +908,7 @@
             let testScoreCount = 0;
             let currentUser = null;
             let isSyncing = false;
+            let testedWords = []; // لتتبع الكلمات التي تم اختبارها
 
             // مؤثرات صوتية
             const sounds = {
@@ -878,6 +924,7 @@
             renderWords();
             updateTopicFilters();
             loadAuthState();
+            renderDeletedWords();
 
             // أحداث التبويبات
             tabs.forEach(tab => {
@@ -1181,30 +1228,44 @@
                         wordCard.querySelector('.delete-word').addEventListener('click', async function() {
                             if (confirm('هل أنت متأكد من حذف هذه الكلمة؟')) {
                                 const wordId = parseInt(this.dataset.id);
+                                const wordIndex = words.findIndex(word => word.id === wordId);
                                 
-                                // تشغيل صوت النقر
-                                sounds.click.play();
-                                
-                                // إضافة تأثير الحذف
-                                wordCard.classList.add('deleting');
-                                
-                                // الانتظار حتى يكتمل تأثير الحذف
-                                setTimeout(async () => {
-                                    // إزالة الكلمة من المصفوفة
-                                    words = words.filter(word => word.id !== wordId);
-                                    await saveWords();
+                                if (wordIndex !== -1) {
+                                    // حفظ الكلمة المحذوفة في قائمة المحذوفات
+                                    const deletedWord = words[wordIndex];
+                                    deletedWords.unshift(deletedWord);
+                                    localStorage.setItem('deletedWords', JSON.stringify(deletedWords));
+                                    renderDeletedWords();
                                     
-                                    // إزالة العنصر من DOM
-                                    wordCard.remove();
-                                    
-                                    // تحديث الإحصائيات
-                                    updateStats();
-                                    
-                                    // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
-                                    if (currentUser) {
-                                        debouncedSync();
+                                    // إظهار قسم الكلمات المحذوفة إذا كان مخفياً
+                                    if (deletedWordsSection.classList.contains('hidden')) {
+                                        deletedWordsSection.classList.remove('hidden');
                                     }
-                                }, 300);
+                                    
+                                    // تشغيل صوت النقر
+                                    sounds.click.play();
+                                    
+                                    // إضافة تأثير الحذف
+                                    wordCard.classList.add('deleting');
+                                    
+                                    // الانتظار حتى يكتمل تأثير الحذف
+                                    setTimeout(async () => {
+                                        // إزالة الكلمة من المصفوفة
+                                        words = words.filter(word => word.id !== wordId);
+                                        await saveWords();
+                                        
+                                        // إزالة العنصر من DOM
+                                        wordCard.remove();
+                                        
+                                        // تحديث الإحصائيات
+                                        updateStats();
+                                        
+                                        // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                                        if (currentUser) {
+                                            debouncedSync();
+                                        }
+                                    }, 300);
+                                }
                             }
                         });
                         
@@ -1218,6 +1279,67 @@
                         });
                     }, 10);
                 });
+            }
+            
+            // عرض الكلمات المحذوفة
+            function renderDeletedWords() {
+                deletedWordsList.innerHTML = '';
+                
+                if (deletedWords.length === 0) {
+                    deletedWordsSection.classList.add('hidden');
+                    return;
+                }
+                
+                deletedWordsSection.classList.remove('hidden');
+                
+                deletedWords.forEach(word => {
+                    const item = document.createElement('div');
+                    item.className = 'deleted-word-item';
+                    item.innerHTML = `
+                        <span>${word.english} - ${word.arabic}</span>
+                        <button class="restore-btn" data-id="${word.id}">استعادة</button>
+                    `;
+                    deletedWordsList.appendChild(item);
+                    
+                    // حدث استعادة الكلمة
+                    item.querySelector('.restore-btn').addEventListener('click', function() {
+                        const wordId = parseInt(this.dataset.id);
+                        restoreWord(wordId);
+                        
+                        // تشغيل صوت النقر
+                        sounds.click.play();
+                    });
+                });
+            }
+            
+            // استعادة كلمة محذوفة
+            function restoreWord(wordId) {
+                const wordIndex = deletedWords.findIndex(word => word.id === wordId);
+                
+                if (wordIndex !== -1) {
+                    const restoredWord = deletedWords[wordIndex];
+                    
+                    // إضافة الكلمة إلى القائمة الرئيسية
+                    words.unshift(restoredWord);
+                    saveWords();
+                    
+                    // إزالة الكلمة من قائمة المحذوفات
+                    deletedWords = deletedWords.filter(word => word.id !== wordId);
+                    localStorage.setItem('deletedWords', JSON.stringify(deletedWords));
+                    
+                    // تحديث الواجهة
+                    renderWords();
+                    renderDeletedWords();
+                    updateStats();
+                    
+                    // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                    if (currentUser) {
+                        debouncedSync();
+                    }
+                    
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
+                }
             }
             
             async function saveWords() {
@@ -1321,12 +1443,18 @@
                 currentReviewIndex = 0;
                 
                 if (reviewWords.length === 0) {
-                    reviewWordEl.textContent = 'لا توجد كلمات تحتاج مراجعة!';
-                    startReviewBtn.classList.remove('hidden');
-                    showTranslationBtn.classList.add('hidden');
-                    nextWordBtn.classList.add('hidden');
-                    reviewTranslationEl.classList.add('hidden');
-                    return;
+                    // إذا لم توجد كلمات تحتاج مراجعة، نستخدم جميع الكلمات
+                    reviewWords = [...words].sort(() => Math.random() - 0.5);
+                    
+                    if (reviewWords.length === 0) {
+                        reviewWordEl.textContent = 'لا توجد كلمات للمراجعة!';
+                        startReviewBtn.classList.remove('hidden');
+                        showTranslationBtn.classList.add('hidden');
+                        nextWordBtn.classList.add('hidden');
+                        reviewTranslationEl.classList.add('hidden');
+                        reviewExampleEl.classList.add('hidden');
+                        return;
+                    }
                 }
                 
                 showNextReviewWord();
@@ -1342,6 +1470,7 @@
                 if (currentReviewIndex >= reviewWords.length) {
                     reviewWordEl.textContent = 'تمت مراجعة جميع الكلمات!';
                     reviewTranslationEl.classList.add('hidden');
+                    reviewExampleEl.classList.add('hidden');
                     startReviewBtn.classList.remove('hidden');
                     showTranslationBtn.classList.add('hidden');
                     nextWordBtn.classList.add('hidden');
@@ -1351,7 +1480,10 @@
                 const currentWord = reviewWords[currentReviewIndex];
                 reviewWordEl.textContent = currentWord.english;
                 reviewTranslationEl.textContent = currentWord.arabic;
+                reviewExampleEl.textContent = currentWord.example ? `مثال: ${currentWord.example}` : '';
+                
                 reviewTranslationEl.classList.add('hidden');
+                reviewExampleEl.classList.add('hidden');
                 showTranslationBtn.classList.remove('hidden');
                 nextWordBtn.classList.add('hidden');
                 
@@ -1361,6 +1493,7 @@
             
             function showTranslation() {
                 reviewTranslationEl.classList.remove('hidden');
+                reviewExampleEl.classList.remove('hidden');
                 showTranslationBtn.classList.add('hidden');
                 nextWordBtn.classList.remove('hidden');
                 
@@ -1406,7 +1539,10 @@
             function startTest() {
                 const selectedTopic = document.getElementById('test-topic').value;
                 const selectedDifficulty = document.getElementById('test-difficulty').value;
-                const questionsNum = parseInt(document.getElementById('test-questions-num').value);
+                let questionsNum = parseInt(document.getElementById('test-questions-num').value);
+                
+                // تحديد الحد الأقصى لعدد الأسئلة (100)
+                questionsNum = Math.min(questionsNum, 100);
                 
                 // تصفية الكلمات حسب الموضوع ومستوى الصعوبة
                 let testWords = [...words];
@@ -1419,6 +1555,23 @@
                     testWords = testWords.filter(word => word.difficulty === selectedDifficulty);
                 }
                 
+                // استبعاد الكلمات التي تم اختبارها مسبقاً في هذه الجلسة
+                testWords = testWords.filter(word => !testedWords.includes(word.id));
+                
+                // إذا لم يتبقى كلمات كافية، نعيد استخدام الكلمات التي تم اختبارها
+                if (testWords.length < questionsNum) {
+                    testedWords = [];
+                    testWords = [...words];
+                    
+                    if (selectedTopic) {
+                        testWords = testWords.filter(word => word.topics && word.topics.includes(selectedTopic));
+                    }
+                    
+                    if (selectedDifficulty) {
+                        testWords = testWords.filter(word => word.difficulty === selectedDifficulty);
+                    }
+                }
+                
                 if (testWords.length < 5) {
                     alert('لا يوجد عدد كافٍ من الكلمات للاختبار. أضف المزيد من الكلمات أولاً.');
                     return;
@@ -1426,6 +1579,9 @@
                 
                 // اختيار عدد عشوائي من الكلمات للاختبار
                 testWords = testWords.sort(() => Math.random() - 0.5).slice(0, Math.min(questionsNum, testWords.length));
+                
+                // إضافة الكلمات المختارة إلى قائمة الكلمات التي تم اختبارها
+                testWords.forEach(word => testedWords.push(word.id));
                 
                 // إنشاء أسئلة الاختبار
                 currentTest = testWords.map(word => {
@@ -1449,7 +1605,8 @@
                         question: word.english,
                         correctAnswer: word.arabic,
                         options: options,
-                        wordId: word.id
+                        wordId: word.id,
+                        example: word.example
                     };
                 });
                 
@@ -1475,6 +1632,8 @@
                 
                 const question = currentTest[currentQuestionIndex];
                 testQuestion.textContent = question.question;
+                testExampleEl.textContent = question.example ? `مثال: ${question.example}` : '';
+                testExampleEl.classList.add('hidden');
                 
                 testOptions.innerHTML = '';
                 question.options.forEach((option, index) => {
@@ -1500,6 +1659,10 @@
                 } else {
                     sounds.wrong.play();
                 }
+                
+                // إظهار المثال عند اختيار الإجابة
+                testExampleEl.textContent = question.example ? `مثال: ${question.example}` : '';
+                testExampleEl.classList.remove('hidden');
                 
                 // تحديث النتيجة
                 if (isCorrect) {
@@ -1685,26 +1848,30 @@
                     
                     // جلب البيانات من السحابة
                     const snapshot = await database.ref(`users/${currentUser.uid}/data`).once('value');
-                    const cloudData = snapshot.val() || { words: [], topics: [] };
+                    const cloudData = snapshot.val() || { words: [], topics: [], deletedWords: [] };
                     
                     // دمج البيانات المحلية مع السحابة
                     const localData = {
                         words: JSON.parse(localStorage.getItem('englishWords')) || [],
-                        topics: JSON.parse(localStorage.getItem('wordTopics')) || []
+                        topics: JSON.parse(localStorage.getItem('wordTopics')) || [],
+                        deletedWords: JSON.parse(localStorage.getItem('deletedWords')) || []
                     };
                     
                     const mergedData = {
                         words: mergeItems(localData.words, cloudData.words),
-                        topics: [...new Set([...localData.topics, ...cloudData.topics])]
+                        topics: [...new Set([...localData.topics, ...cloudData.topics])],
+                        deletedWords: mergeItems(localData.deletedWords, cloudData.deletedWords)
                     };
                     
                     // حفظ البيانات المدمجة
                     localStorage.setItem('englishWords', JSON.stringify(mergedData.words));
                     localStorage.setItem('wordTopics', JSON.stringify(mergedData.topics));
+                    localStorage.setItem('deletedWords', JSON.stringify(mergedData.deletedWords));
                     
                     // تحديث المتغيرات المحلية
                     words = mergedData.words;
                     topics = mergedData.topics;
+                    deletedWords = mergedData.deletedWords;
                     
                     // رفع البيانات المدمجة إلى السحابة
                     await database.ref(`users/${currentUser.uid}/data`).set(mergedData);
@@ -1718,6 +1885,7 @@
                     updateStats();
                     renderWords();
                     updateTopicFilters();
+                    renderDeletedWords();
                 } catch (error) {
                     console.error('Sync error:', error);
                     showSyncMessage(`خطأ في المزامنة: ${error.message}`, 'error');
