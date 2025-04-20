@@ -1063,6 +1063,20 @@
                         <i class="fas fa-volume-up"></i> نطق الكلمة
                     </button>
                 </div>
+                
+                <!-- إضافة خيارات المراجعة -->
+                <div class="review-settings" style="margin: 20px 0;">
+                    <h3 style="margin-bottom: 10px;"><i class="fas fa-cog"></i> إعدادات المراجعة</h3>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="auto-show-translation" checked>
+                        <label for="auto-show-translation" style="margin-bottom: 0;">إظهار الترجمة تلقائياً</label>
+                    </div>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="auto-show-example" checked>
+                        <label for="auto-show-example" style="margin-bottom: 0;">إظهار المثال تلقائياً</label>
+                    </div>
+                </div>
+                
                 <div class="review-actions">
                     <button class="btn btn-success review-btn hidden" id="show-translation">
                         <i class="fas fa-eye"></i> إظهار الترجمة
@@ -1107,7 +1121,7 @@
 
                 <div class="test-container hidden" id="test-container">
                     <div class="test-question" id="test-question"></div>
-                    <div class="word-example hidden" id="test-example"></div>
+                    <div class="word-example" id="test-example"></div>
                     <div class="audio-controls">
                         <button class="audio-btn" id="pronounce-test-word">
                             <i class="fas fa-volume-up"></i> نطق السؤال
@@ -1248,6 +1262,8 @@
             const testExampleEl = document.getElementById('test-example');
             const deletedWordsSection = document.getElementById('deleted-words-section');
             const deletedWordsList = document.getElementById('deleted-words-list');
+            const autoShowTranslationCheckbox = document.getElementById('auto-show-translation');
+            const autoShowExampleCheckbox = document.getElementById('auto-show-example');
 
             // بيانات التطبيق
             let words = JSON.parse(localStorage.getItem('englishWords')) || [];
@@ -1261,6 +1277,18 @@
             let currentUser = null;
             let isSyncing = false;
             let testedWords = []; // لتتبع الكلمات التي تم اختبارها
+
+            // إعدادات المراجعة
+            let reviewSettings = {
+                autoShowTranslation: true,
+                autoShowExample: true
+            };
+
+            // تحميل إعدادات المراجعة من localStorage
+            const savedReviewSettings = localStorage.getItem('reviewSettings');
+            if (savedReviewSettings) {
+                reviewSettings = JSON.parse(savedReviewSettings);
+            }
 
             // مؤثرات صوتية
             const sounds = {
@@ -1277,6 +1305,10 @@
             updateTopicFilters();
             loadAuthState();
             renderDeletedWords();
+
+            // تعيين القيم الأولية لإعدادات المراجعة
+            autoShowTranslationCheckbox.checked = reviewSettings.autoShowTranslation;
+            autoShowExampleCheckbox.checked = reviewSettings.autoShowExample;
 
             // أحداث التبويبات
             tabs.forEach(tab => {
@@ -1378,6 +1410,17 @@
                 
                 // تشغيل صوت النقر
                 sounds.click.play();
+            });
+
+            // أحداث تغيير إعدادات المراجعة
+            autoShowTranslationCheckbox.addEventListener('change', function() {
+                reviewSettings.autoShowTranslation = this.checked;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
+            });
+
+            autoShowExampleCheckbox.addEventListener('change', function() {
+                reviewSettings.autoShowExample = this.checked;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
             });
 
             // أحداث المراجعة
@@ -1860,10 +1903,27 @@
                 reviewTranslationEl.textContent = currentWord.arabic;
                 reviewExampleEl.textContent = currentWord.example ? `مثال: ${currentWord.example}` : '';
                 
-                reviewTranslationEl.classList.add('hidden');
-                reviewExampleEl.classList.add('hidden');
-                showTranslationBtn.classList.remove('hidden');
-                nextWordBtn.classList.add('hidden');
+                // عرض أو إخفاء الترجمة والمثال بناءً على الإعدادات
+                if (reviewSettings.autoShowTranslation) {
+                    reviewTranslationEl.classList.remove('hidden');
+                } else {
+                    reviewTranslationEl.classList.add('hidden');
+                }
+                
+                if (reviewSettings.autoShowExample && currentWord.example) {
+                    reviewExampleEl.classList.remove('hidden');
+                } else {
+                    reviewExampleEl.classList.add('hidden');
+                }
+                
+                // إظهار أو إخفاء الأزرار بناءً على الإعدادات
+                if (reviewSettings.autoShowTranslation) {
+                    showTranslationBtn.classList.add('hidden');
+                    nextWordBtn.classList.remove('hidden');
+                } else {
+                    showTranslationBtn.classList.remove('hidden');
+                    nextWordBtn.classList.add('hidden');
+                }
                 
                 // نطق الكلمة تلقائياً
                 pronounceWord(currentWord.english);
@@ -2011,7 +2071,6 @@
                 const question = currentTest[currentQuestionIndex];
                 testQuestion.textContent = question.question;
                 testExampleEl.textContent = question.example ? `مثال: ${question.example}` : '';
-                testExampleEl.classList.add('hidden');
                 
                 testOptions.innerHTML = '';
                 question.options.forEach((option, index) => {
@@ -2037,10 +2096,6 @@
                 } else {
                     sounds.wrong.play();
                 }
-                
-                // إظهار المثال عند اختيار الإجابة
-                testExampleEl.textContent = question.example ? `مثال: ${question.example}` : '';
-                testExampleEl.classList.remove('hidden');
                 
                 // تحديث النتيجة
                 if (isCorrect) {
