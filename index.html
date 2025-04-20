@@ -2,57 +2,61 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق حفظ الكلمات الإنجليزية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #166088;
-            --background-dark: #121212;
-            --card-dark: #1e1e1e;
-            --text-color: #e0e0e0;
-            --border-color: #333;
-            --success-color: #4caf50;
-            --warning-color: #ff9800;
-            --danger-color: #f44336;
-            --info-color: #2196f3;
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f94144;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
-        .light-theme {
-            --background-dark: #f5f5f5;
-            --card-dark: #ffffff;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --primary-color: #166088;
-            --secondary-color: #4a6fa5;
+        .dark-theme {
+            --primary-color: #4895ef;
+            --primary-light: #4361ee;
+            --secondary-color: #4cc9f0;
+            --accent-color: #f72585;
+            --dark-color: #f8f9fa;
+            --light-color: #1a1a2e;
+            --gray-color: #adb5bd;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-text-size-adjust: 100%;
+            font-family: 'Tajawal', sans-serif;
         }
 
         body {
-            background-color: var(--background-dark);
-            color: var(--text-color);
+            background-color: var(--light-color);
+            color: var(--dark-color);
             line-height: 1.6;
-            padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
-            touch-action: manipulation;
+            transition: var(--transition);
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         h1, h2, h3 {
             color: var(--primary-color);
             margin-bottom: 20px;
-            text-align: center;
         }
 
         .header {
@@ -61,36 +65,56 @@
             align-items: center;
             margin-bottom: 30px;
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
         }
 
         .btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s;
-        }
-
-        .light-theme .btn {
-            color: white !important;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .btn:hover {
             background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn-secondary {
-            background-color: var(--card-dark);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
         }
 
-        .light-theme .btn-secondary {
-            color: #333 !important;
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
         }
 
         .btn-success {
@@ -105,124 +129,179 @@
             background-color: var(--danger-color);
         }
 
-        .btn-info {
-            background-color: var(--info-color);
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 14px;
         }
 
         .card {
-            background-color: var(--card-dark);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-theme .card {
+            background-color: #16213e;
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: var(--text-color);
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background-color: var(--card-dark);
-            color: var(--text-color);
-            transition: background-color 0.3s, border-color 0.3s;
-            font-size: 16px !important;
-            transform: none !important;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: white;
+            color: var(--dark-color);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .dark-theme input,
+        .dark-theme textarea,
+        .dark-theme select {
+            background-color: #0f3460;
+            border-color: rgba(255, 255, 255, 0.1);
+            color: white;
         }
 
         textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
         }
 
         .word-card {
             position: relative;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             cursor: pointer;
+            overflow: hidden;
         }
 
         .word-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
 
         .word-card h3 {
             color: var(--primary-color);
             margin-bottom: 10px;
-            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .word-card p {
-            margin-bottom: 5px;
-            text-align: right;
+            margin-bottom: 8px;
         }
 
         .word-english {
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: bold;
         }
 
         .word-arabic {
-            font-size: 20px;
+            font-size: 1.2rem;
             color: var(--success-color);
         }
 
         .word-example {
             font-style: italic;
-            color: #aaa;
+            color: var(--gray-color);
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .dark-theme .word-example {
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .word-date {
-            font-size: 12px;
-            color: #777;
-            text-align: left;
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            margin-top: 15px;
         }
 
         .actions {
             display: flex;
             justify-content: space-between;
-            margin-top: 15px;
+            margin-top: 20px;
+            gap: 10px;
         }
 
         .hidden {
             display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
         .tabs {
             display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             flex-wrap: wrap;
         }
 
+        .dark-theme .tabs {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
         .tab {
-            padding: 10px 20px;
+            padding: 12px 20px;
             cursor: pointer;
             border-bottom: 3px solid transparent;
-            transition: border-color 0.3s;
-            color: var(--text-color);
+            transition: var(--transition);
+            color: var(--gray-color);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
         }
 
         .tab.active {
+            color: var(--primary-color);
             border-bottom: 3px solid var(--primary-color);
-            font-weight: bold;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px 3px 0 0;
         }
 
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .tab-content.active {
@@ -230,50 +309,62 @@
         }
 
         .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
             text-align: center;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: var(--card-dark);
-            flex: 1;
-            margin: 5px;
-            min-width: 120px;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .stat-card h3 {
-            margin-bottom: 5px;
-            font-size: 14px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 10px;
         }
 
         .stat-card p {
-            font-size: 24px;
+            font-size: 2rem;
             font-weight: bold;
-            color: var(--primary-color);
         }
 
         .review-card {
             text-align: center;
-            padding: 30px;
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+            border: none;
+        }
+
+        .dark-theme .review-card {
+            background: linear-gradient(135deg, #16213e, #0f3460);
         }
 
         .review-word {
-            font-size: 32px;
+            font-size: 2.5rem;
             margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
         }
 
         .review-translation {
-            font-size: 28px;
+            font-size: 2rem;
             color: var(--success-color);
             margin-bottom: 30px;
-            min-height: 40px;
+            min-height: 60px;
+            font-weight: bold;
         }
 
         .review-actions {
@@ -284,12 +375,26 @@
         }
 
         .review-btn {
-            padding: 10px 25px;
-            font-size: 18px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            min-width: 180px;
         }
 
         .search-box {
             margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        .search-box input {
+            padding-left: 40px;
         }
 
         .difficulty-easy {
@@ -307,16 +412,25 @@
         .word-details {
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px dashed var(--border-color);
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .word-details {
+            border-top-color: rgba(255, 255, 255, 0.1);
         }
 
         .pronounce-btn {
             background: none;
             border: none;
-            color: var(--info-color);
+            color: var(--primary-color);
             cursor: pointer;
-            font-size: 20px;
-            margin-right: 10px;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .pronounce-btn:hover {
+            color: var(--secondary-color);
+            transform: scale(1.1);
         }
 
         .test-container {
@@ -324,75 +438,112 @@
         }
 
         .test-question {
-            font-size: 24px;
+            font-size: 1.8rem;
             margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
         }
 
         .test-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
         }
 
         .test-option {
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+
+        .dark-theme .test-option {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .test-option:hover {
-            background-color: var(--card-dark);
+            background-color: rgba(0, 0, 0, 0.03);
+            border-color: var(--primary-color);
+        }
+
+        .dark-theme .test-option:hover {
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .test-option.correct {
-            background-color: var(--success-color);
+            background-color: rgba(76, 201, 240, 0.2);
             border-color: var(--success-color);
-            color: white;
+            color: var(--success-color);
         }
 
         .test-option.wrong {
-            background-color: var(--danger-color);
+            background-color: rgba(249, 65, 68, 0.2);
             border-color: var(--danger-color);
-            color: white;
+            color: var(--danger-color);
         }
 
         .test-result {
-            margin-top: 20px;
-            font-size: 20px;
+            margin-top: 30px;
+            font-size: 1.5rem;
             text-align: center;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background-color: rgba(76, 201, 240, 0.1);
+            border: 1px solid var(--success-color);
+            opacity: 0;
+            transform: scale(0.9);
             transition: all 0.5s ease;
         }
 
+        .dark-theme .test-result {
+            background-color: rgba(76, 201, 240, 0.05);
+        }
+
         .test-result.show {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+            opacity: 1;
+            transform: scale(1);
         }
 
         .test-score {
-            font-size: 24px;
+            font-size: 2rem;
             font-weight: bold;
-            color: var(--primary-color);
+            color: var(--success-color);
+            display: inline-block;
+            margin: 0 5px;
         }
 
         .tags-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .tag {
-            background-color: var(--secondary-color);
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-size: 12px;
+            background-color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag i {
+            font-size: 0.7rem;
         }
 
         .topic-filter {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .topic-filter select {
+            flex: 1;
         }
 
         /* تأثيرات النجاح */
@@ -405,7 +556,7 @@
             position: fixed;
             width: 10px;
             height: 10px;
-            background-color: #f00;
+            background-color: var(--accent-color);
             animation: confetti 3s ease-out forwards;
             z-index: 999;
         }
@@ -416,7 +567,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 3rem;
-            color: var(--success-color);
+            color: var(--accent-color);
             opacity: 0;
             animation: zoomIn 1s ease-out forwards;
             z-index: 1000;
@@ -425,37 +576,41 @@
 
         @keyframes zoomIn {
             0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
 
         /* واجهة المزامنة */
         .sync-section {
             margin-top: 30px;
-            padding: 20px;
         }
 
         .auth-status {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-weight: bold;
             color: var(--primary-color);
+            font-size: 1.1rem;
         }
 
         .sync-message {
             margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: var(--border-radius);
             text-align: center;
+            font-weight: 500;
         }
 
         .sync-message.success {
-            background-color: rgba(76, 175, 80, 0.2);
+            background-color: rgba(76, 201, 240, 0.2);
             color: var(--success-color);
+            border: 1px solid var(--success-color);
         }
 
         .sync-message.error {
-            background-color: rgba(244, 67, 54, 0.2);
+            background-color: rgba(249, 65, 68, 0.2);
             color: var(--danger-color);
+            border: 1px solid var(--danger-color);
         }
 
         .flex {
@@ -480,13 +635,23 @@
 
         /* أنماط جديدة لرفع الملفات */
         .upload-section {
-            margin: 20px 0;
-            padding: 15px;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
+            margin: 25px 0;
+            padding: 20px;
+            border: 2px dashed var(--gray-color);
+            border-radius: var(--border-radius);
             text-align: center;
+            transition: var(--transition);
         }
-        
+
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .dark-theme .upload-section:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
         .upload-btn {
             position: relative;
             overflow: hidden;
@@ -505,53 +670,76 @@
         
         .progress-bar {
             width: 100%;
-            background-color: var(--border-color);
-            border-radius: 5px;
-            margin-top: 10px;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            margin-top: 15px;
             display: none;
+            overflow: hidden;
+        }
+
+        .dark-theme .progress-bar {
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         .progress {
             height: 10px;
-            background-color: var(--success-color);
-            border-radius: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: var(--border-radius);
             width: 0%;
             transition: width 0.3s;
         }
         
         .upload-status {
-            margin-top: 10px;
-            font-size: 14px;
+            margin-top: 15px;
+            font-size: 0.9rem;
             color: var(--primary-color);
+            font-weight: 500;
         }
 
         .export-section {
-            margin-top: 20px;
-            padding: 15px;
-            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .export-section {
+            border-top-color: rgba(255, 255, 255, 0.1);
         }
 
         /* قائمة الكلمات المحذوفة */
         .deleted-words-container {
-            margin-top: 20px;
-            padding: 15px;
-            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .deleted-words-container {
+            border-top-color: rgba(255, 255, 255, 0.1);
         }
 
         .deleted-words-list {
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
-            margin-top: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 10px;
+            margin-top: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+        }
+
+        .dark-theme .deleted-words-list {
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .deleted-word-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border-color);
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .deleted-word-item {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
         }
 
         .deleted-word-item:last-child {
@@ -559,49 +747,48 @@
         }
 
         .restore-btn {
-            background-color: var(--info-color);
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 3px 8px;
-            border-radius: 3px;
+            padding: 6px 12px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 12px;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        @media (max-width: 600px) {
-            .stats {
-                flex-direction: column;
-            }
-            
-            .stat-card {
-                margin: 5px 0;
-                min-width: 100%;
-            }
-            
-            .review-actions {
-                flex-direction: column;
-            }
-            
-            .tab {
-                padding: 8px 12px;
-                font-size: 14px;
-            }
+        .restore-btn:hover {
+            background-color: var(--secondary-color);
         }
 
         /* مؤثرات صوتية */
         .audio-controls {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .audio-btn {
-            background: none;
+            background: var(--primary-color);
+            color: white;
             border: none;
-            color: var(--info-color);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 20px;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .audio-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
         }
 
         /* تأثيرات الحذف */
@@ -610,93 +797,231 @@
             opacity: 0;
             transition: all 0.3s ease;
         }
+
+        /* زر تبديل الثيم */
+        .theme-toggle {
+            background-color: transparent;
+            border: none;
+            color: var(--dark-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .dark-theme .theme-toggle {
+            color: var(--light-color);
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: rotate(30deg);
+        }
+
+        .dark-theme .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* تأثيرات للبطاقات */
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .word-card {
+            animation: cardEntrance 0.5s ease-out;
+            animation-fill-mode: backwards;
+        }
+
+        /* تكييف للهواتف المحمولة */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .review-card {
+                padding: 25px;
+            }
+            
+            .review-word {
+                font-size: 2rem;
+            }
+            
+            .review-translation {
+                font-size: 1.5rem;
+            }
+            
+            .review-actions {
+                flex-direction: column;
+            }
+            
+            .review-btn {
+                width: 100%;
+            }
+            
+            .test-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card p {
+                font-size: 1.5rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>تطبيق حفظ الكلمات الإنجليزية</h1>
-            <button id="toggle-theme" class="btn btn-secondary">وضع النهار</button>
+            <div class="logo">
+                <i class="fas fa-language"></i>
+                <span>تطبيق حفظ الكلمات الإنجليزية</span>
+            </div>
+            <button id="toggle-theme" class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
         </div>
 
         <div class="stats">
             <div class="stat-card">
-                <h3>إجمالي الكلمات</h3>
+                <h3><i class="fas fa-book-open"></i> إجمالي الكلمات</h3>
                 <p id="total-words">0</p>
             </div>
             <div class="stat-card">
-                <h3>الكلمات المضافة اليوم</h3>
+                <h3><i class="fas fa-calendar-day"></i> الكلمات المضافة اليوم</h3>
                 <p id="today-words">0</p>
             </div>
             <div class="stat-card">
-                <h3>الكلمات التي تحتاج مراجعة</h3>
+                <h3><i class="fas fa-redo"></i> تحتاج مراجعة</h3>
                 <p id="review-words">0</p>
             </div>
             <div class="stat-card">
-                <h3>المواضيع</h3>
+                <h3><i class="fas fa-tags"></i> المواضيع</h3>
                 <p id="total-topics">0</p>
             </div>
         </div>
 
         <div class="tabs">
-            <div class="tab active" data-tab="words-list">قائمة الكلمات</div>
-            <div class="tab" data-tab="add-word">إضافة كلمة جديدة</div>
-            <div class="tab" data-tab="review">مراجعة الكلمات</div>
-            <div class="tab" data-tab="test">اختبار كتابي</div>
-            <div class="tab" data-tab="sync">المزامنة</div>
+            <div class="tab active" data-tab="words-list">
+                <i class="fas fa-list"></i> قائمة الكلمات
+            </div>
+            <div class="tab" data-tab="add-word">
+                <i class="fas fa-plus"></i> إضافة كلمة
+            </div>
+            <div class="tab" data-tab="review">
+                <i class="fas fa-redo"></i> مراجعة
+            </div>
+            <div class="tab" data-tab="test">
+                <i class="fas fa-question-circle"></i> اختبار
+            </div>
+            <div class="tab" data-tab="sync">
+                <i class="fas fa-cloud"></i> المزامنة
+            </div>
         </div>
 
         <div class="tab-content active" id="words-list">
             <div class="search-box">
+                <i class="fas fa-search"></i>
                 <input type="text" id="search-input" placeholder="ابحث عن كلمة...">
             </div>
             <div class="topic-filter">
                 <select id="topic-filter">
                     <option value="">جميع المواضيع</option>
                 </select>
+                <button class="btn btn-sm" id="clear-filter">
+                    <i class="fas fa-times"></i> مسح
+                </button>
             </div>
             <div id="words-container"></div>
             
             <!-- قسم الكلمات المحذوفة -->
             <div class="deleted-words-container hidden" id="deleted-words-section">
-                <h3>الكلمات المحذوفة</h3>
+                <h3><i class="fas fa-trash"></i> الكلمات المحذوفة</h3>
                 <div class="deleted-words-list" id="deleted-words-list"></div>
             </div>
         </div>
 
         <div class="tab-content" id="add-word">
             <div class="card">
-                <h2>إضافة كلمة جديدة</h2>
+                <h2><i class="fas fa-plus-circle"></i> إضافة كلمة جديدة</h2>
                 
                 <!-- قسم رفع الملفات -->
                 <div class="upload-section">
-                    <h3>أو رفع ملف يحتوي على كلمات متعددة</h3>
+                    <h3><i class="fas fa-file-upload"></i> رفع ملف يحتوي على كلمات متعددة</h3>
                     <div class="upload-btn">
-                        <button class="btn btn-info">اختر ملف</button>
+                        <button class="btn btn-accent">
+                            <i class="fas fa-folder-open"></i> اختر ملف
+                        </button>
                         <input type="file" id="words-file" accept=".json,.csv,.txt">
                     </div>
                     <div class="progress-bar">
                         <div class="progress" id="upload-progress"></div>
                     </div>
                     <div class="upload-status" id="upload-status"></div>
-                    <p>يمكنك رفع ملف JSON أو CSV يحتوي على الكلمات. يجب أن يحتوي الملف على حقول: english, arabic, example (اختياري), difficulty (اختياري), topics (اختياري)</p>
+                    <p class="text-muted">يمكنك رفع ملف JSON أو CSV يحتوي على الكلمات. يجب أن يحتوي الملف على حقول: english, arabic, example (اختياري), difficulty (اختياري), topics (اختياري)</p>
                 </div>
                 
                 <form id="add-word-form">
                     <div class="form-group">
-                        <label for="english-word">الكلمة الإنجليزية</label>
+                        <label for="english-word"><i class="fas fa-font"></i> الكلمة الإنجليزية</label>
                         <input type="text" id="english-word" required>
                     </div>
                     <div class="form-group">
-                        <label for="arabic-meaning">المعنى العربي</label>
+                        <label for="arabic-meaning"><i class="fas fa-language"></i> المعنى العربي</label>
                         <input type="text" id="arabic-meaning" required>
                     </div>
                     <div class="form-group">
-                        <label for="example-sentence">مثال (اختياري)</label>
+                        <label for="example-sentence"><i class="fas fa-comment-dots"></i> مثال (اختياري)</label>
                         <textarea id="example-sentence"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="difficulty">مستوى الصعوبة</label>
+                        <label for="difficulty"><i class="fas fa-tachometer-alt"></i> مستوى الصعوبة</label>
                         <select id="difficulty">
                             <option value="easy">سهلة</option>
                             <option value="medium">متوسطة</option>
@@ -704,19 +1029,25 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="word-topics">المواضيع (افصل بينها بفاصلة)</label>
+                        <label for="word-topics"><i class="fas fa-tags"></i> المواضيع (افصل بينها بفاصلة)</label>
                         <input type="text" id="word-topics" placeholder="مثال: أعمال, سفر, تكنولوجيا">
                     </div>
-                    <button type="submit" class="btn">حفظ الكلمة</button>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i> حفظ الكلمة
+                    </button>
                 </form>
 
                 <!-- قسم تصدير الكلمات -->
                 <div class="export-section">
-                    <h3>تصدير الكلمات</h3>
-                    <p>يمكنك تصدير جميع كلماتك إلى ملف JSON أو CSV</p>
+                    <h3><i class="fas fa-file-export"></i> تصدير الكلمات</h3>
+                    <p class="text-muted">يمكنك تصدير جميع كلماتك إلى ملف JSON أو CSV</p>
                     <div class="actions">
-                        <button class="btn btn-secondary" id="export-json">تصدير إلى JSON</button>
-                        <button class="btn btn-secondary" id="export-csv">تصدير إلى CSV</button>
+                        <button class="btn btn-secondary" id="export-json">
+                            <i class="fas fa-file-code"></i> تصدير JSON
+                        </button>
+                        <button class="btn btn-secondary" id="export-csv">
+                            <i class="fas fa-file-csv"></i> تصدير CSV
+                        </button>
                     </div>
                 </div>
             </div>
@@ -728,28 +1059,36 @@
                 <div class="review-translation hidden" id="review-translation">...</div>
                 <div class="word-example hidden" id="review-example"></div>
                 <div class="audio-controls">
-                    <button class="audio-btn" id="pronounce-review-word">🔊 نطق الكلمة</button>
+                    <button class="audio-btn" id="pronounce-review-word">
+                        <i class="fas fa-volume-up"></i> نطق الكلمة
+                    </button>
                 </div>
                 <div class="review-actions">
-                    <button class="btn btn-success review-btn hidden" id="show-translation">إظهار الترجمة</button>
-                    <button class="btn btn-success review-btn hidden" id="next-word">كلمة تالية</button>
-                    <button class="btn btn-warning review-btn" id="start-review">بدء المراجعة</button>
+                    <button class="btn btn-success review-btn hidden" id="show-translation">
+                        <i class="fas fa-eye"></i> إظهار الترجمة
+                    </button>
+                    <button class="btn btn-success review-btn hidden" id="next-word">
+                        <i class="fas fa-arrow-right"></i> كلمة تالية
+                    </button>
+                    <button class="btn btn-accent review-btn" id="start-review">
+                        <i class="fas fa-play"></i> بدء المراجعة
+                    </button>
                 </div>
             </div>
         </div>
 
         <div class="tab-content" id="test">
             <div class="card">
-                <h2>اختبار كتابي</h2>
+                <h2><i class="fas fa-question-circle"></i> اختبار كتابي</h2>
                 <div class="test-settings">
                     <div class="form-group">
-                        <label for="test-topic">اختر موضوع (اختياري)</label>
+                        <label for="test-topic"><i class="fas fa-tags"></i> اختر موضوع (اختياري)</label>
                         <select id="test-topic">
                             <option value="">جميع المواضيع</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="test-difficulty">مستوى الصعوبة (اختياري)</label>
+                        <label for="test-difficulty"><i class="fas fa-tachometer-alt"></i> مستوى الصعوبة (اختياري)</label>
                         <select id="test-difficulty">
                             <option value="">جميع المستويات</option>
                             <option value="easy">سهلة فقط</option>
@@ -758,23 +1097,33 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="test-questions-num">عدد الأسئلة (حد أقصى 100)</label>
+                        <label for="test-questions-num"><i class="fas fa-list-ol"></i> عدد الأسئلة (حد أقصى 100)</label>
                         <input type="number" id="test-questions-num" min="1" max="100" value="10">
                     </div>
-                    <button class="btn" id="start-test">بدء الاختبار</button>
+                    <button class="btn" id="start-test">
+                        <i class="fas fa-play"></i> بدء الاختبار
+                    </button>
                 </div>
 
                 <div class="test-container hidden" id="test-container">
                     <div class="test-question" id="test-question"></div>
                     <div class="word-example hidden" id="test-example"></div>
                     <div class="audio-controls">
-                        <button class="audio-btn" id="pronounce-test-word">🔊 نطق السؤال</button>
+                        <button class="audio-btn" id="pronounce-test-word">
+                            <i class="fas fa-volume-up"></i> نطق السؤال
+                        </button>
                     </div>
                     <div class="test-options" id="test-options"></div>
                     <div class="test-result hidden" id="test-result">
                         <p>نتيجة الاختبار: <span class="test-score" id="test-score">0</span>/<span id="test-total">0</span></p>
-                        <button class="btn" id="retry-test">إعادة الاختبار</button>
-                        <button class="btn btn-secondary" id="new-test">اختبار جديد</button>
+                        <div class="actions">
+                            <button class="btn" id="retry-test">
+                                <i class="fas fa-redo"></i> إعادة الاختبار
+                            </button>
+                            <button class="btn btn-secondary" id="new-test">
+                                <i class="fas fa-plus"></i> اختبار جديد
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -782,16 +1131,16 @@
 
         <div class="tab-content" id="sync">
             <div class="card sync-section">
-                <h3>المزامنة مع السحابة</h3>
+                <h3><i class="fas fa-cloud"></i> المزامنة مع السحابة</h3>
                 <div id="auth-status" class="auth-status">غير مسجل الدخول</div>
                 
                 <div id="login-form">
                     <div class="form-group">
-                        <label for="email">البريد الإلكتروني</label>
+                        <label for="email"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
                         <input type="email" id="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">كلمة المرور</label>
+                        <label for="password"><i class="fas fa-lock"></i> كلمة المرور</label>
                         <input type="password" id="password" required>
                     </div>
                     <div class="form-group flex">
@@ -799,17 +1148,19 @@
                         <label for="remember-me" style="margin-bottom: 0;">تذكرني</label>
                     </div>
                     <button id="login-btn" class="btn">
-                        <span id="login-text">تسجيل الدخول / تسجيل جديد</span>
+                        <span id="login-text"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول / تسجيل جديد</span>
                         <span id="login-spinner" class="loading hidden"></span>
                     </button>
                 </div>
                 
                 <div id="sync-controls" class="hidden">
                     <button id="sync-now" class="btn">
-                        <span id="sync-text">مزامنة الآن</span>
+                        <span id="sync-text"><i class="fas fa-sync-alt"></i> مزامنة الآن</span>
                         <span id="sync-spinner" class="loading hidden"></span>
                     </button>
-                    <button id="logout" class="btn btn-secondary">تسجيل الخروج</button>
+                    <button id="logout" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                    </button>
                 </div>
                 
                 <div id="sync-message" class="sync-message"></div>
@@ -861,6 +1212,7 @@
             const reviewWordsEl = document.getElementById('review-words');
             const totalTopicsEl = document.getElementById('total-topics');
             const topicFilter = document.getElementById('topic-filter');
+            const clearFilterBtn = document.getElementById('clear-filter');
             const testTopic = document.getElementById('test-topic');
             const startTestBtn = document.getElementById('start-test');
             const testContainer = document.getElementById('test-container');
@@ -1008,12 +1360,21 @@
                 renderWords(searchInput.value.toLowerCase(), this.value);
             });
 
+            // حدث مسح التصفية
+            clearFilterBtn.addEventListener('click', function() {
+                topicFilter.value = '';
+                renderWords(searchInput.value.toLowerCase(), '');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            });
+
             // تبديل الثيم
             toggleThemeBtn.addEventListener('click', function() {
-                document.body.classList.toggle('light-theme');
-                const isLightMode = document.body.classList.contains('light-theme');
-                this.textContent = isLightMode ? 'الوضع الليلي' : 'وضع النهار';
-                localStorage.setItem('themePreference', isLightMode ? 'light' : 'dark');
+                document.body.classList.toggle('dark-theme');
+                const isDarkMode = document.body.classList.contains('dark-theme');
+                this.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                localStorage.setItem('themePreference', isDarkMode ? 'dark' : 'light');
                 
                 // تشغيل صوت النقر
                 sounds.click.play();
@@ -1116,6 +1477,7 @@
                 currentUser = user;
                 if (user) {
                     authStatus.textContent = `مرحباً، ${user.email}`;
+                    authStatus.innerHTML = `<i class="fas fa-user-check"></i> ${user.email}`;
                     loginForm.classList.add('hidden');
                     syncControls.classList.remove('hidden');
                     
@@ -1123,6 +1485,7 @@
                     syncData();
                 } else {
                     authStatus.textContent = 'غير مسجل الدخول';
+                    authStatus.innerHTML = '<i class="fas fa-user-times"></i> غير مسجل الدخول';
                     loginForm.classList.remove('hidden');
                     syncControls.classList.add('hidden');
                 }
@@ -1130,10 +1493,10 @@
 
             // وظائف التطبيق
             function loadThemePreference() {
-                const savedTheme = localStorage.getItem('themePreference') || 'dark';
-                if (savedTheme === 'light') {
-                    document.body.classList.add('light-theme');
-                    toggleThemeBtn.textContent = 'الوضع الليلي';
+                const savedTheme = localStorage.getItem('themePreference') || 'light';
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                    toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
                 }
             }
 
@@ -1159,7 +1522,12 @@
                 });
                 
                 if (filteredWords.length === 0) {
-                    wordsContainer.innerHTML = '<div class="card">لا توجد كلمات متطابقة مع بحثك</div>';
+                    wordsContainer.innerHTML = `
+                        <div class="card" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-search" style="font-size: 3rem; color: var(--gray-color); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--gray-color);">لا توجد كلمات متطابقة مع بحثك</h3>
+                        </div>
+                    `;
                     return;
                 }
                 
@@ -1177,30 +1545,36 @@
                     wordCard.className = 'card word-card';
                     wordCard.dataset.id = word.id;
                     wordCard.style.opacity = '0';
-                    wordCard.style.transition = 'opacity 0.3s';
+                    wordCard.style.animationDelay = `${Math.random() * 0.3}s`;
                     
                     const topicsHTML = word.topics && word.topics.length > 0 
-                        ? `<div class="tags-container">${word.topics.map(t => `<span class="tag">${t}</span>`).join('')}</div>`
+                        ? `<div class="tags-container">${word.topics.map(t => `<span class="tag"><i class="fas fa-tag"></i> ${t}</span>`).join('')}</div>`
                         : '';
                     
                     wordCard.innerHTML = `
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <h3 class="word-english">${word.english}</h3>
-                            <button class="pronounce-btn" data-word="${word.english}">🔊</button>
+                            <button class="pronounce-btn" data-word="${word.english}">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
                         </div>
                         <p class="word-arabic">${word.arabic}</p>
                         ${word.example ? `<p class="word-example">مثال: ${word.example}</p>` : ''}
                         ${topicsHTML}
-                        <p class="word-date">أضيفت في: ${formatDate(word.dateAdded)}</p>
+                        <p class="word-date"><i class="far fa-calendar-alt"></i> أضيفت في: ${formatDate(word.dateAdded)}</p>
                         <div class="word-details hidden">
-                            <p>مستوى الصعوبة: <span class="difficulty-${word.difficulty}">${getDifficultyText(word.difficulty)}</span></p>
-                            <p>عدد المراجعات: ${word.reviewCount}</p>
-                            <p>الإجابات الصحيحة: ${word.correctAnswers}</p>
-                            ${word.lastReviewed ? `<p>آخر مراجعة: ${formatDate(word.lastReviewed)}</p>` : '<p>لم تتم مراجعتها بعد</p>'}
+                            <p><i class="fas fa-tachometer-alt"></i> مستوى الصعوبة: <span class="difficulty-${word.difficulty}">${getDifficultyText(word.difficulty)}</span></p>
+                            <p><i class="fas fa-redo"></i> عدد المراجعات: ${word.reviewCount}</p>
+                            <p><i class="fas fa-check-circle"></i> الإجابات الصحيحة: ${word.correctAnswers}</p>
+                            ${word.lastReviewed ? `<p><i class="far fa-clock"></i> آخر مراجعة: ${formatDate(word.lastReviewed)}</p>` : '<p><i class="far fa-clock"></i> لم تتم مراجعتها بعد</p>'}
                         </div>
                         <div class="actions">
-                            <button class="btn btn-secondary toggle-details" data-id="${word.id}">تفاصيل</button>
-                            <button class="btn btn-danger delete-word" data-id="${word.id}">حذف</button>
+                            <button class="btn btn-secondary toggle-details" data-id="${word.id}">
+                                <i class="fas fa-info-circle"></i> تفاصيل
+                            </button>
+                            <button class="btn btn-danger delete-word" data-id="${word.id}">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
                         </div>
                     `;
                     
@@ -1218,7 +1592,9 @@
                             const wordId = parseInt(this.dataset.id);
                             const details = wordCard.querySelector('.word-details');
                             details.classList.toggle('hidden');
-                            this.textContent = details.classList.contains('hidden') ? 'تفاصيل' : 'إخفاء التفاصيل';
+                            this.innerHTML = details.classList.contains('hidden') 
+                                ? '<i class="fas fa-info-circle"></i> تفاصيل' 
+                                : '<i class="fas fa-eye-slash"></i> إخفاء التفاصيل';
                             
                             // تشغيل صوت النقر
                             sounds.click.play();
@@ -1296,8 +1672,10 @@
                     const item = document.createElement('div');
                     item.className = 'deleted-word-item';
                     item.innerHTML = `
-                        <span>${word.english} - ${word.arabic}</span>
-                        <button class="restore-btn" data-id="${word.id}">استعادة</button>
+                        <span><i class="fas fa-font"></i> ${word.english} - <i class="fas fa-language"></i> ${word.arabic}</span>
+                        <button class="restore-btn" data-id="${word.id}">
+                            <i class="fas fa-undo"></i> استعادة
+                        </button>
                     `;
                     deletedWordsList.appendChild(item);
                     
@@ -1718,7 +2096,7 @@
             }
             
             function createConfetti() {
-                const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+                const colors = ['#f72585', '#4361ee', '#3f37c9', '#4895ef', '#4cc9f0'];
                 
                 for (let i = 0; i < 100; i++) {
                     const confetti = document.createElement('div');
@@ -1742,13 +2120,23 @@
                 // اختيار رسالة مختلفة حسب النتيجة
                 const percentage = (testScoreCount / currentTest.length) * 100;
                 let message = '';
+                let icon = '';
                 
-                if (percentage >= 90) message = '🎉 ممتاز!';
-                else if (percentage >= 70) message = '👏 جيد جداً!';
-                else if (percentage >= 50) message = '👍 ليس سيئاً!';
-                else message = '💪 يمكنك التحسن!';
+                if (percentage >= 90) {
+                    message = 'ممتاز!';
+                    icon = 'fas fa-trophy';
+                } else if (percentage >= 70) {
+                    message = 'جيد جداً!';
+                    icon = 'fas fa-star';
+                } else if (percentage >= 50) {
+                    message = 'ليس سيئاً!';
+                    icon = 'fas fa-thumbs-up';
+                } else {
+                    message = 'يمكنك التحسن!';
+                    icon = 'fas fa-rocket';
+                }
                 
-                celebration.textContent = message;
+                celebration.innerHTML = `<i class="${icon}"></i> ${message}`;
                 document.body.appendChild(celebration);
                 
                 // إزالة الرسالة بعد 2 ثواني
