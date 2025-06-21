@@ -1064,6 +1064,9 @@
                     <button class="audio-btn" id="pronounce-review-word">
                         <i class="fas fa-volume-up"></i> نطق الكلمة
                     </button>
+                    <button class="audio-btn" id="auto-play-toggle">
+                        <i class="fas fa-play"></i> تشغيل تلقائي
+                    </button>
                 </div>
                 
                 <!-- إضافة خيارات المراجعة -->
@@ -1076,6 +1079,14 @@
                     <div class="form-group flex">
                         <input type="checkbox" id="auto-show-example" checked>
                         <label for="auto-show-example" style="margin-bottom: 0;">إظهار المثال تلقائياً</label>
+                    </div>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="auto-play-audio" checked>
+                        <label for="auto-play-audio" style="margin-bottom: 0;">تشغيل الصوت تلقائياً</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="auto-play-delay"><i class="fas fa-clock"></i> تأخير التشغيل التلقائي (ثانية)</label>
+                        <input type="number" id="auto-play-delay" min="1" max="10" value="3">
                     </div>
                 </div>
                 
@@ -1266,6 +1277,9 @@
             const deletedWordsList = document.getElementById('deleted-words-list');
             const autoShowTranslationCheckbox = document.getElementById('auto-show-translation');
             const autoShowExampleCheckbox = document.getElementById('auto-show-example');
+            const autoPlayAudioCheckbox = document.getElementById('auto-play-audio');
+            const autoPlayDelayInput = document.getElementById('auto-play-delay');
+            const autoPlayToggleBtn = document.getElementById('auto-play-toggle');
 
             // بيانات التطبيق
             let words = JSON.parse(localStorage.getItem('englishWords')) || [];
@@ -1279,11 +1293,15 @@
             let currentUser = null;
             let isSyncing = false;
             let testedWords = []; // لتتبع الكلمات التي تم اختبارها
+            let autoPlayInterval = null;
+            let isAutoPlaying = false;
 
             // إعدادات المراجعة
             let reviewSettings = {
                 autoShowTranslation: true,
-                autoShowExample: true
+                autoShowExample: true,
+                autoPlayAudio: true,
+                autoPlayDelay: 3
             };
 
             // تحميل إعدادات المراجعة من localStorage
@@ -1311,6 +1329,8 @@
             // تعيين القيم الأولية لإعدادات المراجعة
             autoShowTranslationCheckbox.checked = reviewSettings.autoShowTranslation;
             autoShowExampleCheckbox.checked = reviewSettings.autoShowExample;
+            autoPlayAudioCheckbox.checked = reviewSettings.autoPlayAudio;
+            autoPlayDelayInput.value = reviewSettings.autoPlayDelay;
 
             // أحداث التبويبات
             tabs.forEach(tab => {
@@ -1424,6 +1444,19 @@
                 reviewSettings.autoShowExample = this.checked;
                 localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
             });
+
+            autoPlayAudioCheckbox.addEventListener('change', function() {
+                reviewSettings.autoPlayAudio = this.checked;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
+            });
+
+            autoPlayDelayInput.addEventListener('change', function() {
+                reviewSettings.autoPlayDelay = parseInt(this.value) || 3;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
+            });
+
+            // أحداث التشغيل التلقائي
+            autoPlayToggleBtn.addEventListener('click', toggleAutoPlay);
 
             // أحداث المراجعة
             startReviewBtn.addEventListener('click', startReview);
@@ -1897,6 +1930,7 @@
                     startReviewBtn.classList.remove('hidden');
                     showTranslationBtn.classList.add('hidden');
                     nextWordBtn.classList.add('hidden');
+                    stopAutoPlay();
                     return;
                 }
                 
@@ -1927,8 +1961,10 @@
                     nextWordBtn.classList.add('hidden');
                 }
                 
-                // نطق الكلمة تلقائياً
-                pronounceWord(currentWord.english);
+                // نطق الكلمة تلقائياً إذا كان الخيار مفعل
+                if (reviewSettings.autoPlayAudio) {
+                    pronounceWord(currentWord.english);
+                }
             }
             
             function showTranslation() {
@@ -1974,6 +2010,47 @@
                 } else {
                     alert('متصفحك لا يدود ميزة النطق. جرب استخدام متصفح حديث مثل Chrome أو Edge');
                 }
+            }
+            
+            // وظائف التشغيل التلقائي
+            function toggleAutoPlay() {
+                if (isAutoPlaying) {
+                    stopAutoPlay();
+                } else {
+                    startAutoPlay();
+                }
+            }
+            
+            function startAutoPlay() {
+                if (isAutoPlaying || currentReviewIndex >= reviewWords.length) return;
+                
+                isAutoPlaying = true;
+                autoPlayToggleBtn.innerHTML = '<i class="fas fa-pause"></i> إيقاف التشغيل التلقائي';
+                
+                const delay = reviewSettings.autoPlayDelay * 1000;
+                
+                autoPlayInterval = setInterval(() => {
+                    if (currentReviewIndex < reviewWords.length - 1) {
+                        currentReviewIndex++;
+                        showNextReviewWord();
+                    } else {
+                        stopAutoPlay();
+                    }
+                }, delay);
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function stopAutoPlay() {
+                if (!isAutoPlaying) return;
+                
+                isAutoPlaying = false;
+                clearInterval(autoPlayInterval);
+                autoPlayToggleBtn.innerHTML = '<i class="fas fa-play"></i> تشغيل تلقائي';
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
             }
             
             function startTest() {
