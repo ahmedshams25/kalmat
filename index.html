@@ -5,7 +5,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق حفظ الكلمات المطور</title>
+    <title>تطبيق حفظ الكلمات الإنجليزية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -118,18 +118,22 @@
             background-color: var(--primary-color);
             color: white;
         }
-        
-        .btn:disabled {
-            background-color: var(--gray-color);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+
+        .btn-success {
+            background-color: var(--success-color);
         }
 
-        .btn-success { background-color: var(--success-color); }
-        .btn-warning { background-color: var(--warning-color); }
-        .btn-danger { background-color: var(--danger-color); }
-        .btn-accent { background-color: var(--accent-color); }
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
 
         .btn-sm {
             padding: 8px 12px;
@@ -151,7 +155,9 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
 
-        .form-group { margin-bottom: 20px; }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
         label {
             display: block;
@@ -184,7 +190,69 @@
             resize: vertical;
         }
 
-        .hidden { display: none !important; }
+        .word-card {
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .word-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .word-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .word-card p {
+            margin-bottom: 8px;
+        }
+
+        .word-english {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .word-arabic {
+            font-size: 1.2rem;
+            color: var(--success-color);
+        }
+
+        .word-example {
+            font-style: italic;
+            color: var(--gray-color);
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .dark-theme .word-example {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .word-date {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            margin-top: 15px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
 
         .tabs {
             display: flex;
@@ -193,7 +261,9 @@
             flex-wrap: wrap;
         }
 
-        .dark-theme .tabs { border-bottom-color: rgba(255, 255, 255, 0.1); }
+        .dark-theme .tabs {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
 
         .tab {
             padding: 12px 20px;
@@ -205,28 +275,44 @@
             position: relative;
         }
 
-        .tab:hover { color: var(--primary-color); }
+        .tab:hover {
+            color: var(--primary-color);
+        }
 
         .tab.active {
             color: var(--primary-color);
             border-bottom: 3px solid var(--primary-color);
         }
 
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
         }
-        
-        .tab-content.active { display: block; }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .tab-content.active {
+            display: block;
+        }
+
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -240,153 +326,481 @@
             box-shadow: var(--box-shadow);
             transition: var(--transition);
         }
+
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+
         .stat-card h3 {
             color: white;
             font-size: 1rem;
             margin-bottom: 10px;
         }
+
         .stat-card p {
             font-size: 2rem;
             font-weight: bold;
         }
 
-        .word-card {
-            position: relative;
-            transition: var(--transition);
-            cursor: pointer;
-            overflow: hidden;
-        }
-        .word-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-        }
-        .word-english { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); }
-        .word-arabic { font-size: 1.2rem; color: var(--success-color); }
-        .word-example {
-            font-style: italic;
-            color: var(--gray-color);
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.03);
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        .dark-theme .word-example { background-color: rgba(255, 255, 255, 0.05); }
-
-        /* SRS Level Styles */
-        .srs-level {
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            color: white;
-            font-weight: bold;
-        }
-        .srs-level-0, .srs-level-1 { background-color: var(--danger-color); } /* New/Learning */
-        .srs-level-2, .srs-level-3 { background-color: var(--warning-color); } /* Familiar */
-        .srs-level-4, .srs-level-5, .srs-level-6 { background-color: var(--success-color); } /* Mastered */
-
-        .actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            gap: 10px;
-        }
-
-        /* --- New Review System Styles --- */
-        .review-container {
-            text-align: center;
-        }
-        .review-progress-bar {
-            width: 100%;
-            height: 10px;
-            background-color: #e9ecef;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        .review-progress {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
-            transition: width 0.5s ease;
-        }
         .review-card {
             text-align: center;
             padding: 40px;
             background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
             border: none;
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
-        .dark-theme .review-card { background: linear-gradient(135deg, #16213e, #0f3460); }
-        
+
+        .dark-theme .review-card {
+            background: linear-gradient(135deg, #16213e, #0f3460);
+        }
+
         .review-word {
-            font-size: 2.8rem;
-            margin-bottom: 15px;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
             font-weight: bold;
             color: var(--primary-color);
         }
 
-        .review-input-container {
-            margin: 20px 0;
-            position: relative;
-        }
-
-        #review-answer-input {
-            text-align: center;
-            font-size: 1.5rem;
-            padding: 15px;
-            border-width: 2px;
-        }
-
-        #review-answer-input.correct {
-            border-color: var(--success-color);
-            background-color: rgba(76, 201, 240, 0.1);
-        }
-
-        #review-answer-input.wrong {
-            border-color: var(--danger-color);
-            background-color: rgba(249, 65, 68, 0.1);
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
-        }
-
-        .review-feedback {
-            margin-top: 15px;
-            font-size: 1.5rem;
+        .review-translation {
+            font-size: 2rem;
+            color: var(--success-color);
+            margin-bottom: 30px;
+            min-height: 60px;
             font-weight: bold;
-            min-height: 50px;
         }
-
-        .review-feedback.correct { color: var(--success-color); }
-        .review-feedback.wrong { color: var(--danger-color); }
 
         .review-actions {
             display: flex;
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
+        }
+
+        .review-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            min-width: 180px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .difficulty-easy {
+            color: var(--success-color);
+        }
+
+        .difficulty-medium {
+            color: var(--warning-color);
+        }
+
+        .difficulty-hard {
+            color: var(--danger-color);
+        }
+
+        .word-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .word-details {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .pronounce-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .pronounce-btn:hover {
+            color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .test-container {
             margin-top: 20px;
         }
 
-        .review-summary {
-            padding: 30px;
+        .test-question {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
         }
 
-        .review-summary h2 { font-size: 2rem; }
-        .review-summary p { font-size: 1.2rem; margin-bottom: 20px; }
+        .test-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
 
-        /* Theme Toggle */
+        .test-option {
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+
+        .dark-theme .test-option {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .test-option:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-color: var(--primary-color);
+        }
+
+        .dark-theme .test-option:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .test-option.correct {
+            background-color: rgba(76, 201, 240, 0.2);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .test-option.wrong {
+            background-color: rgba(249, 65, 68, 0.2);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .test-result {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background-color: rgba(76, 201, 240, 0.1);
+            border: 1px solid var(--success-color);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+        }
+
+        .dark-theme .test-result {
+            background-color: rgba(76, 201, 240, 0.05);
+        }
+
+        .test-result.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .test-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--success-color);
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            background-color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag i {
+            font-size: 0.7rem;
+        }
+
+        .topic-filter {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .topic-filter select {
+            flex: 1;
+        }
+
+        /* تأثيرات النجاح */
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-color);
+            animation: confetti 3s ease-out forwards;
+            z-index: 999;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: var(--accent-color);
+            opacity: 0;
+            animation: zoomIn 1s ease-out forwards;
+            z-index: 1000;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        @keyframes zoomIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        /* واجهة المزامنة */
+        .sync-section {
+            margin-top: 30px;
+        }
+
+        .auth-status {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .sync-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .sync-message.success {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .sync-message.error {
+            background-color: rgba(249, 65, 68, 0.2);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        .flex {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* أنماط جديدة لرفع الملفات */
+        .upload-section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 2px dashed var(--gray-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .dark-theme .upload-section:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .upload-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .upload-btn input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            margin-top: 15px;
+            display: none;
+            overflow: hidden;
+        }
+
+        .dark-theme .progress-bar {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress {
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: var(--border-radius);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .upload-status {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .export-section {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .export-section {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* قائمة الكلمات المحذوفة */
+        .deleted-words-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .deleted-words-container {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .deleted-words-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+        }
+
+        .dark-theme .deleted-words-list {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .deleted-word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .deleted-word-item {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .deleted-word-item:last-child {
+            border-bottom: none;
+        }
+
+        .restore-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .restore-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* مؤثرات صوتية */
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .audio-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .audio-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* تأثيرات الحذف */
+        .word-card.deleting {
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        /* زر تبديل الثيم */
         .theme-toggle {
             background-color: transparent;
             border: none;
@@ -402,51 +816,105 @@
             border-radius: 50%;
         }
 
-        .dark-theme .theme-toggle { color: var(--light-color); }
+        .dark-theme .theme-toggle {
+            color: var(--light-color);
+        }
+
         .theme-toggle:hover {
             background-color: rgba(0, 0, 0, 0.05);
             transform: rotate(30deg);
         }
-        .dark-theme .theme-toggle:hover { background-color: rgba(255, 255, 255, 0.1); }
-        
-        /* General Styles used in many places */
-        .pronounce-btn {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: var(--transition);
-        }
-        .pronounce-btn:hover {
-            color: var(--secondary-color);
-            transform: scale(1.1);
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container { padding: 15px; }
-            .header { flex-direction: column; gap: 15px; text-align: center; }
-            .stats { grid-template-columns: 1fr 1fr; }
-            .tabs { overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
-            .review-word { font-size: 2rem; }
-            #review-answer-input { font-size: 1.2rem; }
+        .dark-theme .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
+
+        /* تأثيرات للبطاقات */
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .word-card {
+            animation: cardEntrance 0.5s ease-out;
+            animation-fill-mode: backwards;
+        }
+
+        /* تكييف للهواتف المحمولة */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .review-card {
+                padding: 25px;
+            }
+            
+            .review-word {
+                font-size: 2rem;
+            }
+            
+            .review-translation {
+                font-size: 1.5rem;
+            }
+            
+            .review-actions {
+                flex-direction: column;
+            }
+            
+            .review-btn {
+                width: 100%;
+            }
+            
+            .test-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 480px) {
-            .stats { grid-template-columns: 1fr; }
-            .actions { flex-direction: column; }
-            .btn { width: 100%; justify-content: center; }
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card p {
+                font-size: 1.5rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -454,8 +922,8 @@
     <div class="container">
         <div class="header">
             <div class="logo">
-                <i class="fas fa-brain"></i>
-                <span>حفظ الكلمات المطور</span>
+                <i class="fas fa-language"></i>
+                <span>تطبيق حفظ الكلمات الإنجليزية</span>
             </div>
             <button id="toggle-theme" class="theme-toggle">
                 <i class="fas fa-moon"></i>
@@ -468,40 +936,79 @@
                 <p id="total-words">0</p>
             </div>
             <div class="stat-card">
-                <h3><i class="fas fa-redo"></i> للمراجعة اليوم</h3>
-                <p id="review-words-today">0</p>
+                <h3><i class="fas fa-calendar-day"></i> الكلمات المضافة اليوم</h3>
+                <p id="today-words">0</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #f72585, #f8961e);">
-                <h3><i class="fas fa-fire"></i> سلسلة المراجعة</h3>
-                <p id="review-streak">0</p>
+            <div class="stat-card">
+                <h3><i class="fas fa-redo"></i> تحتاج مراجعة</h3>
+                <p id="review-words">0</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #4cc9f0, #3f37c9);">
-                <h3><i class="fas fa-star"></i> النقاط</h3>
-                <p id="total-points">0</p>
+            <div class="stat-card">
+                <h3><i class="fas fa-tags"></i> المواضيع</h3>
+                <p id="total-topics">0</p>
             </div>
         </div>
 
         <div class="tabs">
-            <div class="tab active" data-tab="words-list"><i class="fas fa-list"></i> قائمة الكلمات</div>
-            <div class="tab" data-tab="add-word"><i class="fas fa-plus"></i> إضافة كلمة</div>
-            <div class="tab" data-tab="review"><i class="fas fa-redo"></i> مراجعة</div>
-            <div class="tab" data-tab="test"><i class="fas fa-question-circle"></i> اختبار</div>
-            <div class="tab" data-tab="sync"><i class="fas fa-cloud"></i> المزامنة</div>
+            <div class="tab active" data-tab="words-list">
+                <i class="fas fa-list"></i> قائمة الكلمات
+            </div>
+            <div class="tab" data-tab="add-word">
+                <i class="fas fa-plus"></i> إضافة كلمة
+            </div>
+            <div class="tab" data-tab="review">
+                <i class="fas fa-redo"></i> مراجعة
+            </div>
+            <div class="tab" data-tab="test">
+                <i class="fas fa-question-circle"></i> اختبار
+            </div>
+            <div class="tab" data-tab="sync">
+                <i class="fas fa-cloud"></i> المزامنة
+            </div>
         </div>
 
-        <!-- Tab: Words List -->
         <div class="tab-content active" id="words-list">
-             <div class="search-box">
+            <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="ابحث عن كلمة..." style="padding-left: 40px;">
+                <input type="text" id="search-input" placeholder="ابحث عن كلمة...">
+            </div>
+            <div class="topic-filter">
+                <select id="topic-filter">
+                    <option value="">جميع المواضيع</option>
+                </select>
+                <button class="btn btn-sm" id="clear-filter">
+                    <i class="fas fa-times"></i> مسح
+                </button>
             </div>
             <div id="words-container"></div>
+            
+            <!-- قسم الكلمات المحذوفة -->
+            <div class="deleted-words-container hidden" id="deleted-words-section">
+                <h3><i class="fas fa-trash"></i> الكلمات المحذوفة</h3>
+                <div class="deleted-words-list" id="deleted-words-list"></div>
+            </div>
         </div>
 
-        <!-- Tab: Add Word -->
         <div class="tab-content" id="add-word">
             <div class="card">
                 <h2><i class="fas fa-plus-circle"></i> إضافة كلمة جديدة</h2>
+                
+                <!-- قسم رفع الملفات -->
+                <div class="upload-section">
+                    <h3><i class="fas fa-file-upload"></i> رفع ملف يحتوي على كلمات متعددة</h3>
+                    <div class="upload-btn">
+                        <button class="btn btn-accent">
+                            <i class="fas fa-folder-open"></i> اختر ملف
+                        </button>
+                        <input type="file" id="words-file" accept=".json,.csv,.txt">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" id="upload-progress"></div>
+                    </div>
+                    <div class="upload-status" id="upload-status"></div>
+                    <p class="text-muted">يمكنك رفع ملف JSON أو CSV يحتوي على الكلمات. يجب أن يحتوي الملف على حقول: english, arabic, example (اختياري), difficulty (اختياري), topics (اختياري)</p>
+                </div>
+                
                 <form id="add-word-form">
                     <div class="form-group">
                         <label for="english-word"><i class="fas fa-font"></i> الكلمة الإنجليزية</label>
@@ -515,495 +1022,1644 @@
                         <label for="example-sentence"><i class="fas fa-comment-dots"></i> مثال (اختياري)</label>
                         <textarea id="example-sentence"></textarea>
                     </div>
-                    <button type="submit" class="btn"><i class="fas fa-save"></i> حفظ الكلمة</button>
+                    <div class="form-group">
+                        <label for="difficulty"><i class="fas fa-tachometer-alt"></i> مستوى الصعوبة</label>
+                        <select id="difficulty">
+                            <option value="easy">سهلة</option>
+                            <option value="medium">متوسطة</option>
+                            <option value="hard">صعبة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="word-topics"><i class="fas fa-tags"></i> المواضيع (افصل بينها بفاصلة)</label>
+                        <input type="text" id="word-topics" placeholder="مثال: أعمال, سفر, تكنولوجيا">
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i> حفظ الكلمة
+                    </button>
                 </form>
+
+                <!-- قسم تصدير الكلمات -->
+                <div class="export-section">
+                    <h3><i class="fas fa-file-export"></i> تصدير الكلمات</h3>
+                    <p class="text-muted">يمكنك تصدير جميع كلماتك إلى ملف JSON أو CSV</p>
+                    <div class="actions">
+                        <button class="btn btn-secondary" id="export-json">
+                            <i class="fas fa-file-code"></i> تصدير JSON
+                        </button>
+                        <button class="btn btn-secondary" id="export-csv">
+                            <i class="fas fa-file-csv"></i> تصدير CSV
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Tab: Review -->
         <div class="tab-content" id="review">
-            <div class="review-container">
-                <div id="review-start-screen">
-                    <div class="card" style="text-align: center;">
-                        <h2><i class="fas fa-redo"></i> جلسة المراجعة</h2>
-                        <p id="review-intro-text">لديك <strong id="review-count-info">0</strong> كلمات تحتاج إلى مراجعة. هل أنت مستعد؟</p>
-                        <button class="btn btn-accent btn-lg" id="start-review-btn"><i class="fas fa-play"></i> ابدأ المراجعة</button>
+            <div class="card review-card">
+                <div class="review-word" id="review-word">...</div>
+                <div class="review-translation hidden" id="review-translation">...</div>
+                <div class="word-example hidden" id="review-example"></div>
+                <div class="audio-controls">
+                    <button class="audio-btn" id="pronounce-review-word">
+                        <i class="fas fa-volume-up"></i> نطق الكلمة
+                    </button>
+                    <button class="audio-btn" id="auto-play-toggle">
+                        <i class="fas fa-play"></i> تشغيل تلقائي
+                    </button>
+                </div>
+                
+                <!-- إضافة خيارات المراجعة -->
+                <div class="review-settings" style="margin: 20px 0;">
+                    <h3 style="margin-bottom: 10px;"><i class="fas fa-cog"></i> إعدادات المراجعة</h3>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="auto-show-translation" checked>
+                        <label for="auto-show-translation" style="margin-bottom: 0;">إظهار الترجمة تلقائياً</label>
+                    </div>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="auto-show-example" checked>
+                        <label for="auto-show-example" style="margin-bottom: 0;">إظهار المثال تلقائياً</label>
+                    </div>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="auto-play-audio" checked>
+                        <label for="auto-play-audio" style="margin-bottom: 0;">تشغيل الصوت تلقائياً</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="auto-play-delay"><i class="fas fa-clock"></i> تأخير التشغيل التلقائي (ثانية)</label>
+                        <input type="number" id="auto-play-delay" min="1" max="10" value="3">
                     </div>
                 </div>
+                
+                <div class="review-actions">
+                    <button class="btn btn-success review-btn hidden" id="show-translation">
+                        <i class="fas fa-eye"></i> إظهار الترجمة
+                    </button>
+                    <button class="btn btn-success review-btn hidden" id="next-word">
+                        <i class="fas fa-arrow-right"></i> كلمة تالية
+                    </button>
+                    <button class="btn btn-accent review-btn" id="start-review">
+                        <i class="fas fa-play"></i> بدء المراجعة
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <div id="review-session-screen" class="hidden">
-                    <div class="review-progress-bar">
-                        <div class="review-progress" id="review-progress"></div>
+        <div class="tab-content" id="test">
+            <div class="card">
+                <h2><i class="fas fa-question-circle"></i> اختبار كتابي</h2>
+                <div class="test-settings">
+                    <div class="form-group">
+                        <label for="test-topic"><i class="fas fa-tags"></i> اختر موضوع (اختياري)</label>
+                        <select id="test-topic">
+                            <option value="">جميع المواضيع</option>
+                        </select>
                     </div>
-                    <div class="card review-card" id="review-card">
-                        <!-- Content will be generated by JS -->
+                    <div class="form-group">
+                        <label for="test-difficulty"><i class="fas fa-tachometer-alt"></i> مستوى الصعوبة (اختياري)</label>
+                        <select id="test-difficulty">
+                            <option value="">جميع المستويات</option>
+                            <option value="easy">سهلة فقط</option>
+                            <option value="medium">متوسطة فقط</option>
+                            <option value="hard">صعبة فقط</option>
+                        </select>
                     </div>
+                    <div class="form-group">
+                        <label for="test-questions-num"><i class="fas fa-list-ol"></i> عدد الأسئلة (حد أقصى 100)</label>
+                        <input type="number" id="test-questions-num" min="1" max="100" value="10">
+                    </div>
+                    <button class="btn" id="start-test">
+                        <i class="fas fa-play"></i> بدء الاختبار
+                    </button>
                 </div>
 
-                <div id="review-summary-screen" class="hidden">
-                    <div class="card review-summary">
-                        <h2><i class="fas fa-trophy"></i> أحسنت!</h2>
-                        <p>لقد أكملت جلسة المراجعة بنجاح.</p>
-                        <p id="summary-stats"></p>
-                        <button class="btn" id="return-to-main-btn"><i class="fas fa-home"></i> العودة للرئيسية</button>
+                <div class="test-container hidden" id="test-container">
+                    <div class="test-question" id="test-question"></div>
+                    <div class="word-example" id="test-example"></div>
+                    <div class="audio-controls">
+                        <button class="audio-btn" id="pronounce-test-word">
+                            <i class="fas fa-volume-up"></i> نطق السؤال
+                        </button>
+                    </div>
+                    <div class="test-options" id="test-options"></div>
+                    <div class="test-result hidden" id="test-result">
+                        <p>نتيجة الاختبار: <span class="test-score" id="test-score">0</span>/<span id="test-total">0</span></p>
+                        <div class="actions">
+                            <button class="btn" id="retry-test">
+                                <i class="fas fa-redo"></i> إعادة الاختبار
+                            </button>
+                            <button class="btn btn-secondary" id="new-test">
+                                <i class="fas fa-plus"></i> اختبار جديد
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Other Tabs remain the same for now for brevity, will integrate later if needed -->
-        <div class="tab-content" id="test"> ... </div>
-        <div class="tab-content" id="sync"> ... </div>
 
+        <div class="tab-content" id="sync">
+            <div class="card sync-section">
+                <h3><i class="fas fa-cloud"></i> المزامنة مع السحابة</h3>
+                <div id="auth-status" class="auth-status">غير مسجل الدخول</div>
+                
+                <div id="login-form">
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-lock"></i> كلمة المرور</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group flex">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me" style="margin-bottom: 0;">تذكرني</label>
+                    </div>
+                    <button id="login-btn" class="btn">
+                        <span id="login-text"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول / تسجيل جديد</span>
+                        <span id="login-spinner" class="loading hidden"></span>
+                    </button>
+                </div>
+                
+                <div id="sync-controls" class="hidden">
+                    <button id="sync-now" class="btn">
+                        <span id="sync-text"><i class="fas fa-sync-alt"></i> مزامنة الآن</span>
+                        <span id="sync-spinner" class="loading hidden"></span>
+                    </button>
+                    <button id="logout" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                    </button>
+                </div>
+                
+                <div id="sync-message" class="sync-message"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Howler.js for sounds -->
+    <!-- مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <!-- مكتبة Howler.js للمؤثرات الصوتية -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- DOM Elements ---
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const addWordForm = document.getElementById('add-word-form');
-        const wordsContainer = document.getElementById('words-container');
-        const searchInput = document.getElementById('search-input');
-        const toggleThemeBtn = document.getElementById('toggle-theme');
+        document.addEventListener('DOMContentLoaded', async function() {
+            // تكوين Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyBMXP-TAS2eBKq8C-dRlPJ2N2He5mTsRpo",
+                authDomain: "kalmat-264f2.firebaseapp.com",
+                databaseURL: "https://kalmat-264f2-default-rtdb.firebaseio.com",
+                projectId: "kalmat-264f2",
+                storageBucket: "kalmat-264f2.appspot.com",
+                messagingSenderId: "654701224401",
+                appId: "1:654701224401:web:671bd7619ac622a75f80f0",
+                measurementId: "G-BRK3MGXZT1"
+            };
 
-        // Stats
-        const totalWordsEl = document.getElementById('total-words');
-        const reviewWordsTodayEl = document.getElementById('review-words-today');
-        const reviewStreakEl = document.getElementById('review-streak');
-        const totalPointsEl = document.getElementById('total-points');
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
 
-        // Review System Elements
-        const reviewStartScreen = document.getElementById('review-start-screen');
-        const reviewSessionScreen = document.getElementById('review-session-screen');
-        const reviewSummaryScreen = document.getElementById('review-summary-screen');
-        const startReviewBtn = document.getElementById('start-review-btn');
-        const reviewCountInfo = document.getElementById('review-count-info');
-        const reviewProgress = document.getElementById('review-progress');
-        const reviewCard = document.getElementById('review-card');
-        const returnToMainBtn = document.getElementById('return-to-main-btn');
-        const summaryStatsEl = document.getElementById('summary-stats');
+            // عناصر DOM
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const addWordForm = document.getElementById('add-word-form');
+            const wordsContainer = document.getElementById('words-container');
+            const searchInput = document.getElementById('search-input');
+            const toggleThemeBtn = document.getElementById('toggle-theme');
+            const startReviewBtn = document.getElementById('start-review');
+            const showTranslationBtn = document.getElementById('show-translation');
+            const nextWordBtn = document.getElementById('next-word');
+            const reviewWordEl = document.getElementById('review-word');
+            const reviewTranslationEl = document.getElementById('review-translation');
+            const reviewExampleEl = document.getElementById('review-example');
+            const totalWordsEl = document.getElementById('total-words');
+            const todayWordsEl = document.getElementById('today-words');
+            const reviewWordsEl = document.getElementById('review-words');
+            const totalTopicsEl = document.getElementById('total-topics');
+            const topicFilter = document.getElementById('topic-filter');
+            const clearFilterBtn = document.getElementById('clear-filter');
+            const testTopic = document.getElementById('test-topic');
+            const startTestBtn = document.getElementById('start-test');
+            const testContainer = document.getElementById('test-container');
+            const testQuestion = document.getElementById('test-question');
+            const testOptions = document.getElementById('test-options');
+            const testResult = document.getElementById('test-result');
+            const testScore = document.getElementById('test-score');
+            const testTotal = document.getElementById('test-total');
+            const retryTestBtn = document.getElementById('retry-test');
+            const newTestBtn = document.getElementById('new-test');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const rememberMe = document.getElementById('remember-me');
+            const loginBtn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            const syncNowBtn = document.getElementById('sync-now');
+            const syncText = document.getElementById('sync-text');
+            const syncSpinner = document.getElementById('sync-spinner');
+            const logoutBtn = document.getElementById('logout');
+            const authStatus = document.getElementById('auth-status');
+            const loginForm = document.getElementById('login-form');
+            const syncControls = document.getElementById('sync-controls');
+            const syncMessage = document.getElementById('sync-message');
+            const wordsFileInput = document.getElementById('words-file');
+            const uploadProgress = document.getElementById('upload-progress');
+            const uploadStatus = document.getElementById('upload-status');
+            const progressBar = document.querySelector('.progress-bar');
+            const exportJsonBtn = document.getElementById('export-json');
+            const exportCsvBtn = document.getElementById('export-csv');
+            const pronounceReviewBtn = document.getElementById('pronounce-review-word');
+            const pronounceTestBtn = document.getElementById('pronounce-test-word');
+            const testExampleEl = document.getElementById('test-example');
+            const deletedWordsSection = document.getElementById('deleted-words-section');
+            const deletedWordsList = document.getElementById('deleted-words-list');
+            const autoShowTranslationCheckbox = document.getElementById('auto-show-translation');
+            const autoShowExampleCheckbox = document.getElementById('auto-show-example');
+            const autoPlayAudioCheckbox = document.getElementById('auto-play-audio');
+            const autoPlayDelayInput = document.getElementById('auto-play-delay');
+            const autoPlayToggleBtn = document.getElementById('auto-play-toggle');
 
-        // --- App Data ---
-        let words = JSON.parse(localStorage.getItem('englishWords_v2')) || [];
-        let stats = JSON.parse(localStorage.getItem('userStats_v2')) || {
-            points: 0,
-            streak: 0,
-            lastReviewDate: null
-        };
-        
-        let reviewSession = {
-            isActive: false,
-            words: [],
-            currentIndex: 0,
-            correctCount: 0,
-            incorrectCount: 0
-        };
+            // بيانات التطبيق
+            let words = JSON.parse(localStorage.getItem('englishWords')) || [];
+            let deletedWords = JSON.parse(localStorage.getItem('deletedWords')) || [];
+            let topics = JSON.parse(localStorage.getItem('wordTopics')) || ['عام', 'أعمال', 'سفر', 'تكنولوجيا'];
+            let currentReviewIndex = 0;
+            let reviewWords = [];
+            let currentTest = null;
+            let currentQuestionIndex = 0;
+            let testScoreCount = 0;
+            let currentUser = null;
+            let isSyncing = false;
+            let testedWords = []; // لتتبع الكلمات التي تم اختبارها
+            let autoPlayInterval = null;
+            let isAutoPlaying = false;
 
-        // --- SRS (Spaced Repetition System) Settings ---
-        const srsIntervals = [1, 3, 7, 14, 30, 90]; // in days
-        const srsLevelNames = {
-            0: "جديدة", 1: "جديدة", 2: "قيد التعلم", 3: "قيد التعلم",
-            4: "مألوفة", 5: "متقنة", 6: "متقنة"
-        };
+            // إعدادات المراجعة
+            let reviewSettings = {
+                autoShowTranslation: true,
+                autoShowExample: true,
+                autoPlayAudio: true,
+                autoPlayDelay: 3
+            };
 
+            // تحميل إعدادات المراجعة من localStorage
+            const savedReviewSettings = localStorage.getItem('reviewSettings');
+            if (savedReviewSettings) {
+                reviewSettings = JSON.parse(savedReviewSettings);
+            }
 
-        // --- Sound Effects ---
-        const sounds = {
-            correct: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3'], volume: 0.7 }),
-            wrong: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3'], volume: 0.7 }),
-            success: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3'] }),
-            click: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3'], volume: 0.5 })
-        };
+            // مؤثرات صوتية
+            const sounds = {
+                correct: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3'] }),
+                wrong: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3'] }),
+                success: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3'] }),
+                click: new Howl({ src: ['https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3'] })
+            };
 
-        // --- Initialization ---
-        function init() {
+            // تهيئة التطبيق
             loadThemePreference();
-            updateStreak();
             updateStats();
             renderWords();
-            setupReviewScreen();
+            updateTopicFilters();
+            loadAuthState();
+            renderDeletedWords();
 
-            // Load review session if it was interrupted
-            const savedSession = JSON.parse(localStorage.getItem('reviewSession_v2'));
-            if (savedSession && savedSession.isActive) {
-                reviewSession = savedSession;
-                startReview(true); // resume session
-            }
-        }
+            // تعيين القيم الأولية لإعدادات المراجعة
+            autoShowTranslationCheckbox.checked = reviewSettings.autoShowTranslation;
+            autoShowExampleCheckbox.checked = reviewSettings.autoShowExample;
+            autoPlayAudioCheckbox.checked = reviewSettings.autoPlayAudio;
+            autoPlayDelayInput.value = reviewSettings.autoPlayDelay;
 
-        // --- Event Listeners ---
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                sounds.click.play();
+            // أحداث التبويبات
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                    
+                    if (tab.dataset.tab === 'test') {
+                        updateTopicFilters('test-topic');
+                    }
+                    
+                    // تشغيل صوت النقر
+                    sounds.click.play();
+                });
+            });
+
+            // حدث إضافة كلمة جديدة
+            addWordForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const englishWord = document.getElementById('english-word').value.trim();
+                const arabicMeaning = document.getElementById('arabic-meaning').value.trim();
+                const exampleSentence = document.getElementById('example-sentence').value.trim();
+                const difficulty = document.getElementById('difficulty').value;
+                const wordTopics = document.getElementById('word-topics').value.split(',').map(t => t.trim()).filter(t => t);
+                
+                const newWord = {
+                    id: Date.now(),
+                    english: englishWord,
+                    arabic: arabicMeaning,
+                    example: exampleSentence,
+                    difficulty: difficulty,
+                    topics: wordTopics,
+                    dateAdded: new Date().toISOString(),
+                    lastReviewed: null,
+                    reviewCount: 0,
+                    correctAnswers: 0
+                };
+                
+                // إضافة أي مواضيع جديدة إلى قائمة المواضيع
+                wordTopics.forEach(topic => {
+                    if (!topics.includes(topic)) {
+                        topics.push(topic);
+                    }
+                });
+                
+                saveTopics();
+                words.unshift(newWord);
+                saveWords();
+                addWordForm.reset();
+                
+                // تشغيل صوت النجاح
+                sounds.success.play();
+                
+                // الانتقال إلى قائمة الكلمات
                 tabs.forEach(t => t.classList.remove('active'));
                 tabContents.forEach(c => c.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
-            });
-        });
-
-        addWordForm.addEventListener('submit', handleAddWord);
-        searchInput.addEventListener('input', () => renderWords(searchInput.value.toLowerCase()));
-        toggleThemeBtn.addEventListener('click', toggleTheme);
-        startReviewBtn.addEventListener('click', () => startReview(false));
-        returnToMainBtn.addEventListener('click', () => {
-            reviewSummaryScreen.classList.add('hidden');
-            reviewStartScreen.classList.remove('hidden');
-            document.querySelector('.tab[data-tab="words-list"]').click();
-        });
-
-
-        // --- Core Functions ---
-        
-        function handleAddWord(e) {
-            e.preventDefault();
-            const englishWord = document.getElementById('english-word').value.trim();
-            const arabicMeaning = document.getElementById('arabic-meaning').value.trim();
-            const exampleSentence = document.getElementById('example-sentence').value.trim();
-            
-            if(!englishWord || !arabicMeaning) return;
-
-            const nextReviewDate = new Date();
-            nextReviewDate.setHours(0, 0, 0, 0);
-
-            const newWord = {
-                id: Date.now(),
-                english: englishWord,
-                arabic: arabicMeaning,
-                example: exampleSentence,
-                dateAdded: new Date().toISOString(),
-                srsLevel: 0,
-                nextReviewDate: nextReviewDate.toISOString()
-            };
-
-            words.unshift(newWord);
-            addPoints(5); // Add 5 points for a new word
-            saveAllData();
-            addWordForm.reset();
-            sounds.success.play();
-
-            document.querySelector('.tab[data-tab="words-list"]').click();
-            renderWords();
-            updateStats();
-        }
-
-        function renderWords(searchTerm = '') {
-            wordsContainer.innerHTML = '';
-            const filteredWords = words.filter(word => 
-                word.english.toLowerCase().includes(searchTerm) || 
-                word.arabic.toLowerCase().includes(searchTerm)
-            );
-
-            if (filteredWords.length === 0) {
-                wordsContainer.innerHTML = `<div class="card" style="text-align: center; padding: 40px;"><h3>لا توجد كلمات.</h3></div>`;
-                return;
-            }
-
-            filteredWords.forEach(word => {
-                const wordCard = document.createElement('div');
-                wordCard.className = 'card word-card';
-                wordCard.dataset.id = word.id;
+                document.querySelector('.tab[data-tab="words-list"]').classList.add('active');
+                document.getElementById('words-list').classList.add('active');
                 
-                const nextReview = new Date(word.nextReviewDate).toLocaleDateString('ar-EG');
-                const srsLevel = word.srsLevel || 0;
-                
-                wordCard.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <h3 class="word-english">${word.english}</h3>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                           <span class="srs-level srs-level-${srsLevel}">${srsLevelNames[srsLevel]}</span>
-                           <button class="pronounce-btn" data-word="${word.english}"><i class="fas fa-volume-up"></i></button>
-                        </div>
-                    </div>
-                    <p class="word-arabic">${word.arabic}</p>
-                    ${word.example ? `<p class="word-example">مثال: ${word.example}</p>` : ''}
-                    <p style="font-size: 0.8rem; color: var(--gray-color); margin-top: 10px;"><i class="far fa-calendar-alt"></i> المراجعة القادمة: ${nextReview}</p>
-                    <div class="actions">
-                        <button class="btn btn-danger delete-word" data-id="${word.id}"><i class="fas fa-trash"></i> حذف</button>
-                    </div>
-                `;
-                wordsContainer.appendChild(wordCard);
-            });
-
-            // Add event listeners after rendering
-            wordsContainer.querySelectorAll('.delete-word').forEach(btn => btn.addEventListener('click', deleteWord));
-            wordsContainer.querySelectorAll('.pronounce-btn').forEach(btn => btn.addEventListener('click', e => {
-                 e.stopPropagation();
-                 pronounceWord(e.currentTarget.dataset.word);
-            }));
-        }
-
-        function deleteWord(e) {
-            const wordId = parseInt(e.currentTarget.dataset.id);
-            if (confirm('هل أنت متأكد من حذف هذه الكلمة؟')) {
-                words = words.filter(w => w.id !== wordId);
-                saveAllData();
                 renderWords();
                 updateStats();
-            }
-        }
-        
-        // --- Spaced Repetition System (SRS) & Review ---
+                updateTopicFilters();
 
-        function getWordsForReview() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            return words.filter(word => {
-                const nextReviewDate = new Date(word.nextReviewDate);
-                nextReviewDate.setHours(0, 0, 0, 0);
-                return nextReviewDate <= today;
-            }).sort(() => Math.random() - 0.5); // Shuffle them
-        }
-        
-        function setupReviewScreen() {
-            const wordsToReview = getWordsForReview();
-            reviewCountInfo.textContent = wordsToReview.length;
-            if (wordsToReview.length === 0) {
-                startReviewBtn.disabled = true;
-                reviewIntroText.innerHTML = "رائع! لا توجد كلمات للمراجعة اليوم. <br>عد غداً أو أضف كلمات جديدة.";
-            } else {
-                 startReviewBtn.disabled = false;
-                 reviewIntroText.innerHTML = `لديك <strong>${wordsToReview.length}</strong> كلمات تحتاج إلى مراجعة. هل أنت مستعد؟`;
-            }
-        }
-
-        function startReview(isResuming = false) {
-            if (!isResuming) {
-                const wordsToReview = getWordsForReview();
-                if (wordsToReview.length === 0) return;
-
-                reviewSession = {
-                    isActive: true,
-                    words: wordsToReview,
-                    currentIndex: 0,
-                    correctCount: 0,
-                    incorrectCount: 0,
-                };
-            }
-            
-            reviewStartScreen.classList.add('hidden');
-            reviewSummaryScreen.classList.add('hidden');
-            reviewSessionScreen.classList.remove('hidden');
-
-            displayCurrentReviewWord();
-            saveReviewSession();
-        }
-        
-        function displayCurrentReviewWord() {
-            if (reviewSession.currentIndex >= reviewSession.words.length) {
-                finishReviewSession();
-                return;
-            }
-
-            updateReviewProgress();
-            
-            const word = reviewSession.words[reviewSession.currentIndex];
-            
-            reviewCard.innerHTML = `
-                <h2 class="review-word">${word.english}</h2>
-                <div class="review-input-container">
-                    <input type="text" id="review-answer-input" placeholder="اكتب المعنى بالعربية..." dir="rtl">
-                    <div id="review-feedback" class="review-feedback"></div>
-                </div>
-                ${word.example ? `<p class="word-example" style="margin-top:0;">${word.example}</p>` : ''}
-                <div class="review-actions">
-                    <button class="btn btn-success" id="check-review-answer-btn"><i class="fas fa-check"></i> تحقق</button>
-                    <button class="btn btn-warning" id="idk-btn"><i class="fas fa-question"></i> لا أعرف</button>
-                </div>
-            `;
-            
-            const input = document.getElementById('review-answer-input');
-            input.focus();
-            
-            document.getElementById('check-review-answer-btn').addEventListener('click', checkReviewAnswer);
-            document.getElementById('idk-btn').addEventListener('click', () => checkReviewAnswer(null));
-            input.addEventListener('keypress', (e) => {
-                if(e.key === 'Enter') checkReviewAnswer();
+                // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                if (currentUser) {
+                    debouncedSync();
+                }
             });
-        }
 
-        function checkReviewAnswer(answer = undefined) {
-            const input = document.getElementById('review-answer-input');
-            const userAnswer = answer === null ? null : input.value.trim();
-            const currentWord = reviewSession.words[reviewSession.currentIndex];
-            
-            const isCorrect = userAnswer && (userAnswer === currentWord.arabic);
+            // حدث البحث
+            searchInput.addEventListener('input', function() {
+                renderWords(this.value.toLowerCase(), topicFilter.value);
+            });
 
-            const feedbackEl = document.getElementById('review-feedback');
-            
-            input.disabled = true;
-            document.getElementById('check-review-answer-btn').classList.add('hidden');
-            document.getElementById('idk-btn').classList.add('hidden');
+            // حدث تصفية المواضيع
+            topicFilter.addEventListener('change', function() {
+                renderWords(searchInput.value.toLowerCase(), this.value);
+            });
 
-            if (isCorrect) {
-                sounds.correct.play();
-                input.classList.add('correct');
-                feedbackEl.textContent = 'صحيح!';
-                feedbackEl.className = 'review-feedback correct';
-                updateSrsLevel(currentWord, true);
-                reviewSession.correctCount++;
-                addPoints(2); // +2 points for correct review
-            } else {
-                sounds.wrong.play();
-                input.classList.add('wrong');
-                feedbackEl.innerHTML = `الإجابة الصحيحة: <strong>${currentWord.arabic}</strong>`;
-                feedbackEl.className = 'review-feedback wrong';
-                updateSrsLevel(currentWord, false);
-                reviewSession.incorrectCount++;
-            }
-            
-            // Show next button
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'btn btn-primary';
-            nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> التالي';
-            nextBtn.onclick = () => {
-                reviewSession.currentIndex++;
-                displayCurrentReviewWord();
-                saveReviewSession();
-            };
-            reviewCard.querySelector('.review-actions').appendChild(nextBtn);
-            nextBtn.focus();
-        }
-
-        function updateSrsLevel(word, isCorrect) {
-            const wordIndex = words.findIndex(w => w.id === word.id);
-            if (wordIndex === -1) return;
-
-            let currentLevel = words[wordIndex].srsLevel;
-
-            if (isCorrect) {
-                currentLevel = Math.min(currentLevel + 1, srsIntervals.length -1);
-            } else {
-                currentLevel = Math.max(0, currentLevel - 2); // Penalize more for wrong answer
-            }
-            
-            words[wordIndex].srsLevel = currentLevel;
-            const daysToAdd = srsIntervals[currentLevel];
-            const nextReviewDate = new Date();
-            nextReviewDate.setDate(nextReviewDate.getDate() + daysToAdd);
-            nextReviewDate.setHours(0, 0, 0, 0);
-
-            words[wordIndex].nextReviewDate = nextReviewDate.toISOString();
-        }
-        
-        function updateReviewProgress() {
-            const progress = (reviewSession.currentIndex / reviewSession.words.length) * 100;
-            reviewProgress.style.width = `${progress}%`;
-        }
-
-        function finishReviewSession() {
-            sounds.success.play();
-            updateStreak(true); // Mark today's review as done
-            addPoints(reviewSession.words.length); // +1 point for each word in session
-
-            reviewSession.isActive = false;
-            saveAllData();
-            clearReviewSession();
-
-            summaryStatsEl.innerHTML = `
-                أجبت بشكل صحيح على: <strong>${reviewSession.correctCount}</strong><br>
-                أخطأت في: <strong>${reviewSession.incorrectCount}</strong>
-            `;
-
-            reviewSessionScreen.classList.add('hidden');
-            reviewSummaryScreen.classList.remove('hidden');
-
-            updateStats(); // Update stats on main page
-            renderWords(); // Rerender words to show new SRS levels
-            setupReviewScreen();
-        }
-
-        // --- Stats & Gamification ---
-        
-        function updateStats() {
-            totalWordsEl.textContent = words.length;
-            reviewWordsTodayEl.textContent = getWordsForReview().length;
-            reviewStreakEl.textContent = stats.streak;
-            totalPointsEl.textContent = stats.points;
-        }
-
-        function addPoints(amount) {
-            stats.points += amount;
-        }
-
-        function updateStreak(reviewCompleted = false) {
-            const today = new Date().toDateString();
-            const lastReview = stats.lastReviewDate ? new Date(stats.lastReviewDate).toDateString() : null;
-
-            if(reviewCompleted && today !== lastReview){
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
+            // حدث مسح التصفية
+            clearFilterBtn.addEventListener('click', function() {
+                topicFilter.value = '';
+                renderWords(searchInput.value.toLowerCase(), '');
                 
-                if (lastReview === yesterday.toDateString()) {
-                    stats.streak++;
+                // تشغيل صوت النقر
+                sounds.click.play();
+            });
+
+            // تبديل الثيم
+            toggleThemeBtn.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                const isDarkMode = document.body.classList.contains('dark-theme');
+                this.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                localStorage.setItem('themePreference', isDarkMode ? 'dark' : 'light');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            });
+
+            // أحداث تغيير إعدادات المراجعة
+            autoShowTranslationCheckbox.addEventListener('change', function() {
+                reviewSettings.autoShowTranslation = this.checked;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
+            });
+
+            autoShowExampleCheckbox.addEventListener('change', function() {
+                reviewSettings.autoShowExample = this.checked;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
+            });
+
+            autoPlayAudioCheckbox.addEventListener('change', function() {
+                reviewSettings.autoPlayAudio = this.checked;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
+            });
+
+            autoPlayDelayInput.addEventListener('change', function() {
+                reviewSettings.autoPlayDelay = parseInt(this.value) || 3;
+                localStorage.setItem('reviewSettings', JSON.stringify(reviewSettings));
+            });
+
+            // أحداث التشغيل التلقائي
+            autoPlayToggleBtn.addEventListener('click', toggleAutoPlay);
+
+            // أحداث المراجعة
+            startReviewBtn.addEventListener('click', startReview);
+            showTranslationBtn.addEventListener('click', showTranslation);
+            nextWordBtn.addEventListener('click', nextReviewWord);
+            pronounceReviewBtn.addEventListener('click', () => {
+                if (reviewWordEl.textContent && reviewWordEl.textContent !== '...') {
+                    pronounceWord(reviewWordEl.textContent);
+                }
+            });
+
+            // أحداث الاختبار
+            startTestBtn.addEventListener('click', startTest);
+            retryTestBtn.addEventListener('click', retryTest);
+            newTestBtn.addEventListener('click', newTest);
+            pronounceTestBtn.addEventListener('click', () => {
+                if (testQuestion.textContent) {
+                    pronounceWord(testQuestion.textContent);
+                }
+            });
+
+            // أحداث المزامنة
+            loginBtn.addEventListener('click', handleLogin);
+            syncNowBtn.addEventListener('click', syncData);
+            logoutBtn.addEventListener('click', logout);
+
+            // أحداث رفع الملفات
+            wordsFileInput.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                try {
+                    uploadStatus.textContent = 'جاري تحليل الملف...';
+                    progressBar.style.display = 'block';
+                    uploadProgress.style.width = '10%';
+                    
+                    const fileType = file.name.split('.').pop().toLowerCase();
+                    let wordsToAdd = [];
+                    
+                    if (fileType === 'json') {
+                        wordsToAdd = await parseJSONFile(file);
+                    } else if (fileType === 'csv') {
+                        wordsToAdd = await parseCSVFile(file);
+                    } else {
+                        wordsToAdd = await parseTextFile(file);
+                    }
+                    
+                    if (!wordsToAdd || wordsToAdd.length === 0) {
+                        throw new Error('لم يتم العثور على كلمات في الملف');
+                    }
+                    
+                    uploadStatus.textContent = `تم تحليل ${wordsToAdd.length} كلمة، جاري الإضافة...`;
+                    uploadProgress.style.width = '50%';
+                    
+                    // إضافة الكلمات إلى القاعدة
+                    await addBulkWords(wordsToAdd);
+                    
+                    uploadStatus.textContent = `تمت إضافة ${wordsToAdd.length} كلمة بنجاح!`;
+                    uploadProgress.style.width = '100%';
+                    
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
+                    
+                    // تحديث الواجهة
+                    renderWords();
+                    updateStats();
+                    updateTopicFilters();
+                    
+                    // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                    if (currentUser) {
+                        debouncedSync();
+                    }
+                    
+                    // إخفاء شريط التقدم بعد 3 ثواني
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        uploadStatus.textContent = '';
+                    }, 3000);
+                    
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    uploadStatus.textContent = `خطأ: ${error.message}`;
+                    uploadProgress.style.backgroundColor = 'var(--danger-color)';
+                    
+                    // تشغيل صوت الخطأ
+                    sounds.wrong.play();
+                }
+            });
+
+            // أحداث تصدير الكلمات
+            exportJsonBtn.addEventListener('click', exportToJson);
+            exportCsvBtn.addEventListener('click', exportToCsv);
+
+            // مراقبة حالة المصادقة
+            firebase.auth().onAuthStateChanged(user => {
+                currentUser = user;
+                if (user) {
+                    authStatus.textContent = `مرحباً، ${user.email}`;
+                    authStatus.innerHTML = `<i class="fas fa-user-check"></i> ${user.email}`;
+                    loginForm.classList.add('hidden');
+                    syncControls.classList.remove('hidden');
+                    
+                    // تلقائيًا مزامنة البيانات عند تسجيل الدخول
+                    syncData();
                 } else {
-                    stats.streak = 1;
+                    authStatus.textContent = 'غير مسجل الدخول';
+                    authStatus.innerHTML = '<i class="fas fa-user-times"></i> غير مسجل الدخول';
+                    loginForm.classList.remove('hidden');
+                    syncControls.classList.add('hidden');
                 }
-                stats.lastReviewDate = new Date().toISOString();
-                addPoints(stats.streak * 5); // Bonus points for maintaining streak
-            } else {
-                // Check if streak is broken
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                if(lastReview && lastReview !== today && lastReview !== yesterday.toDateString()){
-                    stats.streak = 0;
+            });
+
+            // وظائف التطبيق
+            function loadThemePreference() {
+                const savedTheme = localStorage.getItem('themePreference') || 'light';
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                    toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
                 }
             }
-            saveStats();
-        }
 
-
-        // --- Utility & Data Management ---
-
-        function saveWords() {
-            localStorage.setItem('englishWords_v2', JSON.stringify(words));
-        }
-        function saveStats(){
-            localStorage.setItem('userStats_v2', JSON.stringify(stats));
-        }
-        function saveReviewSession() {
-            localStorage.setItem('reviewSession_v2', JSON.stringify(reviewSession));
-        }
-        function clearReviewSession() {
-            localStorage.removeItem('reviewSession_v2');
-        }
-        function saveAllData() {
-            saveWords();
-            saveStats();
-        }
-
-        function toggleTheme() {
-            sounds.click.play();
-            document.body.classList.toggle('dark-theme');
-            const isDarkMode = document.body.classList.contains('dark-theme');
-            this.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            localStorage.setItem('themePreference', isDarkMode ? 'dark' : 'light');
-        }
-
-        function loadThemePreference() {
-            const savedTheme = localStorage.getItem('themePreference');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-                toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            async function renderWords(searchTerm = '', topic = '') {
+                // تأخير عرض البيانات أثناء المزامنة
+                if (isSyncing) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+                
+                wordsContainer.innerHTML = '';
+                
+                const filteredWords = words.filter(word => {
+                    const matchesSearch = searchTerm 
+                        ? word.english.toLowerCase().includes(searchTerm) || 
+                          word.arabic.toLowerCase().includes(searchTerm)
+                        : true;
+                    
+                    const matchesTopic = topic 
+                        ? word.topics && word.topics.includes(topic)
+                        : true;
+                    
+                    return matchesSearch && matchesTopic;
+                });
+                
+                if (filteredWords.length === 0) {
+                    wordsContainer.innerHTML = `
+                        <div class="card" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-search" style="font-size: 3rem; color: var(--gray-color); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--gray-color);">لا توجد كلمات متطابقة مع بحثك</h3>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // عرض الكلمات مع تأثير تدريجي
+                for (let i = 0; i < filteredWords.length; i++) {
+                    const word = filteredWords[i];
+                    await renderWordCard(word);
+                    if (i % 10 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+                }
             }
-        }
-        
-        function pronounceWord(word) {
-            if ('speechSynthesis' in window) {
-                speechSynthesis.cancel(); // Cancel any previous speech
-                const utterance = new SpeechSynthesisUtterance(word);
-                utterance.lang = 'en-US';
-                speechSynthesis.speak(utterance);
+            
+            async function renderWordCard(word) {
+                return new Promise(resolve => {
+                    const wordCard = document.createElement('div');
+                    wordCard.className = 'card word-card';
+                    wordCard.dataset.id = word.id;
+                    wordCard.style.opacity = '0';
+                    wordCard.style.animationDelay = `${Math.random() * 0.3}s`;
+                    
+                    const topicsHTML = word.topics && word.topics.length > 0 
+                        ? `<div class="tags-container">${word.topics.map(t => `<span class="tag"><i class="fas fa-tag"></i> ${t}</span>`).join('')}</div>`
+                        : '';
+                    
+                    wordCard.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h3 class="word-english">${word.english}</h3>
+                            <button class="pronounce-btn" data-word="${word.english}">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                        <p class="word-arabic">${word.arabic}</p>
+                        ${word.example ? `<p class="word-example">مثال: ${word.example}</p>` : ''}
+                        ${topicsHTML}
+                        <p class="word-date"><i class="far fa-calendar-alt"></i> أضيفت في: ${formatDate(word.dateAdded)}</p>
+                        <div class="word-details hidden">
+                            <p><i class="fas fa-tachometer-alt"></i> مستوى الصعوبة: <span class="difficulty-${word.difficulty}">${getDifficultyText(word.difficulty)}</span></p>
+                            <p><i class="fas fa-redo"></i> عدد المراجعات: ${word.reviewCount}</p>
+                            <p><i class="fas fa-check-circle"></i> الإجابات الصحيحة: ${word.correctAnswers}</p>
+                            ${word.lastReviewed ? `<p><i class="far fa-clock"></i> آخر مراجعة: ${formatDate(word.lastReviewed)}</p>` : '<p><i class="far fa-clock"></i> لم تتم مراجعتها بعد</p>'}
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-secondary toggle-details" data-id="${word.id}">
+                                <i class="fas fa-info-circle"></i> تفاصيل
+                            </button>
+                            <button class="btn btn-danger delete-word" data-id="${word.id}">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    `;
+                    
+                    wordsContainer.appendChild(wordCard);
+                    
+                    setTimeout(() => {
+                        wordCard.style.opacity = '1';
+                        resolve();
+                    }, 0);
+                    
+                    // إضافة الأحداث بعد عرض العنصر
+                    setTimeout(() => {
+                        // حدث تفاصيل الكلمة
+                        wordCard.querySelector('.toggle-details').addEventListener('click', function() {
+                            const wordId = parseInt(this.dataset.id);
+                            const details = wordCard.querySelector('.word-details');
+                            details.classList.toggle('hidden');
+                            this.innerHTML = details.classList.contains('hidden') 
+                                ? '<i class="fas fa-info-circle"></i> تفاصيل' 
+                                : '<i class="fas fa-eye-slash"></i> إخفاء التفاصيل';
+                            
+                            // تشغيل صوت النقر
+                            sounds.click.play();
+                        });
+                        
+                        // حدث حذف الكلمة
+                        wordCard.querySelector('.delete-word').addEventListener('click', async function() {
+                            if (confirm('هل أنت متأكد من حذف هذه الكلمة؟')) {
+                                const wordId = parseInt(this.dataset.id);
+                                const wordIndex = words.findIndex(word => word.id === wordId);
+                                
+                                if (wordIndex !== -1) {
+                                    // حفظ الكلمة المحذوفة في قائمة المحذوفات
+                                    const deletedWord = words[wordIndex];
+                                    deletedWords.unshift(deletedWord);
+                                    localStorage.setItem('deletedWords', JSON.stringify(deletedWords));
+                                    renderDeletedWords();
+                                    
+                                    // إظهار قسم الكلمات المحذوفة إذا كان مخفياً
+                                    if (deletedWordsSection.classList.contains('hidden')) {
+                                        deletedWordsSection.classList.remove('hidden');
+                                    }
+                                    
+                                    // تشغيل صوت النقر
+                                    sounds.click.play();
+                                    
+                                    // إضافة تأثير الحذف
+                                    wordCard.classList.add('deleting');
+                                    
+                                    // الانتظار حتى يكتمل تأثير الحذف
+                                    setTimeout(async () => {
+                                        // إزالة الكلمة من المصفوفة
+                                        words = words.filter(word => word.id !== wordId);
+                                        await saveWords();
+                                        
+                                        // إزالة العنصر من DOM
+                                        wordCard.remove();
+                                        
+                                        // تحديث الإحصائيات
+                                        updateStats();
+                                        
+                                        // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                                        if (currentUser) {
+                                            debouncedSync();
+                                        }
+                                    }, 300);
+                                }
+                            }
+                        });
+                        
+                        // حدث نطق الكلمة
+                        wordCard.querySelector('.pronounce-btn').addEventListener('click', function() {
+                            const word = this.dataset.word;
+                            pronounceWord(word);
+                            
+                            // تشغيل صوت النقر
+                            sounds.click.play();
+                        });
+                    }, 10);
+                });
             }
-        }
-
-        // --- Run App ---
-        init();
-    });
+            
+            // عرض الكلمات المحذوفة
+            function renderDeletedWords() {
+                deletedWordsList.innerHTML = '';
+                
+                if (deletedWords.length === 0) {
+                    deletedWordsSection.classList.add('hidden');
+                    return;
+                }
+                
+                deletedWordsSection.classList.remove('hidden');
+                
+                deletedWords.forEach(word => {
+                    const item = document.createElement('div');
+                    item.className = 'deleted-word-item';
+                    item.innerHTML = `
+                        <span><i class="fas fa-font"></i> ${word.english} - <i class="fas fa-language"></i> ${word.arabic}</span>
+                        <button class="restore-btn" data-id="${word.id}">
+                            <i class="fas fa-undo"></i> استعادة
+                        </button>
+                    `;
+                    deletedWordsList.appendChild(item);
+                    
+                    // حدث استعادة الكلمة
+                    item.querySelector('.restore-btn').addEventListener('click', function() {
+                        const wordId = parseInt(this.dataset.id);
+                        restoreWord(wordId);
+                        
+                        // تشغيل صوت النقر
+                        sounds.click.play();
+                    });
+                });
+            }
+            
+            // استعادة كلمة محذوفة
+            function restoreWord(wordId) {
+                const wordIndex = deletedWords.findIndex(word => word.id === wordId);
+                
+                if (wordIndex !== -1) {
+                    const restoredWord = deletedWords[wordIndex];
+                    
+                    // إضافة الكلمة إلى القائمة الرئيسية
+                    words.unshift(restoredWord);
+                    saveWords();
+                    
+                    // إزالة الكلمة من قائمة المحذوفات
+                    deletedWords = deletedWords.filter(word => word.id !== wordId);
+                    localStorage.setItem('deletedWords', JSON.stringify(deletedWords));
+                    
+                    // تحديث الواجهة
+                    renderWords();
+                    renderDeletedWords();
+                    updateStats();
+                    
+                    // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                    if (currentUser) {
+                        debouncedSync();
+                    }
+                    
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
+                }
+            }
+            
+            async function saveWords() {
+                localStorage.setItem('englishWords', JSON.stringify(words));
+                
+                // إذا كان هناك مزامنة قيد التنفيذ، انتظر حتى تنتهي
+                while (isSyncing) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+            
+            function saveTopics() {
+                localStorage.setItem('wordTopics', JSON.stringify(topics));
+            }
+            
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('ar-EG');
+            }
+            
+            function getDifficultyText(difficulty) {
+                const difficulties = {
+                    easy: 'سهلة',
+                    medium: 'متوسطة',
+                    hard: 'صعبة'
+                };
+                return difficulties[difficulty];
+            }
+            
+            function updateStats() {
+                totalWordsEl.textContent = words.length;
+                
+                const today = new Date().toLocaleDateString();
+                const todayWords = words.filter(word => 
+                    new Date(word.dateAdded).toLocaleDateString() === today).length;
+                todayWordsEl.textContent = todayWords;
+                
+                // كلمات لم تتم مراجعتها أو مراجعتها منذ أكثر من 3 أيام
+                const reviewNeededWords = words.filter(word => {
+                    if (!word.lastReviewed) return true;
+                    const lastReviewed = new Date(word.lastReviewed);
+                    const threeDaysAgo = new Date();
+                    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                    return lastReviewed < threeDaysAgo;
+                }).length;
+                reviewWordsEl.textContent = reviewNeededWords;
+                
+                // عدد المواضيع الفريدة
+                const allTopics = new Set();
+                words.forEach(word => {
+                    if (word.topics) {
+                        word.topics.forEach(topic => allTopics.add(topic));
+                    }
+                });
+                totalTopicsEl.textContent = allTopics.size;
+            }
+            
+            function updateTopicFilters(target = 'topic-filter') {
+                const allTopics = new Set();
+                words.forEach(word => {
+                    if (word.topics) {
+                        word.topics.forEach(topic => allTopics.add(topic));
+                    }
+                });
+                
+                const topicSelect = document.getElementById(target);
+                // حفظ القيمة المحددة حالياً
+                const currentValue = topicSelect.value;
+                
+                // إزالة جميع الخيارات عدا الأول
+                while (topicSelect.options.length > 1) {
+                    topicSelect.remove(1);
+                }
+                
+                // إضافة المواضيع
+                Array.from(allTopics).sort().forEach(topic => {
+                    const option = document.createElement('option');
+                    option.value = topic;
+                    option.textContent = topic;
+                    topicSelect.appendChild(option);
+                });
+                
+                // استعادة القيمة المحددة إذا كانت لا تزال موجودة
+                if (currentValue && Array.from(allTopics).includes(currentValue)) {
+                    topicSelect.value = currentValue;
+                }
+            }
+            
+            function startReview() {
+                // تحضير قائمة الكلمات للمراجعة (الكلمات التي تحتاج مراجعة)
+                const now = new Date();
+                const threeDaysAgo = new Date(now);
+                threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                
+                reviewWords = words.filter(word => {
+                    if (!word.lastReviewed) return true;
+                    const lastReviewed = new Date(word.lastReviewed);
+                    return lastReviewed < threeDaysAgo;
+                }).sort(() => Math.random() - 0.5);
+                
+                currentReviewIndex = 0;
+                
+                if (reviewWords.length === 0) {
+                    // إذا لم توجد كلمات تحتاج مراجعة، نستخدم جميع الكلمات
+                    reviewWords = [...words].sort(() => Math.random() - 0.5);
+                    
+                    if (reviewWords.length === 0) {
+                        reviewWordEl.textContent = 'لا توجد كلمات للمراجعة!';
+                        startReviewBtn.classList.remove('hidden');
+                        showTranslationBtn.classList.add('hidden');
+                        nextWordBtn.classList.add('hidden');
+                        reviewTranslationEl.classList.add('hidden');
+                        reviewExampleEl.classList.add('hidden');
+                        return;
+                    }
+                }
+                
+                showNextReviewWord();
+                startReviewBtn.classList.add('hidden');
+                showTranslationBtn.classList.remove('hidden');
+                nextWordBtn.classList.add('hidden');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function showNextReviewWord() {
+                if (currentReviewIndex >= reviewWords.length) {
+                    reviewWordEl.textContent = 'تمت مراجعة جميع الكلمات!';
+                    reviewTranslationEl.classList.add('hidden');
+                    reviewExampleEl.classList.add('hidden');
+                    startReviewBtn.classList.remove('hidden');
+                    showTranslationBtn.classList.add('hidden');
+                    nextWordBtn.classList.add('hidden');
+                    stopAutoPlay();
+                    return;
+                }
+                
+                const currentWord = reviewWords[currentReviewIndex];
+                reviewWordEl.textContent = currentWord.english;
+                reviewTranslationEl.textContent = currentWord.arabic;
+                reviewExampleEl.textContent = currentWord.example ? `مثال: ${currentWord.example}` : '';
+                
+                // عرض أو إخفاء الترجمة والمثال بناءً على الإعدادات
+                if (reviewSettings.autoShowTranslation) {
+                    reviewTranslationEl.classList.remove('hidden');
+                } else {
+                    reviewTranslationEl.classList.add('hidden');
+                }
+                
+                if (reviewSettings.autoShowExample && currentWord.example) {
+                    reviewExampleEl.classList.remove('hidden');
+                } else {
+                    reviewExampleEl.classList.add('hidden');
+                }
+                
+                // إظهار أو إخفاء الأزرار بناءً على الإعدادات
+                if (reviewSettings.autoShowTranslation) {
+                    showTranslationBtn.classList.add('hidden');
+                    nextWordBtn.classList.remove('hidden');
+                } else {
+                    showTranslationBtn.classList.remove('hidden');
+                    nextWordBtn.classList.add('hidden');
+                }
+                
+                // نطق الكلمة تلقائياً إذا كان الخيار مفعل
+                if (reviewSettings.autoPlayAudio) {
+                    pronounceWord(currentWord.english);
+                }
+            }
+            
+            function showTranslation() {
+                reviewTranslationEl.classList.remove('hidden');
+                reviewExampleEl.classList.remove('hidden');
+                showTranslationBtn.classList.add('hidden');
+                nextWordBtn.classList.remove('hidden');
+                
+                // تشغيل صوت النجاح
+                sounds.correct.play();
+                
+                // تحديث بيانات المراجعة
+                const currentWordId = reviewWords[currentReviewIndex].id;
+                const wordIndex = words.findIndex(word => word.id === currentWordId);
+                
+                if (wordIndex !== -1) {
+                    words[wordIndex].lastReviewed = new Date().toISOString();
+                    words[wordIndex].reviewCount = (words[wordIndex].reviewCount || 0) + 1;
+                    saveWords();
+                    updateStats();
+                    
+                    // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                    if (currentUser) {
+                        debouncedSync();
+                    }
+                }
+            }
+            
+            function nextReviewWord() {
+                currentReviewIndex++;
+                showNextReviewWord();
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function pronounceWord(word) {
+                // استخدام Web Speech API لنطق الكلمة
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(word);
+                    utterance.lang = 'en-US';
+                    speechSynthesis.speak(utterance);
+                } else {
+                    alert('متصفحك لا يدود ميزة النطق. جرب استخدام متصفح حديث مثل Chrome أو Edge');
+                }
+            }
+            
+            // وظائف التشغيل التلقائي
+            function toggleAutoPlay() {
+                if (isAutoPlaying) {
+                    stopAutoPlay();
+                } else {
+                    startAutoPlay();
+                }
+            }
+            
+            function startAutoPlay() {
+                if (isAutoPlaying || currentReviewIndex >= reviewWords.length) return;
+                
+                isAutoPlaying = true;
+                autoPlayToggleBtn.innerHTML = '<i class="fas fa-pause"></i> إيقاف التشغيل التلقائي';
+                
+                const delay = reviewSettings.autoPlayDelay * 1000;
+                
+                autoPlayInterval = setInterval(() => {
+                    if (currentReviewIndex < reviewWords.length - 1) {
+                        currentReviewIndex++;
+                        showNextReviewWord();
+                    } else {
+                        stopAutoPlay();
+                    }
+                }, delay);
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function stopAutoPlay() {
+                if (!isAutoPlaying) return;
+                
+                isAutoPlaying = false;
+                clearInterval(autoPlayInterval);
+                autoPlayToggleBtn.innerHTML = '<i class="fas fa-play"></i> تشغيل تلقائي';
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function startTest() {
+                const selectedTopic = document.getElementById('test-topic').value;
+                const selectedDifficulty = document.getElementById('test-difficulty').value;
+                let questionsNum = parseInt(document.getElementById('test-questions-num').value);
+                
+                // تحديد الحد الأقصى لعدد الأسئلة (100)
+                questionsNum = Math.min(questionsNum, 100);
+                
+                // تصفية الكلمات حسب الموضوع ومستوى الصعوبة
+                let testWords = [...words];
+                
+                if (selectedTopic) {
+                    testWords = testWords.filter(word => word.topics && word.topics.includes(selectedTopic));
+                }
+                
+                if (selectedDifficulty) {
+                    testWords = testWords.filter(word => word.difficulty === selectedDifficulty);
+                }
+                
+                // استبعاد الكلمات التي تم اختبارها مسبقاً في هذه الجلسة
+                testWords = testWords.filter(word => !testedWords.includes(word.id));
+                
+                // إذا لم يتبقى كلمات كافية، نعيد استخدام الكلمات التي تم اختبارها
+                if (testWords.length < questionsNum) {
+                    testedWords = [];
+                    testWords = [...words];
+                    
+                    if (selectedTopic) {
+                        testWords = testWords.filter(word => word.topics && word.topics.includes(selectedTopic));
+                    }
+                    
+                    if (selectedDifficulty) {
+                        testWords = testWords.filter(word => word.difficulty === selectedDifficulty);
+                    }
+                }
+                
+                if (testWords.length < 5) {
+                    alert('لا يوجد عدد كافٍ من الكلمات للاختبار. أضف المزيد من الكلمات أولاً.');
+                    return;
+                }
+                
+                // اختيار عدد عشوائي من الكلمات للاختبار
+                testWords = testWords.sort(() => Math.random() - 0.5).slice(0, Math.min(questionsNum, testWords.length));
+                
+                // إضافة الكلمات المختارة إلى قائمة الكلمات التي تم اختبارها
+                testWords.forEach(word => testedWords.push(word.id));
+                
+                // إنشاء أسئلة الاختبار
+                currentTest = testWords.map(word => {
+                    // إنشاء خيارات عشوائية
+                    let options = [word.arabic];
+                    const otherWords = words.filter(w => w.id !== word.id && w.arabic !== word.arabic);
+                    
+                    while (options.length < 4 && otherWords.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * otherWords.length);
+                        const randomOption = otherWords[randomIndex].arabic;
+                        if (!options.includes(randomOption)) {
+                            options.push(randomOption);
+                        }
+                        otherWords.splice(randomIndex, 1);
+                    }
+                    
+                    // خلط الخيارات
+                    options = options.sort(() => Math.random() - 0.5);
+                    
+                    return {
+                        question: word.english,
+                        correctAnswer: word.arabic,
+                        options: options,
+                        wordId: word.id,
+                        example: word.example
+                    };
+                });
+                
+                currentQuestionIndex = 0;
+                testScoreCount = 0;
+                
+                // إظهار واجهة الاختبار
+                document.querySelector('.test-settings').classList.add('hidden');
+                testContainer.classList.remove('hidden');
+                testResult.classList.add('hidden');
+                
+                showTestQuestion();
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function showTestQuestion() {
+                if (!currentTest || currentQuestionIndex >= currentTest.length) {
+                    finishTest();
+                    return;
+                }
+                
+                const question = currentTest[currentQuestionIndex];
+                testQuestion.textContent = question.question;
+                testExampleEl.textContent = question.example ? `مثال: ${question.example}` : '';
+                
+                testOptions.innerHTML = '';
+                question.options.forEach((option, index) => {
+                    const optionEl = document.createElement('div');
+                    optionEl.className = 'test-option';
+                    optionEl.textContent = option;
+                    optionEl.dataset.index = index;
+                    optionEl.addEventListener('click', () => checkTestAnswer(option));
+                    testOptions.appendChild(optionEl);
+                });
+                
+                // نطق السؤال تلقائياً
+                pronounceWord(question.question);
+            }
+            
+            function checkTestAnswer(selectedAnswer) {
+                const question = currentTest[currentQuestionIndex];
+                const isCorrect = selectedAnswer === question.correctAnswer;
+                
+                // تشغيل الصوت المناسب
+                if (isCorrect) {
+                    sounds.correct.play();
+                } else {
+                    sounds.wrong.play();
+                }
+                
+                // تحديث النتيجة
+                if (isCorrect) {
+                    testScoreCount++;
+                    
+                    // تحديث عدد الإجابات الصحيحة للكلمة
+                    const wordIndex = words.findIndex(w => w.id === question.wordId);
+                    if (wordIndex !== -1) {
+                        words[wordIndex].correctAnswers = (words[wordIndex].correctAnswers || 0) + 1;
+                        saveWords();
+                        
+                        // مزامنة تلقائية إذا كان المستخدم مسجل الدخول
+                        if (currentUser) {
+                            debouncedSync();
+                        }
+                    }
+                }
+                
+                // تلوين الخيارات
+                const optionEls = document.querySelectorAll('.test-option');
+                optionEls.forEach(el => {
+                    if (el.textContent === question.correctAnswer) {
+                        el.classList.add('correct');
+                    } else if (el.textContent === selectedAnswer && !isCorrect) {
+                        el.classList.add('wrong');
+                    }
+                    el.style.pointerEvents = 'none';
+                });
+                
+                // الانتقال إلى السؤال التالي بعد تأخير
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    showTestQuestion();
+                }, 1500);
+            }
+            
+            function finishTest() {
+                testTotal.textContent = currentTest.length;
+                testScore.textContent = testScoreCount;
+                testResult.classList.remove('hidden');
+                
+                // تشغيل صوت النجاح
+                sounds.success.play();
+                
+                // إضافة تأثيرات النجاح
+                createConfetti();
+                showCelebration();
+                
+                // إضافة تأثير للنتيجة
+                setTimeout(() => {
+                    testResult.classList.add('show');
+                }, 100);
+            }
+            
+            function createConfetti() {
+                const colors = ['#f72585', '#4361ee', '#3f37c9', '#4895ef', '#4cc9f0'];
+                
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                    document.body.appendChild(confetti);
+                    
+                    // إزالة الكونفيتي بعد الانتهاء
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+            
+            function showCelebration() {
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration';
+                
+                // اختيار رسالة مختلفة حسب النتيجة
+                const percentage = (testScoreCount / currentTest.length) * 100;
+                let message = '';
+                let icon = '';
+                
+                if (percentage >= 90) {
+                    message = 'ممتاز!';
+                    icon = 'fas fa-trophy';
+                } else if (percentage >= 70) {
+                    message = 'جيد جداً!';
+                    icon = 'fas fa-star';
+                } else if (percentage >= 50) {
+                    message = 'ليس سيئاً!';
+                    icon = 'fas fa-thumbs-up';
+                } else {
+                    message = 'يمكنك التحسن!';
+                    icon = 'fas fa-rocket';
+                }
+                
+                celebration.innerHTML = `<i class="${icon}"></i> ${message}`;
+                document.body.appendChild(celebration);
+                
+                // إزالة الرسالة بعد 2 ثواني
+                setTimeout(() => {
+                    celebration.remove();
+                }, 2000);
+            }
+            
+            function retryTest() {
+                currentQuestionIndex = 0;
+                testScoreCount = 0;
+                testResult.classList.add('hidden');
+                showTestQuestion();
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function newTest() {
+                document.querySelector('.test-settings').classList.remove('hidden');
+                testContainer.classList.add('hidden');
+                testResult.classList.add('hidden');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            // وظائف المزامنة
+            function loadAuthState() {
+                const savedEmail = localStorage.getItem('savedEmail');
+                if (savedEmail) {
+                    emailInput.value = savedEmail;
+                    rememberMe.checked = true;
+                }
+            }
+            
+            async function handleLogin() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                if (!email || !password) {
+                    showSyncMessage('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                    return;
+                }
+                
+                try {
+                    loginText.classList.add('hidden');
+                    loginSpinner.classList.remove('hidden');
+                    
+                    let userCredential;
+                    try {
+                        userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                    } catch (loginError) {
+                        userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                    }
+                    
+                    currentUser = userCredential.user;
+                    
+                    if (rememberMe.checked) {
+                        localStorage.setItem('savedEmail', email);
+                    } else {
+                        localStorage.removeItem('savedEmail');
+                    }
+                    
+                    showSyncMessage('تم تسجيل الدخول بنجاح', 'success');
+                    
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
+                } catch (error) {
+                    console.error('Authentication error:', error);
+                    showSyncMessage(`خطأ في المصادقة: ${error.message}`, 'error');
+                    
+                    // تشغيل صوت الخطأ
+                    sounds.wrong.play();
+                } finally {
+                    loginText.classList.remove('hidden');
+                    loginSpinner.classList.add('hidden');
+                }
+            }
+            
+            // ديبونس للمزامنة لتجنب الطلبات الكثيرة
+            let syncTimeout = null;
+            function debouncedSync() {
+                if (syncTimeout) clearTimeout(syncTimeout);
+                syncTimeout = setTimeout(() => {
+                    syncData();
+                }, 2000);
+            }
+            
+            async function syncData() {
+                if (!currentUser || isSyncing) return;
+                
+                try {
+                    isSyncing = true;
+                    syncText.classList.add('hidden');
+                    syncSpinner.classList.remove('hidden');
+                    
+                    // جلب البيانات من السحابة
+                    const snapshot = await database.ref(`users/${currentUser.uid}/data`).once('value');
+                    const cloudData = snapshot.val() || { words: [], topics: [], deletedWords: [] };
+                    
+                    // دمج البيانات المحلية مع السحابة
+                    const localData = {
+                        words: JSON.parse(localStorage.getItem('englishWords')) || [],
+                        topics: JSON.parse(localStorage.getItem('wordTopics')) || [],
+                        deletedWords: JSON.parse(localStorage.getItem('deletedWords')) || []
+                    };
+                    
+                    const mergedData = {
+                        words: mergeItems(localData.words, cloudData.words),
+                        topics: [...new Set([...localData.topics, ...cloudData.topics])],
+                        deletedWords: mergeItems(localData.deletedWords, cloudData.deletedWords)
+                    };
+                    
+                    // حفظ البيانات المدمجة
+                    localStorage.setItem('englishWords', JSON.stringify(mergedData.words));
+                    localStorage.setItem('wordTopics', JSON.stringify(mergedData.topics));
+                    localStorage.setItem('deletedWords', JSON.stringify(mergedData.deletedWords));
+                    
+                    // تحديث المتغيرات المحلية
+                    words = mergedData.words;
+                    topics = mergedData.topics;
+                    deletedWords = mergedData.deletedWords;
+                    
+                    // رفع البيانات المدمجة إلى السحابة
+                    await database.ref(`users/${currentUser.uid}/data`).set(mergedData);
+                    
+                    showSyncMessage('تمت المزامنة بنجاح', 'success');
+                    
+                    // تشغيل صوت النجاح
+                    sounds.success.play();
+                    
+                    // تحديث الواجهة
+                    updateStats();
+                    renderWords();
+                    updateTopicFilters();
+                    renderDeletedWords();
+                } catch (error) {
+                    console.error('Sync error:', error);
+                    showSyncMessage(`خطأ في المزامنة: ${error.message}`, 'error');
+                    
+                    // تشغيل صوت الخطأ
+                    sounds.wrong.play();
+                } finally {
+                    syncText.classList.remove('hidden');
+                    syncSpinner.classList.add('hidden');
+                    isSyncing = false;
+                }
+            }
+            
+            function mergeItems(localItems, cloudItems) {
+                const merged = [...localItems];
+                const localIds = localItems.map(item => item.id);
+                
+                cloudItems.forEach(cloudItem => {
+                    if (!localIds.includes(cloudItem.id)) {
+                        merged.push(cloudItem);
+                    } else {
+                        // تحديث العنصر المحلي إذا كان أحدث
+                        const localIndex = localIds.indexOf(cloudItem.id);
+                        const localItem = localItems[localIndex];
+                        
+                        // احتفظ بالعنصر الأحدث بناءً على تاريخ التعديل
+                        const localDate = new Date(localItem.lastReviewed || localItem.dateAdded);
+                        const cloudDate = new Date(cloudItem.lastReviewed || cloudItem.dateAdded);
+                        
+                        if (cloudDate > localDate) {
+                            merged[localIndex] = cloudItem;
+                        }
+                    }
+                });
+                
+                return merged;
+            }
+            
+            function logout() {
+                firebase.auth().signOut();
+                showSyncMessage('تم تسجيل الخروج', 'success');
+                
+                // تشغيل صوت النقر
+                sounds.click.play();
+            }
+            
+            function showSyncMessage(message, type) {
+                syncMessage.textContent = message;
+                syncMessage.className = 'sync-message';
+                syncMessage.classList.add(type);
+                
+                setTimeout(() => {
+                    syncMessage.textContent = '';
+                    syncMessage.className = 'sync-message';
+                }, 5000);
+            }
+            
+            // وظائف رفع الملفات
+            async function parseJSONFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const content = JSON.parse(e.target.result);
+                            if (Array.isArray(content)) {
+                                resolve(content);
+                            } else if (content.words && Array.isArray(content.words)) {
+                                resolve(content.words);
+                            } else {
+                                reject(new Error('تنسيق JSON غير صحيح. يجب أن يكون مصفوفة أو يحتوي على خاصية words'));
+                            }
+                        } catch (err) {
+                            reject(new Error('خطأ في تحليل ملف JSON'));
+                        }
+                    };
+                    reader.onerror = () => reject(new Error('خطأ في قراءة الملف'));
+                    reader.readAsText(file);
+                });
+            }
+            
+            async function parseCSVFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const content = e.target.result;
+                            const lines = content.split('\n');
+                            const headers = lines[0].split(',').map(h => h.trim());
+                            
+                            // التحقق من وجود الحقول الأساسية
+                            if (!headers.includes('english') || !headers.includes('arabic')) {
+                                throw new Error('الملف يجب أن يحتوي على أعمدة english و arabic');
+                            }
+                            
+                            const words = [];
+                            for (let i = 1; i < lines.length; i++) {
+                                if (!lines[i].trim()) continue;
+                                
+                                const values = lines[i].split(',');
+                                const word = {};
+                                
+                                for (let j = 0; j < headers.length; j++) {
+                                    if (j < values.length) {
+                                        word[headers[j]] = values[j].trim();
+                                    }
+                                }
+                                
+                                // التحقق من وجود الحقول الأساسية
+                                if (word.english && word.arabic) {
+                                    words.push(word);
+                                }
+                            }
+                            
+                            resolve(words);
+                        } catch (err) {
+                            reject(new Error('خطأ في تحليل ملف CSV'));
+                        }
+                    };
+                    reader.onerror = () => reject(new Error('خطأ في قراءة الملف'));
+                    reader.readAsText(file);
+                });
+            }
+            
+            async function parseTextFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const content = e.target.result;
+                            const lines = content.split('\n');
+                            const words = [];
+                            
+                            for (const line of lines) {
+                                if (!line.trim()) continue;
+                                
+                                // افترض أن السطر يحتوي على الكلمة الإنجليزية والعربية مفصولة بفاصلة
+                                const parts = line.split(',');
+                                if (parts.length >= 2) {
+                                    words.push({
+                                        english: parts[0].trim(),
+                                        arabic: parts[1].trim(),
+                                        example: parts[2] ? parts[2].trim() : '',
+                                        difficulty: parts[3] ? parts[3].trim() : 'easy',
+                                        topics: parts[4] ? parts[4].split(';').map(t => t.trim()) : []
+                                    });
+                                }
+                            }
+                            
+                            if (words.length === 0) {
+                                throw new Error('لم يتم العثور على كلمات في الملف');
+                            }
+                            
+                            resolve(words);
+                        } catch (err) {
+                            reject(new Error('خطأ في تحليل الملف النصي'));
+                        }
+                    };
+                    reader.onerror = () => reject(new Error('خطأ في قراءة الملف'));
+                    reader.readAsText(file);
+                });
+            }
+            
+            async function addBulkWords(wordsToAdd) {
+                const newWords = wordsToAdd.map(word => {
+                    // تنظيف البيانات والتأكد من وجود الحقول المطلوبة
+                    const english = word.english?.trim();
+                    const arabic = word.arabic?.trim();
+                    
+                    if (!english || !arabic) return null;
+                    
+                    return {
+                        id: Date.now() + Math.floor(Math.random() * 1000), // إنشاء ID فريد
+                        english: english,
+                        arabic: arabic,
+                        example: word.example?.trim() || '',
+                        difficulty: ['easy', 'medium', 'hard'].includes(word.difficulty) ? 
+                                   word.difficulty : 'easy',
+                        topics: Array.isArray(word.topics) ? 
+                               word.topics.filter(t => t && typeof t === 'string') :
+                               (word.topics ? word.topics.split(',').map(t => t.trim()) : []),
+                        dateAdded: new Date().toISOString(),
+                        lastReviewed: null,
+                        reviewCount: 0,
+                        correctAnswers: 0
+                    };
+                }).filter(word => word !== null);
+                
+                // إضافة أي مواضيع جديدة إلى قائمة المواضيع
+                newWords.forEach(word => {
+                    word.topics.forEach(topic => {
+                        if (!topics.includes(topic)) {
+                            topics.push(topic);
+                        }
+                    });
+                });
+                
+                saveTopics();
+                words = [...newWords, ...words];
+                await saveWords();
+            }
+            
+            // وظائف تصدير الكلمات
+            function exportToJson() {
+                const data = {
+                    words: words,
+                    topics: topics,
+                    exportedAt: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `english_words_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                
+                // تشغيل صوت النجاح
+                sounds.success.play();
+                
+                URL.revokeObjectURL(url);
+            }
+            
+            function exportToCsv() {
+                let csvContent = "english,arabic,example,difficulty,topics\n";
+                
+                words.forEach(word => {
+                    const row = [
+                        `"${word.english.replace(/"/g, '""')}"`,
+                        `"${word.arabic.replace(/"/g, '""')}"`,
+                        `"${word.example.replace(/"/g, '""')}"`,
+                        word.difficulty,
+                        `"${word.topics.join(';')}"`
+                    ].join(',');
+                    
+                    csvContent += row + '\n';
+                });
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `english_words_${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                
+                // تشغيل صوت النجاح
+                sounds.success.play();
+                
+                URL.revokeObjectURL(url);
+            }
+        });
     </script>
 </body>
 </html>
