@@ -96,6 +96,26 @@ function apply(c,g,now=Date.now()){c=Object.assign({},c);
 const lab=(c,g)=>{const n=apply(c,g);return g===0?'١٠ د':n.ivl+' يوم'};
 function queue(){const n=Date.now(),l=lg();const rev=S.cards.filter(c=>c.last&&c.due<=n);const nw=S.cards.filter(c=>!c.last).slice(0,Math.max(0,S.set.newLimit-l.new));return shuf(rev).concat(nw)}
 function streak(){let d=new Date(),s=0;const k=x=>new Date(x-x.getTimezoneOffset()*6e4).toISOString().slice(0,10);if(!(S.log[k(d)]||{}).rev)d.setDate(d.getDate()-1);while((S.log[k(d)]||{}).rev>0){s++;d.setDate(d.getDate()-1)}return s}
+/* ---------- حذف المكرر ---------- */
+const dkey=c=>c.en.toLowerCase().replace(/\s+/g,' ').trim();
+function dupGroups(){const m=new Map();S.cards.forEach(c=>{const k=dkey(c);if(!m.has(k))m.set(k,[]);m.get(k).push(c)});return [...m.values()].filter(g=>g.length>1)}
+const dupCount=()=>dupGroups().reduce((n,g)=>n+g.length-1,0);
+function dedupe(){let n=0;
+ dupGroups().forEach(g=>{
+  g.sort((a,b)=>(b.last?1:0)-(a.last?1:0)||b.reps-a.reps||a.added-b.added);
+  const k=g[0];
+  g.slice(1).forEach(d=>{
+   if(!k.ex&&d.ex)k.ex=d.ex;
+   if(!k.pos&&d.pos)k.pos=d.pos;
+   if(!k.topic&&d.topic)k.topic=d.topic;
+   if(d.ar&&!k.ar.includes(d.ar))k.ar+=' / '+d.ar;
+   S.cards=S.cards.filter(x=>x!==d);
+   S.del[d.id]=Date.now();
+   n++});
+  k.u=Date.now()});
+ save();return n}
+function dupCard(){const n=dupCount();
+ return `<div class="g card"><b>🧹 الكلمات المكررة</b><p class="tip" style="margin:6px 0 12px">${n?`تم العثور على ${n} كلمة مكررة. سيتم الاحتفاظ بالنسخة الأكثر مراجعة، ودمج المعاني والأمثلة المختلفة فيها.`:'لا توجد كلمات مكررة 👌'}</p><button class="${n?'bad':''}" style="width:100%;${n?'':'opacity:.5'}" data-a="dedupe" ${n?'':'disabled'}>حذف المكرر${n?' ('+n+')':''}</button></div>`}
 /* ---------- views ---------- */
 let T='today',F='all',Q='',QZ={stage:'setup',mode:'en-ar',n:10};
 const TABS=[['today','اليوم'],['lib','المكتبة'],['add','إضافة'],['quiz','اختبار'],['set','الإعدادات']];
@@ -125,7 +145,7 @@ function vQuiz(){if(QZ.stage==='setup'){return `<h1>اختبار</h1><p class="s
  return `<h1>سؤال ${QZ.i+1}/${QZ.items.length}</h1><div class="bar" style="margin:8px 0 16px"><i class="new" style="width:${QZ.i/QZ.items.length*100}%"></i></div><div class="g card" style="text-align:center"><div class="en" style="${m==='ar-en'?'direction:rtl':''}">${m==='en-ar'?esc(c.en):m==='ar-en'?esc(c.ar):'✍️'}</div></div>${body}`}
 function vSet(){const s=S.set;return `<h1>الإعدادات</h1><div class="g card"><label>المظهر</label><div class="seg">${[['auto','تلقائي'],['light','فاتح'],['dark','داكن']].map(([k,l])=>`<button data-a="th" data-k="${k}" class="${s.theme===k?'on':''}">${l}</button>`).join('')}</div><label>كلمات جديدة يوميًا</label><input id="nl" type="number" min="1" max="50" value="${s.newLimit}"><label>نطق الكلمة تلقائيًا في المراجعة</label><div class="seg"><button data-a="auto" data-k="1" class="${s.auto?'on':''}">مفعّل</button><button data-a="auto" data-k="0" class="${!s.auto?'on':''}">متوقف</button></div></div>
  <div class="g card"><b>نسخة احتياطية</b><p class="tip" style="margin:6px 0 12px">بياناتك محفوظة على هذا المتصفح. صدّر نسخة بشكل دوري، ويمكنك أيضًا استيراد ملف JSON من تطبيقك القديم.</p><div class="row"><button data-a="exp">تصدير JSON</button><button data-a="imp">استيراد ملف</button></div><input type="file" id="file" accept=".json" hidden></div>
- ${syncCard()}<div class="g card"><button class="bad" style="width:100%" data-a="reset">مسح كل البيانات</button></div>`}
+ ${dupCard()}${syncCard()}<div class="g card"><button class="bad" style="width:100%" data-a="reset">مسح كل البيانات</button></div>`}
 function render(){nav();$('#v').innerHTML={today:vToday,lib:vLib,add:vAdd,quiz:vQuiz,set:vSet}[T]();window.scrollTo(0,0)}
 /* ---------- study ---------- */
 let SS=null;
@@ -164,6 +184,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='exp'){const u=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='kalimati-backup-'+today()+'.json';l.click();URL.revokeObjectURL(u)}
  else if(a==='imp')$('#file').click();
  else if(a==='login')login();else if(a==='logout'){firebase.auth().signOut();toast('تم تسجيل الخروج')}else if(a==='sync')sync();
+ else if(a==='dedupe'){if(b.dataset.s){const n=dedupe();render();toast(`تم حذف ${n} كلمة مكررة ✓`)}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}
  else if(a==='reset'){if(b.dataset.s){const dl={};S.cards.forEach(c=>dl[c.id]=Date.now());S=JSON.parse(JSON.stringify(DEF));S.del=dl;save();render();toast('تم المسح')}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click()});
