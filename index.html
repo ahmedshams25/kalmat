@@ -70,6 +70,15 @@ nav button.on{background:var(--glass2);color:var(--tint);font-weight:700}
 .okw{color:var(--ok)}.missw{color:var(--bad);text-decoration:underline wavy}.tg{font-weight:800}
 .mic{width:84px;min-height:84px;border-radius:50%;padding:0;background:var(--tint);color:#fff;border:0;margin:0 auto;display:flex;align-items:center;justify-content:center}
 .mic svg.i{width:34px;height:34px}.mic.on{background:var(--bad);animation:pulse 1.2s infinite}
+.msgs{display:flex;flex-direction:column;margin-top:10px}
+.msg{max-width:86%;padding:12px 16px;border-radius:20px;margin-bottom:10px;line-height:1.7;font-size:16px;direction:ltr;text-align:left}
+.msg.ai{align-self:flex-end;background:var(--glass);border:1px solid var(--stroke);border-bottom-left-radius:6px}
+.msg.me{align-self:flex-start;background:var(--tint);color:#fff;border-bottom-right-radius:6px}
+.msg mark{background:rgba(10,132,255,.22);color:inherit;border-radius:6px;padding:0 3px;font-weight:700}
+.fix{align-self:flex-start;max-width:86%;margin:-4px 0 10px;padding:8px 12px;border-radius:14px;background:rgba(255,159,10,.16);font-size:14px;direction:ltr;text-align:left}
+.cbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 28px));display:flex;gap:8px;padding:8px;border-radius:28px;z-index:19;align-items:center}
+.cbar input{flex:1;min-width:0;border-radius:20px}
+.mic.sm{width:46px;min-height:46px;margin:0;flex:none}.mic.sm svg.i{width:22px;height:22px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -83,7 +92,7 @@ nav button.on{background:var(--glass2);color:var(--tint);font-weight:700}
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const P={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lib:'<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/>',add:'<path d="M12 5v14M5 12h14"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/>',set:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',spk:'<path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',del:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="2"/>'};
+const P={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lib:'<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/>',add:'<path d="M12 5v14M5 12h14"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/>',set:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',spk:'<path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',del:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="2"/>',chat:'<path d="M5 6h14a1 1 0 011 1v8a1 1 0 01-1 1h-7l-4 4v-4H5a1 1 0 01-1-1V7a1 1 0 011-1z"/>'};
 const ic=n=>`<svg class="i" viewBox="0 0 24 24">${P[n]}</svg>`;
 const DEF={cards:[],log:{},set:{newLimit:10,auto:true,theme:'auto'}};
 let S;try{S=JSON.parse(localStorage.getItem('vocab.v2'))}catch(e){}
@@ -138,7 +147,7 @@ function dupCard(){const n=dupCount();
  return `<div class="g card"><b>🧹 الكلمات المكررة</b><p class="tip" style="margin:6px 0 12px">${n?`تم العثور على ${n} كلمة مكررة. سيتم الاحتفاظ بالنسخة الأكثر مراجعة، ودمج المعاني والأمثلة المختلفة فيها.`:'لا توجد كلمات مكررة 👌'}</p><button class="${n?'bad':''}" style="width:100%;${n?'':'opacity:.5'}" data-a="dedupe" ${n?'':'disabled'}>حذف المكرر${n?' ('+n+')':''}</button></div>`}
 /* ---------- views ---------- */
 let T='today',F='all',Q='',QZ={stage:'setup',mode:'en-ar',n:10};
-const TABS=[['today','اليوم'],['lib','المكتبة'],['add','إضافة'],['quiz','اختبار'],['set','الإعدادات']];
+const TABS=[['today','اليوم'],['lib','المكتبة'],['add','إضافة'],['quiz','اختبار'],['chat','محادثة'],['set','الإعدادات']];
 const TIPS=['اكتب جملة من تأليفك لكل كلمة جديدة — الحفظ بالسياق أقوى بكثير من الحفظ المعزول.','٥ دقائق يوميًا أفضل من ساعة في الأسبوع. الانتظام هو السر.','انطق الكلمة بصوت عالٍ بعد سماعها؛ النطق يثبّت الكلمة في الذاكرة.','أضف الكلمة مع مثال واحد على الأقل وتعلّم الكلمات المركبة (collocations) مثل make a decision.','لا تضف أكثر من ١٠ كلمات جديدة يوميًا؛ الجودة قبل الكمية.'];
 function nav(){$('#nav').innerHTML=TABS.map(([k,l])=>`<button data-a="tab" data-k="${k}" class="${T===k?'on':''}">${ic(k)}<span>${l}</span></button>`).join('')}
 function pipeCard(q){const l=lg(),W=(l.words||[]).length,d1=l.rev>0&&!q.length;
@@ -175,7 +184,7 @@ function vSet(){const s=S.set;return `<h1>الإعدادات</h1><div class="g c
  ${aiCard()}
  <div class="g card"><b>نسخة احتياطية</b><p class="tip" style="margin:6px 0 12px">بياناتك محفوظة على هذا المتصفح. صدّر نسخة بشكل دوري، ويمكنك أيضًا استيراد ملف JSON من تطبيقك القديم.</p><div class="row"><button data-a="exp">تصدير JSON</button><button data-a="imp">استيراد ملف</button></div><input type="file" id="file" accept=".json" hidden></div>
  ${dupCard()}${syncCard()}<div class="g card"><button class="bad" style="width:100%" data-a="reset">مسح كل البيانات</button></div>`}
-function render(){nav();$('#v').innerHTML={today:vToday,lib:vLib,add:vAdd,quiz:vQuiz,set:vSet}[T]();window.scrollTo(0,0)}
+function render(){nav();$('#v').innerHTML={today:vToday,lib:vLib,add:vAdd,quiz:vQuiz,chat:vChat,set:vSet}[T]();window.scrollTo(0,T==='chat'&&CH.stage==='chat'?1e9:0)}
 /* ---------- المرحلة 1: المراجعة ---------- */
 let SS=null;
 function study(){const q=queue().map(c=>c.id);if(!q.length)return toast('لا توجد بطاقات مستحقة الآن');SS={q,i:0,shown:false};$('#sheet').classList.add('open');rs();if(S.set.auto)speak(S.cards.find(c=>c.id===q[0]).en)}
@@ -261,6 +270,51 @@ function mic(){if(!SR)return toast('المتصفح لا يدعم التعرف ع
  rec.onend=()=>{if(!SP)return;SP.on=0;if(SP.heard){const r=evalS(SP.s[SP.i],SP.heard),p=SP.res[SP.i];SP.r=r;if(!p||r.acc>=p.acc)SP.res[SP.i]=r}else toast(err==='not-allowed'||err==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':'لم أسمع شيئًا — حاول مرة أخرى');rspeak()};
  try{rec.start();SP.on=1;rspeak()}catch(e){toast('تعذّر تشغيل الميكروفون')}}
 function closeSheet(){try{rec&&rec.abort()}catch(e){}try{speechSynthesis.cancel()}catch(e){}SP=null;SS=null;$('#sheet').classList.remove('open');render()}
+/* ---------- محادثة مع الذكاء الاصطناعي ---------- */
+const CH0=()=>({stage:'setup',topic:'',src:'learning',words:[],msgs:[],used:new Set(),draft:'',busy:0,on:0,err:'',auto:true});
+let CH=CH0(),crec=null;
+const CT=['Job interview','Travel & airports','Restaurant','Doctor visit','Technology news','Shopping','Making friends'];
+const poolW=src=>src==='today'?(lg().words||[]).map(id=>S.cards.find(c=>c.id===id)).filter(Boolean):src==='all'?S.cards.slice():S.cards.filter(c=>status(c)==='learning');
+const mkChat=()=>`You are a friendly English conversation partner for an Arabic-speaking learner (level B1-B2). Topic: "${CH.topic||'everyday life'}".
+Target words the learner is practicing: ${CH.words.map(c=>c.en+' ('+c.ar+')').join('; ')}.
+Rules: Keep each reply to 1-3 short, natural sentences and end with one question. Naturally use 1-2 target words per reply (prefer ones not used yet) and wrap them in **double asterisks**, so the learner hears them in context; steer the conversation so the learner can use the others. Never lecture. If the learner's last message has grammar or word-choice mistakes, put the corrected version in "fix" and a short Arabic explanation in "note"; otherwise leave both "".
+Conversation so far:
+${CH.msgs.slice(-12).map(m=>(m.r==='ai'?'Partner: ':'Learner: ')+m.t).join('\n')||'(none yet - start with a friendly opening question about the topic)'}
+Return ONLY valid JSON, no markdown fences: {"reply":"","ar":"Arabic translation of the reply","fix":"","note":"","used":["target words the learner used correctly in their last message"]}`;
+function usedLocal(t){const H=t.split(/\s+/).map(norm).filter(Boolean);CH.words.forEach(c=>{const k=c.en.split(/\s+/).map(norm).filter(x=>x.length>2);if(k.length&&k.every(x=>H.some(h=>h.startsWith(x.slice(0,Math.max(3,x.length-2))))))CH.used.add(c.en)})}
+function vChat(){
+ if(CH.stage!=='chat'){const n=poolW(CH.src).length;return `<h1>محادثة</h1><p class="sub">تكلّم مع الذكاء الاصطناعي واستخدم كلماتك في حوار حقيقي.</p>
+ <div class="g card"><label>موضوع المحادثة</label><input id="ct" dir="ltr" value="${esc(CH.topic)}" placeholder="مثلاً: job interview — أو اتركه فارغًا"><div style="margin-top:8px">${CT.map(t=>`<span class="chip" data-a="ctp" data-t="${esc(t)}" style="cursor:pointer">${esc(t)}</span>`).join('')}</div>
+ <label>الكلمات المستخدمة في المحادثة</label><div class="seg">${[['learning','قيد التعلّم'],['today','كلمات اليوم'],['all','كل الكلمات']].map(([k,l])=>`<button data-a="csrc" data-k="${k}" class="${CH.src===k?'on':''}">${l}</button>`).join('')}</div>
+ <p class="tip">${n?`متاح ${n} كلمة — سيتم اختيار ${Math.min(8,n)} منها عشوائيًا.`:'لا توجد كلمات في هذا الاختيار.'}</p>
+ ${AIc.key.trim()?'':'<p class="tip" style="color:var(--bad)">أضف مفتاح API من الإعدادات أولًا.</p>'}
+ <button class="pri big" style="margin-top:12px" data-a="cstart">ابدأ المحادثة 💬</button></div>`}
+ const msgs=CH.msgs.map((m,i)=>m.r==='ai'?`<div class="msg ai"><div>${hl(m.t)}</div><div class="row" style="gap:6px;margin-top:6px;justify-content:flex-start"><button class="ib" style="min-height:34px;flex:none" data-a="cspk" data-i="${i}">${ic('spk')}</button><button style="min-height:34px;font-size:12px;flex:none" data-a="ctr" data-i="${i}">${m.show?'إخفاء':'ترجمة'}</button></div>${m.show&&m.ar?`<div style="direction:rtl;text-align:right;margin-top:8px;padding-top:8px;border-top:1px solid var(--stroke);font-size:15px">${esc(m.ar)}</div>`:''}</div>`
+  :`<div class="msg me">${esc(m.t)}</div>${m.fix?`<div class="fix"><b>✏️</b> ${esc(m.fix)}${m.note?`<div style="direction:rtl;text-align:right;margin-top:4px;color:var(--sub)">${esc(m.note)}</div>`:''}</div>`:''}`).join('');
+ return `<div class="row" style="margin:6px 0 10px"><h1 style="margin:0;flex:1">محادثة</h1><button class="ib" style="flex:none" data-a="cauto" title="نطق الردود تلقائيًا">${CH.auto?'🔊':'🔇'}</button><button style="flex:none" data-a="cnew">جديدة</button></div>
+ <div class="g card" style="padding:12px"><p class="tip" style="margin-bottom:6px">الموضوع: <b style="color:var(--ink)" dir="ltr">${esc(CH.topic||'everyday life')}</b> — حاول تستخدم كل الكلمات (${CH.used.size}/${CH.words.length}):</p><div style="direction:ltr">${CH.words.map(c=>`<span class="chip ${CH.used.has(c.en)?'okw':''}" data-a="chw" data-id="${c.id}" style="cursor:pointer">${CH.used.has(c.en)?'✓ ':''}${esc(c.en)}</span>`).join('')}</div></div>
+ <div class="msgs">${msgs}${CH.busy?'<div class="msg ai" style="color:var(--sub)">…</div>':''}</div>
+ ${CH.err?`<div class="g card tip" style="color:var(--bad)">تعذّر الرد: ${esc(CH.err)}<button style="margin-top:8px;width:100%" data-a="cretry">إعادة المحاولة</button></div>`:''}
+ <div style="height:90px"></div>
+ <div class="g cbar"><button class="mic sm ${CH.on?'on':''}" id="cmic" data-a="cmic">${ic(CH.on?'stop':'mic')}</button><input id="ci" dir="ltr" placeholder="Type or speak in English…" value="${esc(CH.draft)}" autocomplete="off"><button class="pri" style="flex:none" data-a="csend" ${CH.busy?'disabled':''}>إرسال</button></div>`}
+function rchat(keep){if(T!=='chat')return;const y=window.scrollY;$('#v').innerHTML=vChat();window.scrollTo(0,keep||CH.stage!=='chat'?y:1e9);const i=$('#ci');if(i&&!CH.busy)i.focus({preventScroll:true})}
+function cstart(){const p=poolW(CH.src);if(!p.length)return toast('لا توجد كلمات في هذا الاختيار');if(!AIc.key.trim())return toast('أضف مفتاح API من الإعدادات أولًا');CH.words=shuf(p).slice(0,8);CH.msgs=[];CH.used=new Set();CH.stage='chat';CH.err='';csend(null)}
+async function csend(txt,re){if(CH.busy)return;if(txt&&!re){CH.msgs.push({r:'me',t:txt});CH.draft='';usedLocal(txt)}CH.busy=1;CH.err='';rchat();
+ try{const raw=await ai(mkChat());let j;try{j=JSON.parse(raw.slice(raw.indexOf('{'),raw.lastIndexOf('}')+1))}catch(e){j={reply:raw}}
+  const me=CH.msgs[CH.msgs.length-1];
+  if(txt&&me&&me.r==='me'){let f=String(j.fix||'').trim();if(f.toLowerCase().replace(/[^a-z0-9 ]/g,'')===txt.toLowerCase().replace(/[^a-z0-9 ]/g,''))f='';me.fix=f;me.note=f?String(j.note||''):''}
+  (Array.isArray(j.used)?j.used:[]).forEach(w=>{const c=CH.words.find(x=>x.en.toLowerCase()===String(w).toLowerCase());if(c)CH.used.add(c.en)});
+  const r=String(j.reply||'').trim();if(!r)throw new Error('رد فارغ');
+  CH.msgs.push({r:'ai',t:r,ar:String(j.ar||'')});if(CH.auto)speak(plain(r))
+ }catch(e){CH.err=e.message==='nokey'?'أضف مفتاح API من الإعدادات':e.message}
+ CH.busy=0;rchat()}
+function cmic(){if(!SR)return toast('المتصفح لا يدعم التعرف على الصوت — جرّب Chrome أو Safari');
+ if(CH.on){try{crec.stop()}catch(e){}return}
+ try{speechSynthesis.cancel()}catch(e){}
+ crec=new SR();crec.lang='en-US';crec.interimResults=true;crec.continuous=false;
+ crec.onresult=e=>{let t='';for(let k=0;k<e.results.length;k++)t+=e.results[k][0].transcript+' ';CH.draft=t.trim();const i=$('#ci');if(i)i.value=CH.draft};
+ crec.onend=()=>{CH.on=0;const b=$('#cmic');if(b){b.classList.remove('on');b.innerHTML=ic('mic')}};
+ try{crec.start();CH.on=1;const b=$('#cmic');b.classList.add('on');b.innerHTML=ic('stop')}catch(e){toast('تعذّر تشغيل الميكروفون')}}
 /* ---------- quiz ---------- */
 function qnext(){QZ.i++;if(QZ.i>=QZ.items.length){QZ.stage='done';save()}render()}
 function qans(ok,c){if(ok)QZ.score++;else{QZ.wrong.push(c.en);const k=S.cards.findIndex(x=>x.id===c.id);S.cards[k]=apply(S.cards[k],0);save()}}
@@ -298,6 +352,17 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
    L.forEach(w=>{const en=String(w.en||'').trim(),ar=String(w.ar||'').trim(),k=en.toLowerCase();if(en&&ar&&!have.has(k)){have.add(k);S.cards.push(newCard(en,ar,String(w.ex||''),PO.includes(w.pos)?w.pos:'',String(w.topic||'')));n++}});
    save();toast(n?`تمت إضافة ${n} كلمة تلقائيًا ✓`:'كل الكلمات المقترحة موجودة عندك بالفعل');if(n){T='lib';F='all';Q='';render()}else{b.disabled=false;b.textContent=o}}
   catch(x){toast('تعذّر الاستخراج: '+x.message);b.disabled=false;b.textContent=o}}
+ else if(a==='ctp'){CH.topic=b.dataset.t;rchat(1)}
+ else if(a==='csrc'){CH.src=b.dataset.k;rchat(1)}
+ else if(a==='cstart')cstart();
+ else if(a==='csend'){const t=(($('#ci')||{}).value||'').trim();if(t)csend(t)}
+ else if(a==='cmic')cmic();
+ else if(a==='cretry'){const l=CH.msgs[CH.msgs.length-1];csend(l&&l.r==='me'?l.t:null,1)}
+ else if(a==='cnew'){try{crec&&crec.abort()}catch(x){}try{speechSynthesis.cancel()}catch(x){}CH=Object.assign(CH0(),{topic:CH.topic,src:CH.src});rchat()}
+ else if(a==='ctr'){const m=CH.msgs[+b.dataset.i];m.show=!m.show;rchat(1)}
+ else if(a==='cspk')speak(plain(CH.msgs[+b.dataset.i].t));
+ else if(a==='cauto'){CH.auto=!CH.auto;rchat(1)}
+ else if(a==='chw'){const c=S.cards.find(x=>x.id==b.dataset.id);if(c)toast(c.en+' = '+c.ar)}
  else if(a==='qm'){QZ.mode=b.dataset.k;render()}else if(a==='qn'){QZ.n=+b.dataset.k;render()}
  else if(a==='qstart'){if(S.cards.length<(QZ.mode==='spell'?1:4))return toast('أضف 4 كلمات على الأقل');QZ={...QZ,stage:'run',items:shuf(S.cards).slice(0,QZ.n),i:0,score:0,wrong:[]};render();if(QZ.mode==='spell')speak(QZ.items[0].en)}
  else if(a==='qreset'){QZ.stage='setup';render()}
@@ -310,8 +375,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='login')login();else if(a==='logout'){firebase.auth().signOut();toast('تم تسجيل الخروج')}else if(a==='sync')sync();
  else if(a==='dedupe'){if(b.dataset.s){const n=dedupe();render();toast(`تم حذف ${n} كلمة مكررة ✓`)}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}
  else if(a==='reset'){if(b.dataset.s){const dl={};S.cards.forEach(c=>dl[c.id]=Date.now());S=JSON.parse(JSON.stringify(DEF));S.del=dl;save();render();toast('تم المسح')}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}});
-document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}else if(e.target.id==='aik'){AIc.key=e.target.value;saveAI()}else if(e.target.id==='aim'){AIc.model=e.target.value;saveAI()}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click()});
+document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}else if(e.target.id==='ci'){CH.draft=e.target.value}else if(e.target.id==='ct'){CH.topic=e.target.value}else if(e.target.id==='aik'){AIc.key=e.target.value;saveAI()}else if(e.target.id==='aim'){AIc.model=e.target.value;saveAI()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click();if(e.key==='Enter'&&e.target.id==='ci'){const t=e.target.value.trim();if(t)csend(t)}});
 document.addEventListener('change',e=>{if(e.target.id!=='file')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let n=0;if(d.cards&&d.set){const ids=new Set(S.cards.map(c=>c.en.toLowerCase()));d.cards.forEach(c=>{if(!ids.has(c.en.toLowerCase())){S.cards.push(c);n++}});Object.assign(S.log,d.log||{})}else{(Array.isArray(d)?d:d.words||[]).forEach(w=>{const en=w.english||w.en,ar=w.arabic||w.ar;if(en&&ar&&!S.cards.some(c=>c.en.toLowerCase()===en.toLowerCase())){S.cards.push(newCard(en,ar,w.example||w.ex||'','',(w.topics&&w.topics[0])||w.topic||''));n++}})}save();render();toast(`تم استيراد ${n} كلمة`)}catch(x){toast('ملف غير صالح')}};r.readAsText(f)});
 /* ---------- Firebase ---------- */
 const FB=typeof firebase!=='undefined';
