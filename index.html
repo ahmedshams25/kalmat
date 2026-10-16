@@ -101,7 +101,7 @@ const store=()=>{try{localStorage.setItem('vocab.v2',JSON.stringify(S))}catch(e)
 let user=null,syncing=false,st='',stm=null;
 const save=()=>{store();dsync()};
 /* ---------- إعدادات الذكاء الاصطناعي (محلية فقط، لا تُزامَن) ---------- */
-let AIc={p:'anthropic',key:'',model:''};try{Object.assign(AIc,JSON.parse(localStorage.getItem('vocab.ai')))}catch(e){}
+let AIc={p:'anthropic',key:'',model:'',v:'device',vn:'Kore',tm:'',gkey:''};try{Object.assign(AIc,JSON.parse(localStorage.getItem('vocab.ai')))}catch(e){}
 const saveAI=()=>{try{localStorage.setItem('vocab.ai',JSON.stringify(AIc))}catch(e){}};
 const DM={anthropic:'claude-haiku-5-5',gemini:'gemini-3.5-flash-lite'};
 async function ai(prompt){const k=AIc.key.trim();if(!k)throw new Error('nokey');const m=AIc.model.trim()||DM[AIc.p];let r,d;
@@ -112,7 +112,19 @@ const lg=()=>S.log[today()]||(S.log[today()]={rev:0,new:0});
 const status=c=>!c.last?'new':c.ivl>=21?'mastered':'learning';
 const SL={new:'جديدة',learning:'قيد التعلّم',mastered:'متقنة'};
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
-function speak(t,r=.9){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=r;speechSynthesis.speak(u)}catch(e){}}
+function dspeak(t,r=.9){try{try{speechSynthesis.cancel()}catch(e){}const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=r;speechSynthesis.speak(u)}catch(e){}}
+const DTM='gemini-3.1-flash-tts-preview',SIL='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=',AU=new Audio(),TC=new Map();let sid=0,warned=0;
+document.addEventListener('click',()=>{if(!AU._u){AU._u=1;AU.src=SIL;AU.play().catch(()=>{})}},{once:true});
+const ttsKey=()=>(AIc.p==='gemini'?AIc.key:AIc.gkey||'').trim();
+function stopS(){sid++;try{speechSynthesis.cancel()}catch(e){}try{AU.pause()}catch(e){}}
+function pcmWav(b64,rate){const bin=atob(b64),n=bin.length,buf=new ArrayBuffer(44+n),v=new DataView(buf),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n,true);const u=new Uint8Array(buf,44);for(let i=0;i<n;i++)u[i]=bin.charCodeAt(i);return new Blob([buf],{type:'audio/wav'})}
+async function ttsFetch(text,slow){const k=ttsKey();if(!k)throw new Error('nokey');const m=(AIc.tm||'').trim()||DTM;
+ const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(m)+':generateContent?key='+encodeURIComponent(k),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:(slow?'Say slowly and clearly: ':'Say naturally and clearly: ')+text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:AIc.vn||'Kore'}}}}})});
+ const d=await r.json();if(d.error)throw new Error(d.error.message);const q=d.candidates[0].content.parts.find(x=>x.inlineData).inlineData;
+ return URL.createObjectURL(pcmWav(q.data,+((/rate=(\d+)/.exec(q.mimeType||''))||[])[1]||24000))}
+function speak(t,r=.9){stopS();if(AIc.v==='ai'&&ttsKey()){const id=sid,slow=r<.8,key=(AIc.vn||'Kore')+'|'+(AIc.tm||'')+'|'+slow+'|'+t;
+  (async()=>{try{let u=TC.get(key);if(!u){u=await ttsFetch(t,slow);TC.set(key,u);if(TC.size>80){const f=TC.keys().next().value;URL.revokeObjectURL(TC.get(f));TC.delete(f)}}if(id!==sid)return;AU.src=u;await AU.play()}catch(e){if(id!==sid)return;if(!warned){warned=1;toast('تعذّر الصوت الذكي ('+(e.message==='nokey'?'مفتاح Gemini غير موجود':e.message)+') — استخدمت صوت الجهاز')}dspeak(t,r)}})();return}
+ dspeak(t,r)}
 let tt;function toast(m,undo){const t=$('#toast');t.innerHTML=`<span>${esc(m)}</span>`+(undo?'<button data-a="undo">تراجع</button>':'');t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),undo?5000:2200)}
 function theme(){const t=S.set.theme;if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t)}
 const newCard=(en,ar,ex='',pos='',topic='')=>({id:Date.now()+Math.floor(Math.random()*1e6),en:en.trim(),ar:ar.trim(),ex:ex.trim(),pos,topic:topic.trim(),added:Date.now(),u:Date.now(),due:0,ivl:0,ease:2.5,reps:0,lapses:0,last:0});
@@ -180,8 +192,10 @@ function vQuiz(){if(QZ.stage==='setup'){return `<h1>اختبار</h1><p class="s
   body=opts.map(o=>`<button class="opt g" data-a="opt" data-v="${esc(o)}" style="${f==='en'?'direction:ltr':''}">${esc(o)}</button>`).join('')}
  return `<h1>سؤال ${QZ.i+1}/${QZ.items.length}</h1><div class="bar" style="margin:8px 0 16px"><i class="new" style="width:${QZ.i/QZ.items.length*100}%"></i></div><div class="g card" style="text-align:center"><div class="en" style="${m==='ar-en'?'direction:rtl':''}">${m==='en-ar'?esc(c.en):m==='ar-en'?esc(c.ar):'✍️'}</div></div>${body}`}
 function aiCard(){return `<div class="g card"><b>🤖 الذكاء الاصطناعي (مرحلة الفقرات)</b><p class="tip" style="margin:6px 0">لتوليد الفقرة تحتاج مفتاح API. يُحفظ على هذا الجهاز فقط ولا يُزامَن ولا يُصدَّر في النسخة الاحتياطية.</p><div class="seg">${[['anthropic','Claude'],['gemini','Gemini']].map(([k,l])=>`<button data-a="aip" data-k="${k}" class="${AIc.p===k?'on':''}">${l}</button>`).join('')}</div><label>مفتاح API</label><input id="aik" type="password" dir="ltr" autocomplete="off" value="${esc(AIc.key)}"><label>اسم النموذج (اختياري)</label><input id="aim" dir="ltr" placeholder="${DM[AIc.p]}" value="${esc(AIc.model)}"></div>`}
+function voiceCard(){const a=AIc.v==='ai';return `<div class="g card"><b>🔊 صوت النطق</b><p class="tip" style="margin:6px 0">اختر صوت الجهاز (سريع ومجاني)، أو صوت مولّد بالذكاء الاصطناعي من Gemini (أطبع وأقرب للبشري).</p><div class="seg">${[['device','صوت الجهاز'],['ai','صوت AI (Gemini)']].map(([k,l])=>`<button data-a="aiv" data-k="${k}" class="${AIc.v===k?'on':''}">${l}</button>`).join('')}</div>
+ ${a?`<label>الصوت</label><select id="avn">${['Kore','Puck','Zephyr','Charon','Fenrir','Aoede','Leda','Orus'].map(v=>`<option ${AIc.vn===v?'selected':''}>${v}</option>`).join('')}</select><label>نموذج الصوت (نموذج TTS، وليس نموذج النص)</label><input id="atm" dir="ltr" placeholder="${DTM}" value="${esc(AIc.tm)}">${AIc.p==='gemini'?'':`<label>مفتاح Gemini للصوت</label><input id="agk" type="password" dir="ltr" autocomplete="off" value="${esc(AIc.gkey)}">`}<button style="width:100%;margin-top:12px" data-a="ttstest">▶︎ تجربة الصوت</button><p class="tip" style="margin-top:8px">لو فشل الصوت الذكي (حد الاستخدام أو خطأ) يرجع تلقائيًا لصوت الجهاز.</p>`:''}</div>`}
 function vSet(){const s=S.set;return `<h1>الإعدادات</h1><div class="g card"><label>المظهر</label><div class="seg">${[['auto','تلقائي'],['light','فاتح'],['dark','داكن']].map(([k,l])=>`<button data-a="th" data-k="${k}" class="${s.theme===k?'on':''}">${l}</button>`).join('')}</div><label>كلمات جديدة يوميًا</label><input id="nl" type="number" min="1" max="50" value="${s.newLimit}"><label>نطق الكلمة تلقائيًا في المراجعة</label><div class="seg"><button data-a="auto" data-k="1" class="${s.auto?'on':''}">مفعّل</button><button data-a="auto" data-k="0" class="${!s.auto?'on':''}">متوقف</button></div></div>
- ${aiCard()}
+ ${aiCard()}${voiceCard()}
  <div class="g card"><b>نسخة احتياطية</b><p class="tip" style="margin:6px 0 12px">بياناتك محفوظة على هذا المتصفح. صدّر نسخة بشكل دوري، ويمكنك أيضًا استيراد ملف JSON من تطبيقك القديم.</p><div class="row"><button data-a="exp">تصدير JSON</button><button data-a="imp">استيراد ملف</button></div><input type="file" id="file" accept=".json" hidden></div>
  ${dupCard()}${syncCard()}<div class="g card"><button class="bad" style="width:100%" data-a="reset">مسح كل البيانات</button></div>`}
 function render(){nav();$('#v').innerHTML={today:vToday,lib:vLib,add:vAdd,quiz:vQuiz,chat:vChat,set:vSet}[T]();window.scrollTo(0,T==='chat'&&CH.stage==='chat'?1e9:0)}
@@ -263,13 +277,13 @@ function rspeak(){const sh=$('#sheet'),head=`<div class="wrap"><div class="row" 
  :`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'اقرأ الجملة بصوت واضح… اضغط للإيقاف':'اضغط على الميكروفون واقرأ الجملة'}</p><button style="width:100%" data-a="spnext">تخطي</button>`}</div>`}
 function mic(){if(!SR)return toast('المتصفح لا يدعم التعرف على الصوت — جرّب Chrome أو Safari');
  if(SP.on){try{rec.stop()}catch(e){}return}
- try{speechSynthesis.cancel()}catch(e){}
+ try{stopS()}catch(e){}
  SP.heard='';SP.r=null;let err='';rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
  rec.onresult=e=>{let t='';for(let k=0;k<e.results.length;k++)t+=e.results[k][0].transcript+' ';if(!SP)return;SP.heard=t.trim();const h=$('#heard');if(h)h.textContent=SP.heard||'…'};
  rec.onerror=e=>{err=e.error};
  rec.onend=()=>{if(!SP)return;SP.on=0;if(SP.heard){const r=evalS(SP.s[SP.i],SP.heard),p=SP.res[SP.i];SP.r=r;if(!p||r.acc>=p.acc)SP.res[SP.i]=r}else toast(err==='not-allowed'||err==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':'لم أسمع شيئًا — حاول مرة أخرى');rspeak()};
  try{rec.start();SP.on=1;rspeak()}catch(e){toast('تعذّر تشغيل الميكروفون')}}
-function closeSheet(){try{rec&&rec.abort()}catch(e){}try{speechSynthesis.cancel()}catch(e){}SP=null;SS=null;$('#sheet').classList.remove('open');render()}
+function closeSheet(){try{rec&&rec.abort()}catch(e){}try{stopS()}catch(e){}SP=null;SS=null;$('#sheet').classList.remove('open');render()}
 /* ---------- محادثة مع الذكاء الاصطناعي ---------- */
 const CH0=()=>({stage:'setup',topic:'',src:'learning',words:[],msgs:[],used:new Set(),draft:'',busy:0,on:0,err:'',auto:true});
 let CH=CH0(),crec=null;
@@ -310,7 +324,7 @@ async function csend(txt,re){if(CH.busy)return;if(txt&&!re){CH.msgs.push({r:'me'
  CH.busy=0;rchat()}
 function cmic(){if(!SR)return toast('المتصفح لا يدعم التعرف على الصوت — جرّب Chrome أو Safari');
  if(CH.on){try{crec.stop()}catch(e){}return}
- try{speechSynthesis.cancel()}catch(e){}
+ try{stopS()}catch(e){}
  crec=new SR();crec.lang='en-US';crec.interimResults=true;crec.continuous=false;
  crec.onresult=e=>{let t='';for(let k=0;k<e.results.length;k++)t+=e.results[k][0].transcript+' ';CH.draft=t.trim();const i=$('#ci');if(i)i.value=CH.draft};
  crec.onend=()=>{CH.on=0;const b=$('#cmic');if(b){b.classList.remove('on');b.innerHTML=ic('mic')}};
@@ -352,13 +366,15 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
    L.forEach(w=>{const en=String(w.en||'').trim(),ar=String(w.ar||'').trim(),k=en.toLowerCase();if(en&&ar&&!have.has(k)){have.add(k);S.cards.push(newCard(en,ar,String(w.ex||''),PO.includes(w.pos)?w.pos:'',String(w.topic||'')));n++}});
    save();toast(n?`تمت إضافة ${n} كلمة تلقائيًا ✓`:'كل الكلمات المقترحة موجودة عندك بالفعل');if(n){T='lib';F='all';Q='';render()}else{b.disabled=false;b.textContent=o}}
   catch(x){toast('تعذّر الاستخراج: '+x.message);b.disabled=false;b.textContent=o}}
+ else if(a==='aiv'){AIc.v=b.dataset.k;saveAI();render()}
+ else if(a==='ttstest'){warned=0;speak('Hello! This is how I will sound when I read your words.')}
  else if(a==='ctp'){CH.topic=b.dataset.t;rchat(1)}
  else if(a==='csrc'){CH.src=b.dataset.k;rchat(1)}
  else if(a==='cstart')cstart();
  else if(a==='csend'){const t=(($('#ci')||{}).value||'').trim();if(t)csend(t)}
  else if(a==='cmic')cmic();
  else if(a==='cretry'){const l=CH.msgs[CH.msgs.length-1];csend(l&&l.r==='me'?l.t:null,1)}
- else if(a==='cnew'){try{crec&&crec.abort()}catch(x){}try{speechSynthesis.cancel()}catch(x){}CH=Object.assign(CH0(),{topic:CH.topic,src:CH.src});rchat()}
+ else if(a==='cnew'){try{crec&&crec.abort()}catch(x){}try{stopS()}catch(x){}CH=Object.assign(CH0(),{topic:CH.topic,src:CH.src});rchat()}
  else if(a==='ctr'){const m=CH.msgs[+b.dataset.i];m.show=!m.show;rchat(1)}
  else if(a==='cspk')speak(plain(CH.msgs[+b.dataset.i].t));
  else if(a==='cauto'){CH.auto=!CH.auto;rchat(1)}
@@ -375,7 +391,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='login')login();else if(a==='logout'){firebase.auth().signOut();toast('تم تسجيل الخروج')}else if(a==='sync')sync();
  else if(a==='dedupe'){if(b.dataset.s){const n=dedupe();render();toast(`تم حذف ${n} كلمة مكررة ✓`)}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}
  else if(a==='reset'){if(b.dataset.s){const dl={};S.cards.forEach(c=>dl[c.id]=Date.now());S=JSON.parse(JSON.stringify(DEF));S.del=dl;save();render();toast('تم المسح')}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}});
-document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}else if(e.target.id==='ci'){CH.draft=e.target.value}else if(e.target.id==='ct'){CH.topic=e.target.value}else if(e.target.id==='aik'){AIc.key=e.target.value;saveAI()}else if(e.target.id==='aim'){AIc.model=e.target.value;saveAI()}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}else if(e.target.id==='avn'){AIc.vn=e.target.value;saveAI()}else if(e.target.id==='atm'){AIc.tm=e.target.value;saveAI()}else if(e.target.id==='agk'){AIc.gkey=e.target.value;saveAI()}else if(e.target.id==='ci'){CH.draft=e.target.value}else if(e.target.id==='ct'){CH.topic=e.target.value}else if(e.target.id==='aik'){AIc.key=e.target.value;saveAI()}else if(e.target.id==='aim'){AIc.model=e.target.value;saveAI()}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click();if(e.key==='Enter'&&e.target.id==='ci'){const t=e.target.value.trim();if(t)csend(t)}});
 document.addEventListener('change',e=>{if(e.target.id!=='file')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let n=0;if(d.cards&&d.set){const ids=new Set(S.cards.map(c=>c.en.toLowerCase()));d.cards.forEach(c=>{if(!ids.has(c.en.toLowerCase())){S.cards.push(c);n++}});Object.assign(S.log,d.log||{})}else{(Array.isArray(d)?d:d.words||[]).forEach(w=>{const en=w.english||w.en,ar=w.arabic||w.ar;if(en&&ar&&!S.cards.some(c=>c.en.toLowerCase()===en.toLowerCase())){S.cards.push(newCard(en,ar,w.example||w.ex||'','',(w.topics&&w.topics[0])||w.topic||''));n++}})}save();render();toast(`تم استيراد ${n} كلمة`)}catch(x){toast('ملف غير صالح')}};r.readAsText(f)});
 /* ---------- Firebase ---------- */
