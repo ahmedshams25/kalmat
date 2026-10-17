@@ -56,8 +56,8 @@ nav button.on{background:var(--glass2);color:var(--tint);font-weight:700}
 .gr button{display:flex;flex-direction:column;gap:2px;min-height:62px;font-weight:700;color:#fff;border:0}.gr small{font-weight:400;font-size:11px;opacity:.9}
 .opt{display:block;width:100%;text-align:center;margin-bottom:10px;min-height:54px;font-size:18px}
 .opt.right{background:var(--ok);color:#fff}.opt.wrong{background:var(--bad);color:#fff}
-#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-90px);padding:12px 20px;border-radius:20px;z-index:99;transition:transform .35s;font-size:15px;display:flex;gap:12px;align-items:center}
-#toast.on{transform:translate(-50%,0)}#toast button{min-height:30px;padding:0 10px;color:var(--tint);font-weight:700}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-250%);max-width:calc(100% - 28px);pointer-events:none;padding:12px 20px;border-radius:20px;z-index:99;transition:transform .35s;font-size:15px;display:flex;gap:12px;align-items:center}
+#toast.on{transform:translate(-50%,0);pointer-events:auto}#toast button{min-height:30px;padding:0 10px;color:var(--tint);font-weight:700}
 .tip{font-size:14px;line-height:1.7;color:var(--sub)}
 .step{display:flex;align-items:center;gap:12px;padding:10px 0}.step .t{flex:1;min-width:0}.step small{display:block;color:var(--sub);font-size:13px}
 .n{width:34px;height:34px;border-radius:50%;background:var(--glass2);display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}.n.d{background:var(--ok);color:#fff}
@@ -123,9 +123,9 @@ async function ttsFetch(text,slow){const k=ttsKey();if(!k)throw new Error('nokey
  const d=await r.json();if(d.error)throw new Error(d.error.message);const q=d.candidates[0].content.parts.find(x=>x.inlineData).inlineData;
  return URL.createObjectURL(pcmWav(q.data,+((/rate=(\d+)/.exec(q.mimeType||''))||[])[1]||24000))}
 function speak(t,r=.9){stopS();if(AIc.v==='ai'&&ttsKey()){const id=sid,slow=r<.8,key=(AIc.vn||'Kore')+'|'+(AIc.tm||'')+'|'+slow+'|'+t;
-  (async()=>{try{let u=TC.get(key);if(!u){u=await ttsFetch(t,slow);TC.set(key,u);if(TC.size>80){const f=TC.keys().next().value;URL.revokeObjectURL(TC.get(f));TC.delete(f)}}if(id!==sid)return;AU.src=u;await AU.play()}catch(e){if(id!==sid)return;if(!warned){warned=1;toast('تعذّر الصوت الذكي ('+(e.message==='nokey'?'مفتاح Gemini غير موجود':e.message)+') — استخدمت صوت الجهاز')}dspeak(t,r)}})();return}
+  (async()=>{try{let u=TC.get(key);if(!u){u=await ttsFetch(t,slow);TC.set(key,u);if(TC.size>80){const f=TC.keys().next().value;URL.revokeObjectURL(TC.get(f));TC.delete(f)}}if(id!==sid)return;AU.src=u;await AU.play()}catch(e){if(id!==sid)return;if(!warned){warned=1;const why=e.message==='nokey'?'مفتاح Gemini غير موجود':/quota|rate|429/i.test(e.message)?'تجاوزت حد الاستخدام':'تعذّر الاتصال';toast('الصوت الذكي غير متاح ('+why+') — صوت الجهاز',0,2500)}dspeak(t,r)}})();return}
  dspeak(t,r)}
-let tt;function toast(m,undo){const t=$('#toast');t.innerHTML=`<span>${esc(m)}</span>`+(undo?'<button data-a="undo">تراجع</button>':'');t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),undo?5000:2200)}
+let tt;function toast(m,undo,ms){const t=$('#toast');t.innerHTML=`<span>${esc(m)}</span>`+(undo?'<button data-a="undo">تراجع</button>':'');t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),ms||(undo?5000:2200))}
 function theme(){const t=S.set.theme;if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t)}
 const newCard=(en,ar,ex='',pos='',topic='')=>({id:Date.now()+Math.floor(Math.random()*1e6),en:en.trim(),ar:ar.trim(),ex:ex.trim(),pos,topic:topic.trim(),added:Date.now(),u:Date.now(),due:0,ivl:0,ease:2.5,reps:0,lapses:0,last:0});
 /* ---------- SRS ---------- */
@@ -211,7 +211,8 @@ function rs(){const sh=$('#sheet');if(SS.i>=SS.q.length){const W=(lg().words||[]
 function gradeIt(g){const id=SS.q[SS.i],k=S.cards.findIndex(c=>c.id===id),c=S.cards[k],l=lg();if(!c.last)l.new++;l.rev++;l.words=l.words||[];if(!l.words.includes(id))l.words.push(id);S.cards[k]=apply(c,g);if(g===0)SS.q.push(id);SS.i++;SS.shown=false;save();rs();if(S.set.auto&&SS.i<SS.q.length)speak(S.cards.find(x=>x.id===SS.q[SS.i]).en)}
 /* ---------- المرحلة 2: فقرة بالذكاء الاصطناعي ---------- */
 let ST={busy:0,err:'',gen:0,ar:0};
-const hl=t=>t.split(/(\*\*[^*]+\*\*)/).map(p=>{const m=/^\*\*([^*]+)\*\*$/.exec(p);const x=m?m[1]:p.replace(/\*\*/g,'');const h=x.split(/([A-Za-z][A-Za-z'’-]*)/).map((w,i)=>i%2?`<span data-a="spk" data-w="${esc(w)}">${esc(w)}</span>`:esc(w)).join('');return m?`<mark>${h}</mark>`:h}).join('');
+/* الضغط على أي كلمة في النص/المحادثة = نطق + ترجمة (data-a="wtr") */
+const hl=t=>t.split(/(\*\*[^*]+\*\*)/).map(p=>{const m=/^\*\*([^*]+)\*\*$/.exec(p);const x=m?m[1]:p.replace(/\*\*/g,'');const h=x.split(/([A-Za-z][A-Za-z'’-]*)/).map((w,i)=>i%2?`<span data-a="wtr" data-w="${esc(w)}">${esc(w)}</span>`:esc(w)).join('');return m?`<mark>${h}</mark>`:h}).join('');
 const plain=t=>t.replace(/\*\*/g,'');
 const wordCards=()=>{let cs=(lg().words||[]).map(id=>S.cards.find(c=>c.id===id)).filter(Boolean);return cs.length>12?shuf(cs).slice(0,12):cs};
 const mkPrompt=(cs,topic)=>`You are an English teacher for an Arabic-speaking learner (level B1-B2).
@@ -226,6 +227,22 @@ For each item return: "en" (base form, or the phrase as it appears), "ar" (short
 Return ONLY a valid JSON array, no markdown fences: [{"en":"","ar":"","ex":"","pos":"","topic":""}]
 TEXT:
 ${txt}`;
+/* ---------- نطق + ترجمة كلمة عند الضغط ---------- */
+const WT=new Map();
+async function wordTr(w,ctx){
+ speak(w);
+ const k=w.toLowerCase(),vs=[k,k.replace(/ies$/,'y'),k.replace(/(es|s|ed|d|ing)$/,''),k.replace(/(ing)$/,'e')];
+ const c=S.cards.find(x=>vs.includes(x.en.toLowerCase().trim()));
+ if(c)return toast(w+' = '+c.ar,0,4000);
+ if(WT.has(k))return toast(w+' = '+WT.get(k),0,4000);
+ if(!AIc.key.trim())return toast('أضف مفتاح API لترجمة الكلمات الجديدة',0,2500);
+ toast(w+' …',0,15000);
+ try{
+  const raw=await ai(`Translate the English word "${w}" into Arabic as used in this sentence: "${ctx.slice(0,300)}". Give a short meaning (1-3 Arabic words). Return ONLY valid JSON, no markdown fences: {"ar":""}`);
+  const j=JSON.parse(raw.slice(raw.indexOf('{'),raw.lastIndexOf('}')+1)),ar=String(j.ar||'').trim();
+  if(!ar)throw new Error('empty');
+  WT.set(k,ar);toast(w+' = '+ar,0,4000)
+ }catch(e){toast('تعذّرت الترجمة',0,2500)}}
 function setStory(raw,cs){let j;try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');j=JSON.parse(raw.slice(a,b+1))}catch(e){j={title:'Practice passage',topic:'',text:raw.trim(),ar:''}}
  if(!j.text||!String(j.text).trim())throw new Error('empty');
  lg().story={title:String(j.title||'Practice passage'),topic:String(j.topic||''),text:String(j.text).trim(),ar:String(j.ar||''),words:cs.map(c=>c.en),ts:Date.now()};delete lg().sp;save()}
@@ -236,7 +253,7 @@ function rstory(){const sh=$('#sheet'),l=lg(),s=l.story;
  if(ST.busy){sh.innerHTML=head+`<div class="g card" style="text-align:center;margin-top:16px;padding:40px 18px"><div style="font-size:44px">✍️</div><p class="sub" style="margin-top:10px">جاري كتابة فقرة بكلماتك…</p></div></div>`;return}
  if(s&&!ST.gen){sh.innerHTML=head+`<div class="g card" style="margin-top:16px"><div class="pos" style="text-align:right">${esc(s.topic)}</div><b style="font-size:22px;direction:ltr;display:block;text-align:left;margin:4px 0 8px">${esc(s.title)}</b><div class="pass">${hl(s.text)}</div>${ST.ar&&s.ar?`<div class="passar">${esc(s.ar)}</div>`:''}</div>
  <div class="row" style="margin-bottom:10px"><button data-a="spkall" data-r=".9">${ic('spk')} استمع</button><button data-a="spkall" data-r=".65">🐢 ببطء</button><button data-a="tr">${ST.ar?'إخفاء الترجمة':'الترجمة'}</button></div>
- <p class="tip" style="margin-bottom:12px">اضغط على أي كلمة لسماع نطقها. الكلمات المظلّلة هي كلمات اليوم.</p>
+ <p class="tip" style="margin-bottom:12px">اضغط على أي كلمة لسماع نطقها ومعرفة معناها. الكلمات المظلّلة هي كلمات اليوم.</p>
  <button class="pri big" data-a="speak">المرحلة ٣ ← اختبار النطق 🎤</button>
  <button style="width:100%;margin-top:10px" data-a="regen">فقرة جديدة بموضوع آخر</button></div>`;return}
  const cs=wordCards(),noKey=!AIc.key.trim();
@@ -355,6 +372,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='show'&&SS&&!SS.shown){SS.shown=true;rs()}
  else if(a==='gr')gradeIt(+b.dataset.g);
  else if(a==='spk')speak(b.dataset.w);
+ else if(a==='wtr')wordTr(b.dataset.w,(b.closest('.pass,.msg,.rd')||{}).textContent||'');
  else if(a==='story')story();
  else if(a==='gen')gen();
  else if(a==='regen'){ST.gen=1;ST.err='';rstory()}
