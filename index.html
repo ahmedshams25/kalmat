@@ -275,20 +275,25 @@ function rspeak(){const sh=$('#sheet'),head=`<div class="wrap"><div class="row" 
  ${SP.on||SP.heard?`<div class="g card" style="text-align:center;direction:ltr"><small class="tip">سمعتك:</small><div id="heard" style="font-size:17px">${esc(SP.heard)||'…'}</div></div>`:''}
  ${r?`<p style="text-align:center;font-size:22px;font-weight:800;margin-bottom:10px;color:var(--${r.acc>=85?'ok':r.acc>=60?'warn':'bad'})">${r.acc}%</p><p class="tip" style="text-align:center;margin-bottom:12px">${r.acc===100?'ممتاز! قرأتها بشكل صحيح.':'الكلمات الحمراء لم أسمعها بوضوح — اضغط عليها للاستماع ثم أعد المحاولة.'}</p><div class="row"><button data-a="sptry">إعادة</button><button class="pri" data-a="spnext">${SP.i+1>=SP.s.length?'النتيجة':'التالية'}</button></div>`
  :`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'اقرأ الجملة بصوت واضح… اضغط للإيقاف':'اضغط على الميكروفون واقرأ الجملة'}</p><button style="width:100%" data-a="spnext">تخطي</button>`}</div>`}
-let RC=null,RT=null;
-function abortListen(){const r=RC;RC=null;clearTimeout(RT);if(r){r.onresult=r.onerror=r.onend=null;try{r.abort()}catch(e){}}}
-function stopListen(){const r=RC;if(!r)return;if(!r.started){r.fin();return}try{r.stop()}catch(e){}setTimeout(()=>r.fin(),1500)}
+/* مُتعرّف صوت واحد يُعاد استخدامه (أثبت على iOS من إنشاء نسخة جديدة كل مرة) */
+let RI=null,RS=0,CB=null,PEND=0,RT=null;
+function mkRec(){const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+ r.onstart=()=>{RS=2};
+ r.onresult=e=>{if(!CB)return;let t='',f=false;for(let k=0;k<e.results.length;k++){t+=e.results[k][0].transcript+' ';f=e.results[k].isFinal}CB.got=t.trim();CB.onText(CB.got);if(f){try{r.stop()}catch(x){}}};
+ r.onerror=e=>{if(CB)CB.err=e.error};
+ r.onend=()=>{RS=0;clearTimeout(RT);if(PEND){PEND=0;go();return}recFin()};
+ return r}
+function recFin(){const c=CB;CB=null;clearTimeout(RT);if(c)c.onEnd(c.got,c.err)}
+function go(){if(!CB)return;
+ try{RI=RI||mkRec();RS=1;RI.start()}catch(e){RS=0;try{RI=mkRec();RS=1;RI.start()}catch(e2){RS=0;if(CB)CB.err='start';recFin();return}}
+ clearTimeout(RT);RT=setTimeout(()=>{try{RI.stop()}catch(e){}RT=setTimeout(()=>{if(CB){RS=0;RI=null;recFin()}},1500)},12000)}
 function listen(onText,onEnd){if(!SR){toast('المتصفح لا يدعم التعرف على الصوت — جرّب Chrome أو Safari');return false}
- stopS();abortListen();
- const r=new SR();RC=r;let err='',got='',done=0;
- r.lang='en-US';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
- r.fin=()=>{if(done)return;done=1;clearTimeout(RT);r.onresult=r.onerror=r.onend=null;try{r.abort()}catch(e){}if(RC===r)RC=null;onEnd(got,err)};
- r.onresult=e=>{let t='',f=false;for(let k=0;k<e.results.length;k++){t+=e.results[k][0].transcript+' ';f=e.results[k].isFinal}got=t.trim();onText(got);if(f){try{r.stop()}catch(x){}setTimeout(()=>r.fin(),1500)}};
- r.onerror=e=>{err=e.error};
- r.onend=()=>r.fin();
- setTimeout(()=>{if(done||RC!==r)return;try{r.start();r.started=1}catch(e){err='start';r.fin()}},350);
- clearTimeout(RT);RT=setTimeout(()=>{if(!r.started){r.fin();return}try{r.stop()}catch(e){}setTimeout(()=>r.fin(),1500)},12000);
+ stopS();CB={onText,onEnd,got:'',err:''};
+ if(RS){PEND=1;try{RI.abort()}catch(e){}setTimeout(()=>{if(PEND&&RS){RS=0;RI=null;PEND=0;go()}},1500)}
+ else setTimeout(go,400);
  return true}
+function stopListen(){if(!RI||!RS){recFin();return}try{RI.stop()}catch(e){}setTimeout(()=>{if(CB&&RS){RS=0;RI=null;recFin()}},1500)}
+function abortListen(){CB=null;PEND=0;clearTimeout(RT);if(RI&&RS){try{RI.abort()}catch(e){}}}
 const micMsg=e=>e==='not-allowed'||e==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':'لم أسمع شيئًا — حاول مرة أخرى';
 function mic(){if(SP.on){stopListen();return}
  SP.heard='';SP.r=null;SP.on=1;
