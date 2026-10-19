@@ -66,7 +66,7 @@ nav button.on{background:var(--glass2);color:var(--tint);font-weight:700}
 .pass mark,.rd mark{background:rgba(10,132,255,.2);color:inherit;border-radius:6px;padding:0 3px;font-weight:700}
 .passar{font-size:17px;line-height:1.9;margin-top:14px;padding-top:14px;border-top:1px solid var(--stroke)}
 .chip{display:inline-block;padding:4px 12px;margin:3px;border-radius:12px;background:var(--glass2);border:1px solid var(--stroke);font-size:14px;direction:ltr}
-.rd{font-size:24px;line-height:2;direction:ltr;text-align:left;font-weight:500}
+.rd{font-size:20px;line-height:2;direction:ltr;text-align:left;font-weight:500}
 .okw{color:var(--ok)}.missw{color:var(--bad);text-decoration:underline wavy}.tg{font-weight:800}
 .mic{width:84px;min-height:84px;border-radius:50%;padding:0;background:var(--tint);color:#fff;border:0;margin:0 auto;display:flex;align-items:center;justify-content:center}
 .mic svg.i{width:34px;height:34px}.mic.on{background:var(--bad);animation:pulse 1.2s infinite}
@@ -100,7 +100,7 @@ S=S||JSON.parse(JSON.stringify(DEF));S.del=S.del||{};
 const store=()=>{try{localStorage.setItem('vocab.v2',JSON.stringify(S))}catch(e){}};
 let user=null,syncing=false,st='',stm=null;
 const save=()=>{store();dsync()};
-/* ---------- إعدادات الذكاء الاصطناعي (محلية فقط، لا تُزامَن) ---------- */
+/* ---------- إعدادات الذكاء الاصطناعي ---------- */
 let AIc={p:'anthropic',key:'',model:'',v:'device',vn:'Kore',tm:'',gkey:''};try{Object.assign(AIc,JSON.parse(localStorage.getItem('vocab.ai')))}catch(e){}
 const saveAI=()=>{try{localStorage.setItem('vocab.ai',JSON.stringify(AIc))}catch(e){}};
 const DM={anthropic:'claude-haiku-5-5',gemini:'gemini-3.5-flash-lite'};
@@ -211,7 +211,6 @@ function rs(){const sh=$('#sheet');if(SS.i>=SS.q.length){const W=(lg().words||[]
 function gradeIt(g){const id=SS.q[SS.i],k=S.cards.findIndex(c=>c.id===id),c=S.cards[k],l=lg();if(!c.last)l.new++;l.rev++;l.words=l.words||[];if(!l.words.includes(id))l.words.push(id);S.cards[k]=apply(c,g);if(g===0)SS.q.push(id);SS.i++;SS.shown=false;save();rs();if(S.set.auto&&SS.i<SS.q.length)speak(S.cards.find(x=>x.id===SS.q[SS.i]).en)}
 /* ---------- المرحلة 2: فقرة بالذكاء الاصطناعي ---------- */
 let ST={busy:0,err:'',gen:0,ar:0};
-/* الضغط على أي كلمة في النص/المحادثة = نطق + ترجمة (data-a="wtr") */
 const hl=t=>t.split(/(\*\*[^*]+\*\*)/).map(p=>{const m=/^\*\*([^*]+)\*\*$/.exec(p);const x=m?m[1]:p.replace(/\*\*/g,'');const h=x.split(/([A-Za-z][A-Za-z'’-]*)/).map((w,i)=>i%2?`<span data-a="wtr" data-w="${esc(w)}">${esc(w)}</span>`:esc(w)).join('');return m?`<mark>${h}</mark>`:h}).join('');
 const plain=t=>t.replace(/\*\*/g,'');
 const wordCards=()=>{let cs=(lg().words||[]).map(id=>S.cards.find(c=>c.id===id)).filter(Boolean);return cs.length>12?shuf(cs).slice(0,12):cs};
@@ -227,7 +226,6 @@ For each item return: "en" (base form, or the phrase as it appears), "ar" (short
 Return ONLY a valid JSON array, no markdown fences: [{"en":"","ar":"","ex":"","pos":"","topic":""}]
 TEXT:
 ${txt}`;
-/* ---------- نطق + ترجمة كلمة عند الضغط ---------- */
 const WT=new Map();
 async function wordTr(w,ctx){
  speak(w);
@@ -263,11 +261,12 @@ function rstory(){const sh=$('#sheet'),l=lg(),s=l.story;
 async function gen(){const cs=wordCards();if(!cs.length)return toast('راجع بعض الكلمات أولًا');const topic=(($('#st-t')||{}).value||'').trim();ST.busy=1;ST.err='';rstory();
  try{setStory(await ai(mkPrompt(cs,topic)),cs);ST.gen=0}catch(e){ST.err=e.message==='nokey'?'أضف مفتاح API من الإعدادات':'تعذّر التوليد: '+e.message}
  ST.busy=0;rstory()}
-/* ---------- المرحلة 3: اختبار النطق والكتابة ---------- */
+
+/* ---------- المرحلة 3: اختبار النطق والكتابة (مُعدّلة للفقرة الكاملة والتسجيل المستمر) ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,SP=null;
 const norm=w=>w.toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9']/g,'');
 const toks=s=>{const o=[];s.split(/(\*\*[^*]+\*\*)/).forEach(p=>{const t=/^\*\*/.test(p);p.replace(/\*\*/g,'').split(/\s+/).forEach(w=>{const n=norm(w);if(n)o.push({w,n,t})})});return o};
-const sents=t=>plain(t).replace(/\n+/g,' ').length?t.replace(/\n+/g,' ').replace(/([.!?]["'”’)]*)\s+/g,'$1\u0001').split('\u0001').map(x=>x.trim()).filter(Boolean):[];
+
 function evalS(s,heard){const E=toks(s),H=heard.split(/\s+/).map(norm).filter(Boolean),n=E.length,m=H.length;
  const dp=Array.from({length:n+1},()=>new Array(m+1).fill(0));
  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)dp[i][j]=E[i].n===H[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
@@ -275,96 +274,110 @@ function evalS(s,heard){const E=toks(s),H=heard.split(/\s+/).map(norm).filter(Bo
  E.forEach(x=>{if(!x.ok)x.ok=false});
  return{E,acc:n?Math.round(E.filter(x=>x.ok).length/n*100):0}}
 const rtoks=E=>E.map(t=>`<span class="${t.ok?'okw':'missw'} ${t.t?'tg':''}" data-a="spk" data-w="${esc(t.w.replace(/[^A-Za-z']/g,''))}">${esc(t.w)}</span>`).join(' ');
-function startSpeak(){const s=lg().story;if(!s)return;openSheet();SP={s:sents(s.text),i:0,res:[],on:0,heard:'',r:null,saved:0,mode:'voice',inputVal:''};rspeak()}
-function missCards(){const W=lg().story.words.map(e=>S.cards.find(c=>c.en===e)).filter(Boolean),miss=SP.res.filter(Boolean).flatMap(r=>r.E.filter(x=>!x.ok&&x.t));
+
+function startSpeak(){const s=lg().story;if(!s)return;openSheet();SP={text:s.text,res:null,on:0,heard:'',saved:0,mode:'voice',inputVal:''};rspeak()}
+function missCards(){if(!SP||!SP.res)return [];const W=lg().story.words.map(e=>S.cards.find(c=>c.en===e)).filter(Boolean),miss=SP.res.E.filter(x=>!x.ok&&x.t);
  return W.filter(c=>c.en.split(/\s+/).map(norm).filter(t=>t.length>2).some(t=>miss.some(m=>m.n.startsWith(t.slice(0,Math.max(3,t.length-2))))))}
-function rspeak(){const sh=$('#sheet'),head=`<div class="wrap"><div class="row" style="gap:14px"><button class="ib" data-a="close" style="flex:none">${ic('x')}</button><div class="bar"><i class="new" style="width:${Math.min(SP.i,SP.s.length)/SP.s.length*100}%"></i></div></div>`;
- if(SP.i>=SP.s.length){const A=SP.res.filter(Boolean),avg=A.length?Math.round(A.reduce((a,r)=>a+r.acc,0)/A.length):0;
-  if(!SP.saved){SP.saved=1;lg().sp={acc:avg,at:Date.now()};save()}
-  const seen=new Set(),weak=A.flatMap(r=>r.E.filter(x=>!x.ok)).filter(x=>!seen.has(x.n)&&seen.add(x.n)),mc=missCards();
+
+function rspeak(){const sh=$('#sheet'),head=`<div class="wrap"><div class="row" style="gap:14px;margin-bottom:10px"><button class="ib" data-a="close" style="flex:none">${ic('x')}</button><b style="flex:1;font-size:18px">المرحلة ٣ — اختبار القراءة والنطق</b></div>`;
+ const r=SP.res;
+ const modeToggle=`<div class="seg" style="max-width:300px;margin:10px auto 0"><button data-a="spmode" data-m="voice" class="${SP.mode==='voice'?'on':''}">${ic('mic')} قراءة بالصوت</button><button data-a="spmode" data-m="write" class="${SP.mode==='write'?'on':''}">${ic('write')} كتابة</button></div>`;
+
+ if(r&&SP.saved){
+  const avg=r.acc,seen=new Set(),weak=r.E.filter(x=>!x.ok).filter(x=>!seen.has(x.n)&&seen.add(x.n)),mc=missCards();
   sh.innerHTML=head+`<div class="g card" style="text-align:center;margin-top:18px"><div style="font-size:54px;font-weight:800">${avg}%</div><p class="sub">${avg>=90?'أداء ممتاز! 🏆':avg>=70?'جيد جدًا 👏':'تدرّب أكثر وستتحسن 🚀'}</p>
+  <div class="rd" style="margin:16px 0;max-height:220px;overflow-y:auto;padding:12px;background:var(--glass2);border-radius:16px">${rtoks(r.E)}</div>
   ${weak.length?`<p class="tip">كلمات تحتاج تدريب (اضغط للاستماع):</p><div style="direction:ltr;margin:8px 0">${weak.map(x=>`<span class="chip missw" data-a="spk" data-w="${esc(x.w.replace(/[^A-Za-z']/g,''))}">${esc(x.w.replace(/[^A-Za-z']/g,''))}</span>`).join('')}</div>`:'<p class="tip">لا توجد أخطاء 👌</p>'}</div>
   ${mc.length?`<button class="pri big" style="margin-bottom:10px" data-a="requeue">أعد ${mc.length} كلمة مستهدفة للمراجعة</button>`:''}
-  <button style="width:100%;margin-bottom:10px" data-a="speak">إعادة الاختبار</button><button style="width:100%" data-a="close">تم</button></div>`;return}
- const s=SP.s[SP.i],r=SP.r;
- const modeToggle=`<div class="seg" style="max-width:300px;margin:10px auto 0"><button data-a="spmode" data-m="voice" class="${SP.mode==='voice'?'on':''}">${ic('mic')} قراءة بالصوت</button><button data-a="spmode" data-m="write" class="${SP.mode==='write'?'on':''}">${ic('write')} كتابة</button></div>`;
- sh.innerHTML=head+`<div class="fc g" style="min-height:220px"><div class="pos">جملة ${SP.i+1} / ${SP.s.length}</div><div class="rd">${r?rtoks(r.E):hl(s)}</div>
- <div class="row" style="justify-content:center"><button data-a="spks" data-r=".9">${ic('spk')} استمع</button><button data-a="spks" data-r=".65">🐢 ببطء</button></div>${modeToggle}</div>
- ${SP.mode==='voice'?(SP.on||SP.heard?`<div class="g card" style="text-align:center;direction:ltr"><small class="tip">سمعتك:</small><div id="heard" style="font-size:17px">${esc(SP.heard)||'…'}</div></div>`:'')
- :`<div class="g card" style="margin-bottom:12px"><label>اكتب الجملة بالإنجليزية:</label><input id="sp-input" dir="ltr" placeholder="Type the sentence here…" value="${esc(SP.inputVal||'')}" autocomplete="off" autocapitalize="none">${!r?`<button class="pri big" style="margin-top:10px" data-a="spwritecheck">تحقق من الكتابة</button>`:''}</div>`}
- ${r?`<p style="text-align:center;font-size:22px;font-weight:800;margin-bottom:10px;color:var(--${r.acc>=85?'ok':r.acc>=60?'warn':'bad'})">${r.acc}%</p><p class="tip" style="text-align:center;margin-bottom:12px">${r.acc===100?'ممتاز! الإجابة صحيحة.':'الكلمات الحمراء بها أخطاء — اضغط عليها للاستماع ثم أعد المحاولة.'}</p><div class="row"><button data-a="sptry">إعادة</button><button class="pri" data-a="spnext">${SP.i+1>=SP.s.length?'النتيجة':'التالية'}</button></div>`
- :(SP.mode==='voice'?`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'اقرأ الجملة بصوت واضح… اضغط للإيقاف':'اضغط على الميكروفون واقرأ الجملة'}</p><button style="width:100%" data-a="spnext">تخطي</button>`
- :`<button style="width:100%;margin-top:6px" data-a="spnext">تخطي</button>`)}</div>`}
-/* PATCHED-MIC-V2 */
-/* ===== محرك الميكروفون الجديد (iOS-safe) ===== */
-let CB=null,MR=null,MS=null,RI=null,RT=null,LID=0;
+  <button style="width:100%;margin-bottom:10px" data-a="speak">إعادة الاختبار</button><button style="width:100%" data-a="close">تم</button></div>`;return
+ }
+
+ sh.innerHTML=head+`<div class="fc g" style="min-height:220px"><div class="pos">الفقرة كاملة</div><div class="rd" style="max-height:280px;overflow-y:auto">${r?rtoks(r.E):hl(SP.text)}</div>
+ <div class="row" style="justify-content:center;margin-top:10px"><button data-a="spks" data-r=".9">${ic('spk')} استمع للفقرة</button><button data-a="spks" data-r=".65">🐢 ببطء</button></div>${modeToggle}</div>
+ ${SP.mode==='voice'?(SP.on||SP.heard?`<div class="g card" style="text-align:center;direction:ltr"><small class="tip">النص المسموع:</small><div id="heard" style="font-size:16px;max-height:120px;overflow-y:auto;margin-top:4px">${esc(SP.heard)||'…'}</div></div>`:'')
+ :`<div class="g card" style="margin-bottom:12px"><label>اكتب الفقرة كاملة بالإنجليزية:</label><textarea id="sp-input" dir="ltr" placeholder="Type the full passage here…" style="min-height:120px">${esc(SP.inputVal||'')}</textarea>${!r?`<button class="pri big" style="margin-top:10px" data-a="spwritecheck">تحقق من الكتابة</button>`:''}</div>`}
+ ${r?`<p style="text-align:center;font-size:22px;font-weight:800;margin:10px 0;color:var(--${r.acc>=85?'ok':r.acc>=60?'warn':'bad'})">${r.acc}%</p><p class="tip" style="text-align:center;margin-bottom:12px">${r.acc===100?'ممتاز! قراءة متقنة تماماً.':'الكلمات الحمراء بها أخطاء — اضغط عليها للاستماع ثم أعد المحاولة.'}</p><div class="row"><button data-a="sptry">إعادة المحاولة</button><button class="pri" data-a="spfinish">حفظ النتيجة</button></div>`
+ :(SP.mode==='voice'?`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'جاري التسجيل... اقرأ الفقرة كاملة ثم اضغط الزر للتوقف والتقييم':'اضغط على الميكروفون وابدأ قراءة الفقرة كاملة'}</p>`
+ :'')}`}
+
+function finishSpeak(){if(!SP||!SP.res)return;SP.saved=1;lg().sp={acc:SP.res.acc,at:Date.now()};save();rspeak()}
+
+/* ===== محرك الميكروفون المحدث (بدون توقف تلقائي) ===== */
+let CB=null,MR=null,MS=null,RI=null,LID=0;
 const gKey=()=>(AIc.p==='gemini'?AIc.key:AIc.gkey||'').trim();
 const useAIrec=()=>!!(window.MediaRecorder&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&gKey());
-function recFin(){const c=CB;CB=null;clearTimeout(RT);if(c)c.onEnd(c.got,c.err)}
-function killRec(){clearTimeout(RT);
+function recFin(){const c=CB;CB=null;if(c)c.onEnd(c.got,c.err)}
+function killRec(){
  if(RI){const r=RI;RI=null;r.onend=r.onresult=r.onerror=null;try{r.abort()}catch(e){}}
  if(MR){const m=MR;MR=null;m.onstop=null;try{if(m.state!=='inactive')m.stop()}catch(e){}}
  if(MS){MS.getTracks().forEach(t=>t.stop());MS=null}}
-/* تحويل التسجيل إلى WAV 16kHz mono (base64) — Gemini يقبله دائمًا */
+
 async function toWav(blob){const AC=window.AudioContext||window.webkitAudioContext,ac=new AC();
  try{const buf=await blob.arrayBuffer(),ab=await new Promise((ok,no)=>ac.decodeAudioData(buf,ok,no)),d=ab.getChannelData(0),sr=ab.sampleRate,n=Math.floor(d.length*16000/sr),o=new DataView(new ArrayBuffer(44+n*2)),w=(p,t)=>{for(let i=0;i<t.length;i++)o.setUint8(p+i,t.charCodeAt(i))};
   w(0,'RIFF');o.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');o.setUint32(16,16,true);o.setUint16(20,1,true);o.setUint16(22,1,true);o.setUint32(24,16000,true);o.setUint32(28,32000,true);o.setUint16(32,2,true);o.setUint16(34,16,true);w(36,'data');o.setUint32(40,n*2,true);
   for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,d[Math.floor(i*sr/16000)]));o.setInt16(44+i*2,s<0?s*32768:s*32767,true)}
   const u=new Uint8Array(o.buffer);let b='';for(let i=0;i<u.length;i+=8192)b+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(b)
  }finally{try{ac.close()}catch(e){}}}
+
 async function transcribe(blob){const data=await toWav(blob),m=(AIc.p==='gemini'&&AIc.model.trim())||DM.gemini;
  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(m)+':generateContent?key='+encodeURIComponent(gKey()),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Transcribe the English speech in this audio word for word, exactly as spoken. Do NOT correct grammar, pronunciation or missing words. Return only the transcript text, nothing else. If there is no clear speech, return an empty string.'},{inlineData:{mimeType:'audio/wav',data}}]}]})});
  const d=await r.json();if(d.error)throw new Error(d.error.message);
  const t=(((d.candidates||[])[0]||{}).content||{}).parts||[];
  return t.map(p=>p.text||'').join('').replace(/^["'\s]+|["'\s]+$/g,'').replace(/^\(?no (clear )?speech[^)]*\)?$/i,'')}
+
 async function recStart(id){
  try{const s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
   if(!CB||CB.id!==id){s.getTracks().forEach(t=>t.stop());return}
   MS=s;const mt=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'',ch=[],m=new MediaRecorder(s,mt?{mimeType:mt}:undefined);MR=m;
   m.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
-  m.onstop=async()=>{s.getTracks().forEach(t=>t.stop());if(MS===s)MS=null;if(MR===m)MR=null;clearTimeout(RT);
+  m.onstop=async()=>{s.getTracks().forEach(t=>t.stop());if(MS===s)MS=null;if(MR===m)MR=null;
    const c=CB;if(!c||c.id!==id)return;const bl=new Blob(ch,{type:m.mimeType||mt});
    if(bl.size<2500){c.err='no-speech';return recFin()}
-   c.onText('…');
+   c.onText('جاري تحليل الصوت ومعالجة الفقرة…');
    try{c.got=await transcribe(bl)}catch(e){c.err='net'}
    if(CB&&CB.id===id)recFin()};
-  m.start();RT=setTimeout(stopListen,15000)
+  m.start();
  }catch(e){if(!CB||CB.id!==id)return;
   if(SR&&e.name!=='NotAllowedError')return nat();
   CB.err=e.name==='NotAllowedError'?'not-allowed':'audio-capture';recFin()}}
-/* المحرك الاحتياطي: كائن جديد في كل مرة + مؤقّت أمان */
-function nat(){const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;RI=r;
- r.onresult=e=>{if(!CB||RI!==r)return;let t='',f=false;for(let k=0;k<e.results.length;k++){t+=e.results[k][0].transcript+' ';f=e.results[k].isFinal}CB.got=t.trim();CB.onText(CB.got);if(f){try{r.stop()}catch(x){}}};
+
+function nat(){const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=true;r.maxAlternatives=1;RI=r;
+ r.onresult=e=>{if(!CB||RI!==r)return;let t='';for(let k=0;k<e.results.length;k++){t+=e.results[k][0].transcript+' '}CB.got=t.trim();CB.onText(CB.got)};
  r.onerror=e=>{if(CB&&RI===r)CB.err=e.error};
  r.onend=()=>{if(RI!==r)return;RI=null;recFin()};
- try{r.start()}catch(e){RI=null;if(CB){CB.err='start';recFin()}return}
- RT=setTimeout(()=>{try{r.stop()}catch(e){}setTimeout(()=>{if(RI===r){RI=null;recFin()}},1500)},12000)}
+ try{r.start()}catch(e){RI=null;if(CB){CB.err='start';recFin()}}}
+
 function listen(onText,onEnd){const useAI=useAIrec();
  if(!useAI&&!SR){toast('المتصفح لا يدعم التعرف على الصوت — أضف مفتاح Gemini من الإعدادات');return false}
  stopS();killRec();const id=++LID;CB={id,onText,onEnd,got:'',err:''};
  setTimeout(()=>{if(!CB||CB.id!==id)return;useAI?recStart(id):nat()},450);
  return true}
+
 function stopListen(){
  if(MR&&MR.state==='recording'){try{MR.stop()}catch(e){recFin()}return}
- if(RI){const r=RI;try{r.stop()}catch(e){}setTimeout(()=>{if(RI===r){RI=null;recFin()}},1500);return}
+ if(RI){const r=RI;try{r.stop()}catch(e){}return}
  recFin()}
+
 function abortListen(){CB=null;killRec()}
 const micMsg=e=>e==='not-allowed'||e==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':e==='net'?'تعذّر التعرّف على الصوت — تحقق من الإنترنت ومفتاح Gemini':'لم أسمع شيئًا — حاول مرة أخرى';
+
 function mic(){if(SP.on){stopListen();return}
  SP.heard='';SP.r=null;SP.on=1;
- const ok=listen(t=>{if(!SP)return;SP.heard=t;const h=$('#heard');if(h)h.textContent=t||'…'},(t,err)=>{if(!SP)return;SP.on=0;SP.heard=t||'';if(t){const r=evalS(SP.s[SP.i],t),p=SP.res[SP.i];SP.r=r;if(!p||r.acc>=p.acc)SP.res[SP.i]=r}else toast(micMsg(err));rspeak()});
+ const ok=listen(t=>{if(!SP)return;SP.heard=t;const h=$('#heard');if(h)h.textContent=t||'…'},(t,err)=>{if(!SP)return;SP.on=0;SP.heard=t||'';if(t){const r=evalS(SP.text,t);SP.r=r}else toast(micMsg(err));rspeak()});
  if(!ok){SP.on=0;return}
  rspeak()}
+
 function checkWrite(){
  if(!SP)return;
  const inp=$('#sp-input');
  const txt=(inp?inp.value:'').trim();
- if(!txt)return toast('اكتب الجملة أولاً');
+ if(!txt)return toast('اكتب الفقرة أولاً');
  SP.inputVal=txt;
- const r=evalS(SP.s[SP.i],txt),p=SP.res[SP.i];
- SP.r=r;if(!p||r.acc>=p.acc)SP.res[SP.i]=r;
- rspeak()}
+ const r=evalS(SP.text,txt);
+ SP.r=r;rspeak()}
+
 function closeSheet(){abortListen();try{stopS()}catch(e){}SP=null;SS=null;$('#sheet').classList.remove('open');render()}
+
 /* ---------- محادثة مع الذكاء الاصطناعي ---------- */
 const CH0=()=>({stage:'setup',topic:'',src:'learning',words:[],msgs:[],used:new Set(),draft:'',busy:0,on:0,err:'',auto:true});
 let CH=CH0(),crec=null;
@@ -426,7 +439,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='cgen'){ST.gen=0;rstory()}
  else if(a==='tr'){ST.ar=!ST.ar;rstory()}
  else if(a==='spkall'){const s=lg().story;if(s)speak(plain(s.text),+b.dataset.r)}
- else if(a==='spks'&&SP)speak(plain(SP.s[SP.i]),+b.dataset.r);
+ else if(a==='spks'&&SP)speak(plain(SP.text),+b.dataset.r);
  else if(a==='cpp'){const cs=wordCards(),p=mkPrompt(cs,(($('#st-t')||{}).value||'').trim());try{await navigator.clipboard.writeText(p);toast('تم نسخ الطلب ✓')}catch(x){toast('تعذّر النسخ')}}
  else if(a==='stpaste'){const v=($('#st-m')||{}).value||'';if(!v.trim())return toast('الصق النص أولًا');try{setStory(v,wordCards());ST.gen=0;rstory()}catch(x){toast('النص غير صالح')}}
  else if(a==='speak')startSpeak();
@@ -434,7 +447,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='spmode'&&SP){SP.mode=b.dataset.m;SP.r=null;SP.heard='';rspeak()}
  else if(a==='spwritecheck'&&SP)checkWrite();
  else if(a==='sptry'&&SP){SP.r=null;SP.heard='';SP.inputVal='';rspeak()}
- else if(a==='spnext'&&SP){abortListen();SP.on=0;SP.i++;SP.r=null;SP.heard='';SP.inputVal='';rspeak()}
+ else if(a==='spfinish'&&SP)finishSpeak();
  else if(a==='requeue'&&SP){const ids=new Set(missCards().map(c=>c.id)),n=Date.now();S.cards=S.cards.map(c=>ids.has(c.id)?Object.assign({},c,{due:n,u:n}):c);save();toast('تمت إعادتها لمراجعة اليوم ✓');b.disabled=true}
  else if(a==='aip'){AIc.p=b.dataset.k;saveAI();render()}
  else if(a==='flt'){F=b.dataset.k;render()}
