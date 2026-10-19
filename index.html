@@ -92,7 +92,7 @@ nav button.on{background:var(--glass2);color:var(--tint);font-weight:700}
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const P={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lib:'<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/>',add:'<path d="M12 5v14M5 12h14"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/>',set:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',spk:'<path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',del:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="2"/>',chat:'<path d="M5 6h14a1 1 0 011 1v8a1 1 0 01-1 1h-7l-4 4v-4H5a1 1 0 01-1-1V7a1 1 0 011-1z"/>'};
+const P={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lib:'<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/>',add:'<path d="M12 5v14M5 12h14"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/>',set:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',spk:'<path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',del:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="2"/>',chat:'<path d="M5 6h14a1 1 0 011 1v8a1 1 0 01-1 1h-7l-4 4v-4H5a1 1 0 01-1-1V7a1 1 0 011-1z"/>',write:'<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>'};
 const ic=n=>`<svg class="i" viewBox="0 0 24 24">${P[n]}</svg>`;
 const DEF={cards:[],log:{},set:{newLimit:10,auto:true,theme:'auto'}};
 let S;try{S=JSON.parse(localStorage.getItem('vocab.v2'))}catch(e){}
@@ -166,7 +166,7 @@ function pipeCard(q){const l=lg(),W=(l.words||[]).length,d1=l.rev>0&&!q.length;
  return `<div class="g card"><b>رحلة اليوم — ٣ مراحل</b>
  <div class="step"><span class="n ${d1?'d':''}">${d1?'✓':'١'}</span><div class="t"><b>مراجعة الكلمات</b><small>${l.rev} بطاقة تمت مراجعتها</small></div></div>
  <div class="step"><span class="n ${l.story?'d':''}">${l.story?'✓':'٢'}</span><div class="t"><b>قراءة في سياق (AI)</b><small>${W?W+' كلمة جاهزة لفقرة اليوم':'راجع كلمات أولًا'}</small></div><button data-a="story" ${W?'':'disabled'}>${l.story?'افتح':'ابدأ'}</button></div>
- <div class="step"><span class="n ${l.sp?'d':''}">${l.sp?'✓':'٣'}</span><div class="t"><b>اختبار النطق</b><small>${l.sp?'آخر دقة: '+l.sp.acc+'%':'اقرأ الفقرة بصوتك'}</small></div><button data-a="speak" ${l.story?'':'disabled'}>${l.sp?'أعد':'ابدأ'}</button></div></div>`}
+ <div class="step"><span class="n ${l.sp?'d':''}">${l.sp?'✓':'٣'}</span><div class="t"><b>اختبار النطق / الكتابة</b><small>${l.sp?'آخر دقة: '+l.sp.acc+'%':'اقرأ أو اكتب الفقرة'}</small></div><button data-a="speak" ${l.story?'':'disabled'}>${l.sp?'أعد':'ابدأ'}</button></div></div>`}
 function vToday(){const q=queue(),l=lg(),m=S.cards.filter(c=>status(c)==='mastered').length,n=S.cards.filter(c=>!c.last).length,t=S.cards.length,lr=t-m-n;
  const tot=l.rev+q.length,p=tot?Math.round(l.rev/tot*100):0,C=2*Math.PI*42;
  return `<h1>أهلاً 👋</h1><p class="sub">${q.length?`عندك ${q.length} بطاقة جاهزة للمراجعة`:'خلّصت مراجعة اليوم — برافو!'}</p>
@@ -254,7 +254,7 @@ function rstory(){const sh=$('#sheet'),l=lg(),s=l.story;
  if(s&&!ST.gen){sh.innerHTML=head+`<div class="g card" style="margin-top:16px"><div class="pos" style="text-align:right">${esc(s.topic)}</div><b style="font-size:22px;direction:ltr;display:block;text-align:left;margin:4px 0 8px">${esc(s.title)}</b><div class="pass">${hl(s.text)}</div>${ST.ar&&s.ar?`<div class="passar">${esc(s.ar)}</div>`:''}</div>
  <div class="row" style="margin-bottom:10px"><button data-a="spkall" data-r=".9">${ic('spk')} استمع</button><button data-a="spkall" data-r=".65">🐢 ببطء</button><button data-a="tr">${ST.ar?'إخفاء الترجمة':'الترجمة'}</button></div>
  <p class="tip" style="margin-bottom:12px">اضغط على أي كلمة لسماع نطقها ومعرفة معناها. الكلمات المظلّلة هي كلمات اليوم.</p>
- <button class="pri big" data-a="speak">المرحلة ٣ ← اختبار النطق 🎤</button>
+ <button class="pri big" data-a="speak">المرحلة ٣ ← اختبار النطق / الكتابة 🎤✍️</button>
  <button style="width:100%;margin-top:10px" data-a="regen">فقرة جديدة بموضوع آخر</button></div>`;return}
  const cs=wordCards(),noKey=!AIc.key.trim();
  sh.innerHTML=head+`<div class="g card" style="margin-top:16px"><b>كلمات اليوم (${cs.length})</b><div style="margin:8px 0">${cs.map(c=>`<span class="chip">${esc(c.en)}</span>`).join('')}</div><label>موضوع الفقرة (اختياري)</label><input id="st-t" placeholder="مثلاً: مقابلة عمل، رحلة سفر، أخبار تقنية…">${ST.err?`<p class="tip" style="color:var(--bad);margin-top:10px;direction:ltr;text-align:left">${esc(ST.err)}</p>`:''}
@@ -263,7 +263,7 @@ function rstory(){const sh=$('#sheet'),l=lg(),s=l.story;
 async function gen(){const cs=wordCards();if(!cs.length)return toast('راجع بعض الكلمات أولًا');const topic=(($('#st-t')||{}).value||'').trim();ST.busy=1;ST.err='';rstory();
  try{setStory(await ai(mkPrompt(cs,topic)),cs);ST.gen=0}catch(e){ST.err=e.message==='nokey'?'أضف مفتاح API من الإعدادات':'تعذّر التوليد: '+e.message}
  ST.busy=0;rstory()}
-/* ---------- المرحلة 3: اختبار النطق ---------- */
+/* ---------- المرحلة 3: اختبار النطق والكتابة ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,SP=null;
 const norm=w=>w.toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9']/g,'');
 const toks=s=>{const o=[];s.split(/(\*\*[^*]+\*\*)/).forEach(p=>{const t=/^\*\*/.test(p);p.replace(/\*\*/g,'').split(/\s+/).forEach(w=>{const n=norm(w);if(n)o.push({w,n,t})})});return o};
@@ -275,23 +275,26 @@ function evalS(s,heard){const E=toks(s),H=heard.split(/\s+/).map(norm).filter(Bo
  E.forEach(x=>{if(!x.ok)x.ok=false});
  return{E,acc:n?Math.round(E.filter(x=>x.ok).length/n*100):0}}
 const rtoks=E=>E.map(t=>`<span class="${t.ok?'okw':'missw'} ${t.t?'tg':''}" data-a="spk" data-w="${esc(t.w.replace(/[^A-Za-z']/g,''))}">${esc(t.w)}</span>`).join(' ');
-function startSpeak(){const s=lg().story;if(!s)return;openSheet();SP={s:sents(s.text),i:0,res:[],on:0,heard:'',r:null,saved:0};rspeak()}
+function startSpeak(){const s=lg().story;if(!s)return;openSheet();SP={s:sents(s.text),i:0,res:[],on:0,heard:'',r:null,saved:0,mode:'voice',inputVal:''};rspeak()}
 function missCards(){const W=lg().story.words.map(e=>S.cards.find(c=>c.en===e)).filter(Boolean),miss=SP.res.filter(Boolean).flatMap(r=>r.E.filter(x=>!x.ok&&x.t));
  return W.filter(c=>c.en.split(/\s+/).map(norm).filter(t=>t.length>2).some(t=>miss.some(m=>m.n.startsWith(t.slice(0,Math.max(3,t.length-2))))))}
 function rspeak(){const sh=$('#sheet'),head=`<div class="wrap"><div class="row" style="gap:14px"><button class="ib" data-a="close" style="flex:none">${ic('x')}</button><div class="bar"><i class="new" style="width:${Math.min(SP.i,SP.s.length)/SP.s.length*100}%"></i></div></div>`;
  if(SP.i>=SP.s.length){const A=SP.res.filter(Boolean),avg=A.length?Math.round(A.reduce((a,r)=>a+r.acc,0)/A.length):0;
   if(!SP.saved){SP.saved=1;lg().sp={acc:avg,at:Date.now()};save()}
   const seen=new Set(),weak=A.flatMap(r=>r.E.filter(x=>!x.ok)).filter(x=>!seen.has(x.n)&&seen.add(x.n)),mc=missCards();
-  sh.innerHTML=head+`<div class="g card" style="text-align:center;margin-top:18px"><div style="font-size:54px;font-weight:800">${avg}%</div><p class="sub">${avg>=90?'نطق ممتاز! 🏆':avg>=70?'جيد جدًا 👏':'تدرّب أكثر وستتحسن 🚀'}</p>
+  sh.innerHTML=head+`<div class="g card" style="text-align:center;margin-top:18px"><div style="font-size:54px;font-weight:800">${avg}%</div><p class="sub">${avg>=90?'أداء ممتاز! 🏆':avg>=70?'جيد جدًا 👏':'تدرّب أكثر وستتحسن 🚀'}</p>
   ${weak.length?`<p class="tip">كلمات تحتاج تدريب (اضغط للاستماع):</p><div style="direction:ltr;margin:8px 0">${weak.map(x=>`<span class="chip missw" data-a="spk" data-w="${esc(x.w.replace(/[^A-Za-z']/g,''))}">${esc(x.w.replace(/[^A-Za-z']/g,''))}</span>`).join('')}</div>`:'<p class="tip">لا توجد أخطاء 👌</p>'}</div>
   ${mc.length?`<button class="pri big" style="margin-bottom:10px" data-a="requeue">أعد ${mc.length} كلمة مستهدفة للمراجعة</button>`:''}
   <button style="width:100%;margin-bottom:10px" data-a="speak">إعادة الاختبار</button><button style="width:100%" data-a="close">تم</button></div>`;return}
  const s=SP.s[SP.i],r=SP.r;
+ const modeToggle=`<div class="seg" style="max-width:300px;margin:10px auto 0"><button data-a="spmode" data-m="voice" class="${SP.mode==='voice'?'on':''}">${ic('mic')} قراءة بالصوت</button><button data-a="spmode" data-m="write" class="${SP.mode==='write'?'on':''}">${ic('write')} كتابة</button></div>`;
  sh.innerHTML=head+`<div class="fc g" style="min-height:220px"><div class="pos">جملة ${SP.i+1} / ${SP.s.length}</div><div class="rd">${r?rtoks(r.E):hl(s)}</div>
- <div class="row" style="justify-content:center"><button data-a="spks" data-r=".9">${ic('spk')} استمع</button><button data-a="spks" data-r=".65">🐢 ببطء</button></div></div>
- ${SP.on||SP.heard?`<div class="g card" style="text-align:center;direction:ltr"><small class="tip">سمعتك:</small><div id="heard" style="font-size:17px">${esc(SP.heard)||'…'}</div></div>`:''}
- ${r?`<p style="text-align:center;font-size:22px;font-weight:800;margin-bottom:10px;color:var(--${r.acc>=85?'ok':r.acc>=60?'warn':'bad'})">${r.acc}%</p><p class="tip" style="text-align:center;margin-bottom:12px">${r.acc===100?'ممتاز! قرأتها بشكل صحيح.':'الكلمات الحمراء لم أسمعها بوضوح — اضغط عليها للاستماع ثم أعد المحاولة.'}</p><div class="row"><button data-a="sptry">إعادة</button><button class="pri" data-a="spnext">${SP.i+1>=SP.s.length?'النتيجة':'التالية'}</button></div>`
- :`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'اقرأ الجملة بصوت واضح… اضغط للإيقاف':'اضغط على الميكروفون واقرأ الجملة'}</p><button style="width:100%" data-a="spnext">تخطي</button>`}</div>`}
+ <div class="row" style="justify-content:center"><button data-a="spks" data-r=".9">${ic('spk')} استمع</button><button data-a="spks" data-r=".65">🐢 ببطء</button></div>${modeToggle}</div>
+ ${SP.mode==='voice'?(SP.on||SP.heard?`<div class="g card" style="text-align:center;direction:ltr"><small class="tip">سمعتك:</small><div id="heard" style="font-size:17px">${esc(SP.heard)||'…'}</div></div>`:'')
+ :`<div class="g card" style="margin-bottom:12px"><label>اكتب الجملة بالإنجليزية:</label><input id="sp-input" dir="ltr" placeholder="Type the sentence here…" value="${esc(SP.inputVal||'')}" autocomplete="off" autocapitalize="none">${!r?`<button class="pri big" style="margin-top:10px" data-a="spwritecheck">تحقق من الكتابة</button>`:''}</div>`}
+ ${r?`<p style="text-align:center;font-size:22px;font-weight:800;margin-bottom:10px;color:var(--${r.acc>=85?'ok':r.acc>=60?'warn':'bad'})">${r.acc}%</p><p class="tip" style="text-align:center;margin-bottom:12px">${r.acc===100?'ممتاز! الإجابة صحيحة.':'الكلمات الحمراء بها أخطاء — اضغط عليها للاستماع ثم أعد المحاولة.'}</p><div class="row"><button data-a="sptry">إعادة</button><button class="pri" data-a="spnext">${SP.i+1>=SP.s.length?'النتيجة':'التالية'}</button></div>`
+ :(SP.mode==='voice'?`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'اقرأ الجملة بصوت واضح… اضغط للإيقاف':'اضغط على الميكروفون واقرأ الجملة'}</p><button style="width:100%" data-a="spnext">تخطي</button>`
+ :`<button style="width:100%;margin-top:6px" data-a="spnext">تخطي</button>`)}</div>`}
 /* PATCHED-MIC-V2 */
 /* ===== محرك الميكروفون الجديد (iOS-safe) ===== */
 let CB=null,MR=null,MS=null,RI=null,RT=null,LID=0;
@@ -351,6 +354,15 @@ function mic(){if(SP.on){stopListen();return}
  SP.heard='';SP.r=null;SP.on=1;
  const ok=listen(t=>{if(!SP)return;SP.heard=t;const h=$('#heard');if(h)h.textContent=t||'…'},(t,err)=>{if(!SP)return;SP.on=0;SP.heard=t||'';if(t){const r=evalS(SP.s[SP.i],t),p=SP.res[SP.i];SP.r=r;if(!p||r.acc>=p.acc)SP.res[SP.i]=r}else toast(micMsg(err));rspeak()});
  if(!ok){SP.on=0;return}
+ rspeak()}
+function checkWrite(){
+ if(!SP)return;
+ const inp=$('#sp-input');
+ const txt=(inp?inp.value:'').trim();
+ if(!txt)return toast('اكتب الجملة أولاً');
+ SP.inputVal=txt;
+ const r=evalS(SP.s[SP.i],txt),p=SP.res[SP.i];
+ SP.r=r;if(!p||r.acc>=p.acc)SP.res[SP.i]=r;
  rspeak()}
 function closeSheet(){abortListen();try{stopS()}catch(e){}SP=null;SS=null;$('#sheet').classList.remove('open');render()}
 /* ---------- محادثة مع الذكاء الاصطناعي ---------- */
@@ -419,8 +431,10 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='stpaste'){const v=($('#st-m')||{}).value||'';if(!v.trim())return toast('الصق النص أولًا');try{setStory(v,wordCards());ST.gen=0;rstory()}catch(x){toast('النص غير صالح')}}
  else if(a==='speak')startSpeak();
  else if(a==='mic'&&SP)mic();
- else if(a==='sptry'&&SP){SP.r=null;SP.heard='';rspeak()}
- else if(a==='spnext'&&SP){abortListen();SP.on=0;SP.i++;SP.r=null;SP.heard='';rspeak()}
+ else if(a==='spmode'&&SP){SP.mode=b.dataset.m;SP.r=null;SP.heard='';rspeak()}
+ else if(a==='spwritecheck'&&SP)checkWrite();
+ else if(a==='sptry'&&SP){SP.r=null;SP.heard='';SP.inputVal='';rspeak()}
+ else if(a==='spnext'&&SP){abortListen();SP.on=0;SP.i++;SP.r=null;SP.heard='';SP.inputVal='';rspeak()}
  else if(a==='requeue'&&SP){const ids=new Set(missCards().map(c=>c.id)),n=Date.now();S.cards=S.cards.map(c=>ids.has(c.id)?Object.assign({},c,{due:n,u:n}):c);save();toast('تمت إعادتها لمراجعة اليوم ✓');b.disabled=true}
  else if(a==='aip'){AIc.p=b.dataset.k;saveAI();render()}
  else if(a==='flt'){F=b.dataset.k;render()}
@@ -458,8 +472,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='login')login();else if(a==='logout'){firebase.auth().signOut();toast('تم تسجيل الخروج')}else if(a==='sync')sync();
  else if(a==='dedupe'){if(b.dataset.s){const n=dedupe();render();toast(`تم حذف ${n} كلمة مكررة ✓`)}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}
  else if(a==='reset'){if(b.dataset.s){const dl={};S.cards.forEach(c=>dl[c.id]=Date.now());S=JSON.parse(JSON.stringify(DEF));S.del=dl;save();render();toast('تم المسح')}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}});
-document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}else if(e.target.id==='avn'){AIc.vn=e.target.value;saveAI()}else if(e.target.id==='atm'){AIc.tm=e.target.value;saveAI()}else if(e.target.id==='agk'){AIc.gkey=e.target.value;saveAI()}else if(e.target.id==='ci'){CH.draft=e.target.value}else if(e.target.id==='ct'){CH.topic=e.target.value}else if(e.target.id==='aik'){AIc.key=e.target.value;saveAI()}else if(e.target.id==='aim'){AIc.model=e.target.value;saveAI()}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click();if(e.key==='Enter'&&e.target.id==='ci'){const t=e.target.value.trim();if(t)csend(t)}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}else if(e.target.id==='avn'){AIc.vn=e.target.value;saveAI()}else if(e.target.id==='atm'){AIc.tm=e.target.value;saveAI()}else if(e.target.id==='agk'){AIc.gkey=e.target.value;saveAI()}else if(e.target.id==='ci'){CH.draft=e.target.value}else if(e.target.id==='ct'){CH.topic=e.target.value}else if(e.target.id==='aik'){AIc.key=e.target.value;saveAI()}else if(e.target.id==='aim'){AIc.model=e.target.value;saveAI()}else if(e.target.id==='sp-input'&&SP){SP.inputVal=e.target.value}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click();if(e.key==='Enter'&&e.target.id==='sp-input'&&SP&&!SP.r)checkWrite();if(e.key==='Enter'&&e.target.id==='ci'){const t=e.target.value.trim();if(t)csend(t)}});
 document.addEventListener('change',e=>{if(e.target.id!=='file')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let n=0;if(d.cards&&d.set){const ids=new Set(S.cards.map(c=>c.en.toLowerCase()));d.cards.forEach(c=>{if(!ids.has(c.en.toLowerCase())){S.cards.push(c);n++}});Object.assign(S.log,d.log||{})}else{(Array.isArray(d)?d:d.words||[]).forEach(w=>{const en=w.english||w.en,ar=w.arabic||w.ar;if(en&&ar&&!S.cards.some(c=>c.en.toLowerCase()===en.toLowerCase())){S.cards.push(newCard(en,ar,w.example||w.ex||'','',(w.topics&&w.topics[0])||w.topic||''));n++}})}save();render();toast(`تم استيراد ${n} كلمة`)}catch(x){toast('ملف غير صالح')}};r.readAsText(f)});
 /* ---------- Firebase ---------- */
 const FB=typeof firebase!=='undefined';
