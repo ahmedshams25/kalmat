@@ -292,6 +292,7 @@ function rspeak(){const sh=$('#sheet'),head=`<div class="wrap"><div class="row" 
  ${SP.on||SP.heard?`<div class="g card" style="text-align:center;direction:ltr"><small class="tip">سمعتك:</small><div id="heard" style="font-size:17px">${esc(SP.heard)||'…'}</div></div>`:''}
  ${r?`<p style="text-align:center;font-size:22px;font-weight:800;margin-bottom:10px;color:var(--${r.acc>=85?'ok':r.acc>=60?'warn':'bad'})">${r.acc}%</p><p class="tip" style="text-align:center;margin-bottom:12px">${r.acc===100?'ممتاز! قرأتها بشكل صحيح.':'الكلمات الحمراء لم أسمعها بوضوح — اضغط عليها للاستماع ثم أعد المحاولة.'}</p><div class="row"><button data-a="sptry">إعادة</button><button class="pri" data-a="spnext">${SP.i+1>=SP.s.length?'النتيجة':'التالية'}</button></div>`
  :`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'اقرأ الجملة بصوت واضح… اضغط للإيقاف':'اضغط على الميكروفون واقرأ الجملة'}</p><button style="width:100%" data-a="spnext">تخطي</button>`}</div>`}
+/* PATCHED-MIC-V2 */
 /* ===== محرك الميكروفون الجديد (iOS-safe) ===== */
 let CB=null,MR=null,MS=null,RI=null,RT=null,LID=0;
 const gKey=()=>(AIc.p==='gemini'?AIc.key:AIc.gkey||'').trim();
@@ -346,7 +347,6 @@ function stopListen(){
  recFin()}
 function abortListen(){CB=null;killRec()}
 const micMsg=e=>e==='not-allowed'||e==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':e==='net'?'تعذّر التعرّف على الصوت — تحقق من الإنترنت ومفتاح Gemini':'لم أسمع شيئًا — حاول مرة أخرى';
-const micMsg=e=>e==='not-allowed'||e==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':'لم أسمع شيئًا — حاول مرة أخرى';
 function mic(){if(SP.on){stopListen();return}
  SP.heard='';SP.r=null;SP.on=1;
  const ok=listen(t=>{if(!SP)return;SP.heard=t;const h=$('#heard');if(h)h.textContent=t||'…'},(t,err)=>{if(!SP)return;SP.on=0;SP.heard=t||'';if(t){const r=evalS(SP.s[SP.i],t),p=SP.res[SP.i];SP.r=r;if(!p||r.acc>=p.acc)SP.res[SP.i]=r}else toast(micMsg(err));rspeak()});
