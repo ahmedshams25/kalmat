@@ -292,25 +292,60 @@ function rspeak(){const sh=$('#sheet'),head=`<div class="wrap"><div class="row" 
  ${SP.on||SP.heard?`<div class="g card" style="text-align:center;direction:ltr"><small class="tip">سمعتك:</small><div id="heard" style="font-size:17px">${esc(SP.heard)||'…'}</div></div>`:''}
  ${r?`<p style="text-align:center;font-size:22px;font-weight:800;margin-bottom:10px;color:var(--${r.acc>=85?'ok':r.acc>=60?'warn':'bad'})">${r.acc}%</p><p class="tip" style="text-align:center;margin-bottom:12px">${r.acc===100?'ممتاز! قرأتها بشكل صحيح.':'الكلمات الحمراء لم أسمعها بوضوح — اضغط عليها للاستماع ثم أعد المحاولة.'}</p><div class="row"><button data-a="sptry">إعادة</button><button class="pri" data-a="spnext">${SP.i+1>=SP.s.length?'النتيجة':'التالية'}</button></div>`
  :`<button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="text-align:center;margin:10px 0">${SP.on?'اقرأ الجملة بصوت واضح… اضغط للإيقاف':'اضغط على الميكروفون واقرأ الجملة'}</p><button style="width:100%" data-a="spnext">تخطي</button>`}</div>`}
-/* مُتعرّف صوت واحد يُعاد استخدامه (أثبت على iOS من إنشاء نسخة جديدة كل مرة) */
-let RI=null,RS=0,CB=null,PEND=0,RT=null;
-function mkRec(){const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
- r.onstart=()=>{RS=2};
- r.onresult=e=>{if(!CB)return;let t='',f=false;for(let k=0;k<e.results.length;k++){t+=e.results[k][0].transcript+' ';f=e.results[k].isFinal}CB.got=t.trim();CB.onText(CB.got);if(f){try{r.stop()}catch(x){}}};
- r.onerror=e=>{if(CB)CB.err=e.error};
- r.onend=()=>{RS=0;clearTimeout(RT);if(PEND){PEND=0;go();return}recFin()};
- return r}
+/* ===== محرك الميكروفون الجديد (iOS-safe) ===== */
+let CB=null,MR=null,MS=null,RI=null,RT=null,LID=0;
+const gKey=()=>(AIc.p==='gemini'?AIc.key:AIc.gkey||'').trim();
+const useAIrec=()=>!!(window.MediaRecorder&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&gKey());
 function recFin(){const c=CB;CB=null;clearTimeout(RT);if(c)c.onEnd(c.got,c.err)}
-function go(){if(!CB)return;
- try{RI=RI||mkRec();RS=1;RI.start()}catch(e){RS=0;try{RI=mkRec();RS=1;RI.start()}catch(e2){RS=0;if(CB)CB.err='start';recFin();return}}
- clearTimeout(RT);RT=setTimeout(()=>{try{RI.stop()}catch(e){}RT=setTimeout(()=>{if(CB){RS=0;RI=null;recFin()}},1500)},12000)}
-function listen(onText,onEnd){if(!SR){toast('المتصفح لا يدعم التعرف على الصوت — جرّب Chrome أو Safari');return false}
- stopS();CB={onText,onEnd,got:'',err:''};
- if(RS){PEND=1;try{RI.abort()}catch(e){}setTimeout(()=>{if(PEND&&RS){RS=0;RI=null;PEND=0;go()}},1500)}
- else setTimeout(go,400);
+function killRec(){clearTimeout(RT);
+ if(RI){const r=RI;RI=null;r.onend=r.onresult=r.onerror=null;try{r.abort()}catch(e){}}
+ if(MR){const m=MR;MR=null;m.onstop=null;try{if(m.state!=='inactive')m.stop()}catch(e){}}
+ if(MS){MS.getTracks().forEach(t=>t.stop());MS=null}}
+/* تحويل التسجيل إلى WAV 16kHz mono (base64) — Gemini يقبله دائمًا */
+async function toWav(blob){const AC=window.AudioContext||window.webkitAudioContext,ac=new AC();
+ try{const buf=await blob.arrayBuffer(),ab=await new Promise((ok,no)=>ac.decodeAudioData(buf,ok,no)),d=ab.getChannelData(0),sr=ab.sampleRate,n=Math.floor(d.length*16000/sr),o=new DataView(new ArrayBuffer(44+n*2)),w=(p,t)=>{for(let i=0;i<t.length;i++)o.setUint8(p+i,t.charCodeAt(i))};
+  w(0,'RIFF');o.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');o.setUint32(16,16,true);o.setUint16(20,1,true);o.setUint16(22,1,true);o.setUint32(24,16000,true);o.setUint32(28,32000,true);o.setUint16(32,2,true);o.setUint16(34,16,true);w(36,'data');o.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,d[Math.floor(i*sr/16000)]));o.setInt16(44+i*2,s<0?s*32768:s*32767,true)}
+  const u=new Uint8Array(o.buffer);let b='';for(let i=0;i<u.length;i+=8192)b+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(b)
+ }finally{try{ac.close()}catch(e){}}}
+async function transcribe(blob){const data=await toWav(blob),m=(AIc.p==='gemini'&&AIc.model.trim())||DM.gemini;
+ const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(m)+':generateContent?key='+encodeURIComponent(gKey()),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Transcribe the English speech in this audio word for word, exactly as spoken. Do NOT correct grammar, pronunciation or missing words. Return only the transcript text, nothing else. If there is no clear speech, return an empty string.'},{inlineData:{mimeType:'audio/wav',data}}]}]})});
+ const d=await r.json();if(d.error)throw new Error(d.error.message);
+ const t=(((d.candidates||[])[0]||{}).content||{}).parts||[];
+ return t.map(p=>p.text||'').join('').replace(/^["'\s]+|["'\s]+$/g,'').replace(/^\(?no (clear )?speech[^)]*\)?$/i,'')}
+async function recStart(id){
+ try{const s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
+  if(!CB||CB.id!==id){s.getTracks().forEach(t=>t.stop());return}
+  MS=s;const mt=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'',ch=[],m=new MediaRecorder(s,mt?{mimeType:mt}:undefined);MR=m;
+  m.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
+  m.onstop=async()=>{s.getTracks().forEach(t=>t.stop());if(MS===s)MS=null;if(MR===m)MR=null;clearTimeout(RT);
+   const c=CB;if(!c||c.id!==id)return;const bl=new Blob(ch,{type:m.mimeType||mt});
+   if(bl.size<2500){c.err='no-speech';return recFin()}
+   c.onText('…');
+   try{c.got=await transcribe(bl)}catch(e){c.err='net'}
+   if(CB&&CB.id===id)recFin()};
+  m.start();RT=setTimeout(stopListen,15000)
+ }catch(e){if(!CB||CB.id!==id)return;
+  if(SR&&e.name!=='NotAllowedError')return nat();
+  CB.err=e.name==='NotAllowedError'?'not-allowed':'audio-capture';recFin()}}
+/* المحرك الاحتياطي: كائن جديد في كل مرة + مؤقّت أمان */
+function nat(){const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;RI=r;
+ r.onresult=e=>{if(!CB||RI!==r)return;let t='',f=false;for(let k=0;k<e.results.length;k++){t+=e.results[k][0].transcript+' ';f=e.results[k].isFinal}CB.got=t.trim();CB.onText(CB.got);if(f){try{r.stop()}catch(x){}}};
+ r.onerror=e=>{if(CB&&RI===r)CB.err=e.error};
+ r.onend=()=>{if(RI!==r)return;RI=null;recFin()};
+ try{r.start()}catch(e){RI=null;if(CB){CB.err='start';recFin()}return}
+ RT=setTimeout(()=>{try{r.stop()}catch(e){}setTimeout(()=>{if(RI===r){RI=null;recFin()}},1500)},12000)}
+function listen(onText,onEnd){const useAI=useAIrec();
+ if(!useAI&&!SR){toast('المتصفح لا يدعم التعرف على الصوت — أضف مفتاح Gemini من الإعدادات');return false}
+ stopS();killRec();const id=++LID;CB={id,onText,onEnd,got:'',err:''};
+ setTimeout(()=>{if(!CB||CB.id!==id)return;useAI?recStart(id):nat()},450);
  return true}
-function stopListen(){if(!RI||!RS){recFin();return}try{RI.stop()}catch(e){}setTimeout(()=>{if(CB&&RS){RS=0;RI=null;recFin()}},1500)}
-function abortListen(){CB=null;PEND=0;clearTimeout(RT);if(RI&&RS){try{RI.abort()}catch(e){}}}
+function stopListen(){
+ if(MR&&MR.state==='recording'){try{MR.stop()}catch(e){recFin()}return}
+ if(RI){const r=RI;try{r.stop()}catch(e){}setTimeout(()=>{if(RI===r){RI=null;recFin()}},1500);return}
+ recFin()}
+function abortListen(){CB=null;killRec()}
+const micMsg=e=>e==='not-allowed'||e==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':e==='net'?'تعذّر التعرّف على الصوت — تحقق من الإنترنت ومفتاح Gemini':'لم أسمع شيئًا — حاول مرة أخرى';
 const micMsg=e=>e==='not-allowed'||e==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':'لم أسمع شيئًا — حاول مرة أخرى';
 function mic(){if(SP.on){stopListen();return}
  SP.heard='';SP.r=null;SP.on=1;
