@@ -472,6 +472,19 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='login')login();else if(a==='logout'){firebase.auth().signOut();toast('تم تسجيل الخروج')}else if(a==='sync')sync();
  else if(a==='dedupe'){if(b.dataset.s){const n=dedupe();render();toast(`تم حذف ${n} كلمة مكررة ✓`)}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}
  else if(a==='reset'){if(b.dataset.s){const dl={};S.cards.forEach(c=>dl[c.id]=Date.now());S=JSON.parse(JSON.stringify(DEF));S.del=dl;save();render();toast('تم المسح')}else{b.dataset.s=1;b.textContent='اضغط مرة أخرى للتأكيد'}}});
+
+document.addEventListener('focusin', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const sheet = document.getElementById('sheet');
+    const sheetScroll = sheet ? sheet.scrollTop : 0;
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollTop);
+      if (sheet) sheet.scrollTop = sheetScroll;
+    });
+  }
+});
+
 document.addEventListener('input',e=>{if(e.target.id==='q'){Q=e.target.value;const p=e.target.selectionStart;render();const i=$('#q');i.focus();i.setSelectionRange(p,p)}else if(e.target.id==='nl'){S.set.newLimit=Math.max(1,Math.min(50,+e.target.value||10));save()}else if(e.target.id==='avn'){AIc.vn=e.target.value;saveAI()}else if(e.target.id==='atm'){AIc.tm=e.target.value;saveAI()}else if(e.target.id==='agk'){AIc.gkey=e.target.value;saveAI()}else if(e.target.id==='ci'){CH.draft=e.target.value}else if(e.target.id==='ct'){CH.topic=e.target.value}else if(e.target.id==='aik'){AIc.key=e.target.value;saveAI()}else if(e.target.id==='aim'){AIc.model=e.target.value;saveAI()}else if(e.target.id==='sp-input'&&SP){SP.inputVal=e.target.value}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click();if(e.key==='Enter'&&e.target.id==='sp-input'&&SP&&!SP.r)checkWrite();if(e.key==='Enter'&&e.target.id==='ci'){const t=e.target.value.trim();if(t)csend(t)}});
 document.addEventListener('change',e=>{if(e.target.id!=='file')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let n=0;if(d.cards&&d.set){const ids=new Set(S.cards.map(c=>c.en.toLowerCase()));d.cards.forEach(c=>{if(!ids.has(c.en.toLowerCase())){S.cards.push(c);n++}});Object.assign(S.log,d.log||{})}else{(Array.isArray(d)?d:d.words||[]).forEach(w=>{const en=w.english||w.en,ar=w.arabic||w.ar;if(en&&ar&&!S.cards.some(c=>c.en.toLowerCase()===en.toLowerCase())){S.cards.push(newCard(en,ar,w.example||w.ex||'','',(w.topics&&w.topics[0])||w.topic||''));n++}})}save();render();toast(`تم استيراد ${n} كلمة`)}catch(x){toast('ملف غير صالح')}};r.readAsText(f)});
