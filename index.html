@@ -238,7 +238,7 @@ function sphCard(){const h=S.sph||[];if(!h.length)return '';const sc=h.map(x=>x.
 /* ---------- المرحلة 1 + زر استعراض كلمات اليوم ---------- */
 function pipeCard(q){const l=lg(),W=(l.words||[]).length,d1=l.rev>0&&!q.length;
  return `<div class="g card"><b>رحلة اليوم — ٣ مراحل</b>
- <div class="step"><span class="n ${d1?'d':''}">${d1?'✓':'١'}</span><div class="t"><b>مراجعة الكلمات</b><small>${l.rev} بطاقة تمت مراجعتها</small></div><button data-a="rvlist" ${W?'':'disabled'}>${ic('lib')} استعرض</button></div>
+ <div class="step"><span class="n ${d1?'d':''}">${d1?'✓':'١'}</span><div class="t"><b>مراجعة الكلمات</b><small>${l.rev} بطاقة تمت مراجعتها</small></div><button data-a="rvlist" ${W?'':'disabled'}>عرض</button></div>
  <div class="step"><span class="n ${l.story?'d':''}">${l.story?'✓':'٢'}</span><div class="t"><b>قراءة في سياق (AI)</b><small>${W?W+' كلمة جاهزة لفقرة اليوم':'راجع كلمات أولًا'}</small></div><button data-a="story" ${W?'':'disabled'}>${l.story?'افتح':'ابدأ'}</button></div>
  <div class="step"><span class="n ${l.sp?'d':''}">${l.sp?'✓':'٣'}</span><div class="t"><b>اختبار النطق</b><small>${l.sp?'آخر تقييم: '+l.sp.acc+'%':'اقرأ الفقرة كاملة بصوتك'}</small></div><button data-a="speak" ${l.story?'':'disabled'}>${l.sp?'أعد':'ابدأ'}</button></div></div>`}
 /* ---------- مستوى الإتقان: إحصائيات حيّة ---------- */
