@@ -150,6 +150,14 @@ nav button{transition:background .25s,color .25s}
 .spark .ar{animation:arfade .8s .45s both}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes arfade{from{opacity:0}}
+/* ---------- هوية المستخدم وتحديد الكلمات وظهور بالسكرول ---------- */
+.uhdr{display:flex;align-items:center;gap:12px;margin:14px 4px 6px}
+.ava{width:48px;height:48px;border-radius:50%;overflow:hidden;flex:none;background:var(--glass2);border:1px solid var(--stroke);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--sub)}
+.ava img{width:100%;height:100%;object-fit:cover;display:block}
+.ava svg.i{width:22px;height:22px}
+.chip.off{opacity:.32;text-decoration:line-through}
+.rv{opacity:0;transform:translateY(14px);transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1);transition-delay:var(--rd,0s)}
+.rv.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -164,7 +172,7 @@ nav button{transition:background .25s,color .25s}
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
-const P={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lib:'<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/>',add:'<path d="M12 5v14M5 12h14"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/>',set:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',spk:'<path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',del:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="2"/>',chat:'<path d="M5 6h14a1 1 0 011 1v8a1 1 0 01-1 1h-7l-4 4v-4H5a1 1 0 01-1-1V7a1 1 0 011-1z"/>',ai:'<path d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>',play:'<path d="M8 6l10 6-10 6z"/>',dl:'<path d="M12 4v9M8 9l4 4 4-4M5 19h14"/>',up:'<path d="M12 19v-9M8 14l4-4 4 4M5 4h14"/>',syn:'<path d="M20 12a8 8 0 01-13.6 5.7M4 12a8 8 0 0113.6-5.7"/><path d="M20 5v4h-4M4 19v-4h4"/>',pen:'<path d="M4 20l4.5-1L19 8.5a2 2 0 00-3-3L5.5 16z"/>',gauge:'<path d="M5 16a7 7 0 1114 0"/><path d="M12 16l3.5-4.5"/>',route:'<circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6h7a4 4 0 010 8H10a4 4 0 000 8h7"/>'};
+const P={today:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lib:'<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 10h8M8 14h5"/>',add:'<path d="M12 5v14M5 12h14"/>',quiz:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 115 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/>',set:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',spk:'<path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',del:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="2"/>',chat:'<path d="M5 6h14a1 1 0 011 1v8a1 1 0 01-1 1h-7l-4 4v-4H5a1 1 0 01-1-1V7a1 1 0 011-1z"/>',ai:'<path d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>',play:'<path d="M8 6l10 6-10 6z"/>',dl:'<path d="M12 4v9M8 9l4 4 4-4M5 19h14"/>',up:'<path d="M12 19v-9M8 14l4-4 4 4M5 4h14"/>',syn:'<path d="M20 12a8 8 0 01-13.6 5.7M4 12a8 8 0 0113.6-5.7"/><path d="M20 5v4h-4M4 19v-4h4"/>',pen:'<path d="M4 20l4.5-1L19 8.5a2 2 0 00-3-3L5.5 16z"/>',gauge:'<path d="M5 16a7 7 0 1114 0"/><path d="M12 16l3.5-4.5"/>',route:'<circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6h7a4 4 0 010 8H10a4 4 0 000 8h7"/>',usr:'<circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0113 0"/>'};
 const ic=n=>`<svg class="i" viewBox="0 0 24 24">${P[n]}</svg>`;
 const DEF={cards:[],log:{},sph:[],set:{newLimit:10,auto:true,theme:'dark'}};
 let S;try{S=JSON.parse(localStorage.getItem('vocab.v2'))}catch(e){}
@@ -212,6 +220,9 @@ function applyBg(){BGV.forEach(v=>RT_.removeProperty(v));
  else if(BG.t==='image'&&BG.img){const d=BG.dim/100;RT_.setProperty('--bgl',`linear-gradient(rgba(0,0,0,${d}),rgba(0,0,0,${d})),url("${BG.img}") center/cover no-repeat`);RT_.setProperty('--bgo','1');RT_.setProperty('--bg','#000');tone(BG.lum*(1-d)<.5)}}
 function bgFile(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);const t=document.createElement('canvas');t.width=t.height=16;const tx=t.getContext('2d');tx.drawImage(im,0,0,16,16);const d=tx.getImageData(0,0,16,16).data;let s=0;for(let i=0;i<d.length;i+=4)s+=(.299*d[i]+.587*d[i+1]+.114*d[i+2])/255;BG.lum=s/256;BG.img=c.toDataURL('image/jpeg',.8);BG.t='image';applyBg();saveBG();render()};im.onerror=()=>toast('تعذّرت قراءة الصورة');im.src=r.result};r.readAsDataURL(f)}
 const newCard=(en,ar,ex='',pos='',topic='')=>({id:Date.now()+Math.floor(Math.random()*1e6),en:en.trim(),ar:ar.trim(),ex:ex.trim(),pos,topic:topic.trim(),added:Date.now(),u:Date.now(),due:0,ivl:0,ease:2.5,reps:0,lapses:0,last:0});
+/* ---------- صورة المستخدم (تخزين الجهاز فقط) ---------- */
+let AVA=null;try{AVA=localStorage.getItem('vocab.ava')}catch(e){}
+function avaFile(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,160/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);AVA=c.toDataURL('image/jpeg',.85);try{localStorage.setItem('vocab.ava',AVA)}catch(e){toast('الصورة كبيرة — جرّب صورة أصغر')}render()};im.onerror=()=>toast('تعذّرت قراءة الصورة');im.src=r.result};r.readAsDataURL(f)}
 /* ---------- SRS ---------- */
 function apply(c,g,now=Date.now()){c=Object.assign({},c);
  if(g===0){c.lapses++;c.ease=Math.max(1.3,c.ease-.2);c.ivl=0;c.reps=0;c.due=now+10*6e4}
@@ -309,7 +320,7 @@ Return ONLY valid JSON, no markdown fences: {"title":"اسم القاعدة با
  TP.busy=0;paintTip()}
 function vToday(){const q=queue(),l=lg(),m=S.cards.filter(c=>status(c)==='mastered').length,n=S.cards.filter(c=>!c.last).length,t=S.cards.length,lr=t-m-n,wk=weekData();
  const tot=l.rev+q.length,p=tot?Math.round(l.rev/tot*100):0,C=2*Math.PI*42;
- return `<h1>أهلاً</h1><p class="sub">${q.length?`عندك ${q.length} بطاقة جاهزة للمراجعة`:'خلّصت مراجعة اليوم — برافو!'}</p>
+ return `<div class="uhdr"><div class="ava" data-a="avapick" title="صورتك — اضغط للتغيير">${AVA?`<img src="${AVA}" alt="">`:ic('usr')}</div><div style="flex:1;min-width:0"><h1 style="margin:0">أهلاً</h1><p class="sub" style="margin:2px 4px 0">${q.length?`عندك ${q.length} بطاقة جاهزة للمراجعة`:'خلّصت مراجعة اليوم — برافو!'}</p></div></div><input type="file" id="avaf" accept="image/*" hidden>
  <div class="g card" style="display:flex;align-items:center;gap:18px"><svg width="104" height="104" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--glass2)" stroke-width="10"/><circle cx="50" cy="50" r="42" fill="none" stroke="var(--tint)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p/100)}" transform="rotate(-90 50 50)"/><text x="50" y="56" text-anchor="middle" font-size="22" font-weight="800" fill="var(--ink)">${p}%</text></svg>
  <div style="flex:1"><b style="font-size:19px">هدف اليوم</b><p class="sub" style="margin:4px 0 12px">تمت مراجعة ${l.rev} بطاقة</p><button class="pri big" data-a="study" ${q.length?'':'disabled'}><span class="btn-ic">${ic('play')}</span>ابدأ المراجعة</button></div></div>
  ${pipeCard(q)}${sphCard()}
@@ -329,7 +340,8 @@ function sentBody(c){const fb=QZ.fb,col=fb&&fb.ok?'ok':'bad';
  if(fb)return top+`<div class="g card" style="direction:ltr;text-align:left"><small class="tip">Your sentence</small><div style="font-size:18px">${esc(QZ.draft)}</div></div>
  <div class="g card" style="border-color:var(--${col})"><b style="color:var(--${col})">${fb.ok?'✓ جملة صحيحة':'✗ تحتاج تعديل'} · ${esc(fb.score)}/10</b>${fb.fixed&&fb.fixed.trim()!==QZ.draft.trim()?`<p dir="ltr" style="text-align:left;margin-top:8px"><b>${esc(fb.fixed)}</b></p>`:''}<p class="tip" style="margin:6px 0">${esc(fb.note)}</p>${fb.better?`<p dir="ltr" class="ex" style="text-align:left">${esc(fb.better)}</p>`:''}</div><button class="pri big" data-a="snnext">${QZ.i+1>=QZ.items.length?'النتيجة':'التالي'}</button>`;
  return top+`<textarea id="sn" dir="ltr" placeholder="Write a sentence using “${esc(c.en)}”…">${esc(QZ.draft||'')}</textarea>${QZ.hint?`<div class="g card tip" style="margin-top:10px">${fmt(QZ.hint)}</div>`:''}<div class="row" style="margin-top:12px"><button data-a="snhint" ${QZ.busy?'disabled':''}>ساعدني</button><button class="pri" data-a="sncheck" ${QZ.busy?'disabled':''}>${QZ.busy?'جاري العمل…':'تحقق'}</button></div><button style="width:100%;margin-top:10px" data-a="snskip">تخطي</button>`}
-function vQuiz(){if(QZ.stage==='setup'){return `<h1>اختبار</h1><p class="sub">اختبر نفسك — الإجابات الخاطئة ترجع للمراجعة تلقائيًا.</p><div class="g card"><label>نوع الاختبار</label><div class="seg">${[['en-ar','إنجليزي ← عربي'],['ar-en','عربي ← إنجليزي'],['spell','إملاء'],['sent','تكوين جملة']].map(([k,l])=>`<button data-a="qm" data-k="${k}" class="${QZ.mode===k?'on':''}">${l}</button>`).join('')}</div>${QZ.mode==='sent'?'<p class="tip">اكتب جملة من تأليفك بالكلمة المعروضة، والذكاء الاصطناعي يصحّحها ويساعدك لو احتجت.</p>':''}<label>عدد الأسئلة</label><div class="seg">${[5,10,20].map(n=>`<button data-a="qn" data-k="${n}" class="${QZ.n===n?'on':''}">${n}</button>`).join('')}</div><button class="pri big" style="margin-top:16px" data-a="qstart"><span class="btn-ic">${ic('play')}</span>ابدأ الاختبار</button></div>`}
+function vQuiz(){if(QZ.stage==='setup'){return `<h1>اختبار</h1><p class="sub">اختبر نفسك — الإجابات الخاطئة ترجع للمراجعة تلقائيًا.</p><div class="g card"><label>نوع الاختبار</label><div class="seg">${[['en-ar','إنجليزي ← عربي'],['ar-en','عربي ← إنجليزي'],['spell','إملاء'],['sent','تكوين جملة']].map(([k,l])=>`<button data-a="qm" data-k="${k}" class="${QZ.mode===k?'on':''}">${l}</button>`).join('')}</div>${QZ.mode==='sent'?'<p class="tip">اكتب جملة من تأليفك بالكلمة المعروضة، والذكاء الاصطناعي يصحّحها ويساعدك لو احتجت.</p>':''}<label>عدد الأسئلة</label><div class="seg">${[5,10,20].map(n=>`<button data-a="qn" data-k="${n}" class="${QZ.n===n?'on':''}">${n}</button>`).join('')}</div><button class="pri big" style="margin-top:16px" data-a="qstart"><span class="btn-ic">${ic('play')}</span>ابدأ الاختبار</button></div>
+ <div class="g card" style="margin-top:14px"><b><span class="hd-ic">${ic('mic')}</span>اختبار النطق</b><p class="tip" style="margin:6px 0">الصق أي نص إنجليزي — من عندك أو ولّده التطبيق — واقرأه بصوتك للحصول على تقييم وتحليل للأخطاء، بنفس نظام تقييم الفقرة اليومية.</p><textarea id="cst" dir="ltr" placeholder="Paste any English text here…"></textarea><div class="row" style="margin-top:10px"><button data-a="qspkgen" ${AIc.key.trim()?'':'disabled'}>ولّد نصًا</button><button data-a="qspkstory" ${lg().story?'':'disabled'}>فقرة اليوم</button><button class="pri" style="flex:none" data-a="qspkstart">ابدأ القراءة</button></div></div>`}
  if(QZ.stage==='done'){const p=Math.round(QZ.score/QZ.items.length*100);return `<h1>${p>=80?'ممتاز!':p>=50?'جيد':'استمر'}</h1><div class="g card" style="text-align:center"><div class="pop" style="font-size:54px;font-weight:800">${QZ.score}/${QZ.items.length}</div><p class="sub">${QZ.wrong.length?'الكلمات الخاطئة: '+QZ.wrong.map(esc).join('، '):'كل الإجابات صحيحة!'}</p><button class="pri big" data-a="qreset">اختبار جديد</button></div>`}
  const c=QZ.items[QZ.i],m=QZ.mode;let body='';
  if(m==='spell')body=`<div class="ar" style="text-align:center;margin:10px 0">${esc(c.ar)}</div><div class="row" style="justify-content:center;margin-bottom:12px"><button data-a="spk" data-w="${esc(c.en)}" style="flex:none">${ic('spk')} استمع</button></div><input id="sp" dir="ltr" autocapitalize="none" autocomplete="off" placeholder="اكتب الكلمة بالإنجليزية"><button class="pri big" style="margin-top:12px" data-a="spcheck">تحقق</button>`;
@@ -349,9 +361,13 @@ function vSet(){const s=S.set;return `<h1>الإعدادات</h1><div class="g c
  ${bgCard()}${aiCard()}${voiceCard()}
  <div class="g card"><b>نسخة احتياطية</b><p class="tip" style="margin:6px 0 12px">بياناتك محفوظة على هذا المتصفح. صدّر نسخة بشكل دوري، ويمكنك أيضًا استيراد ملف JSON من تطبيقك القديم.</p><div class="row"><button data-a="exp"><span class="btn-ic">${ic('dl')}</span>تصدير JSON</button><button data-a="imp"><span class="btn-ic">${ic('up')}</span>استيراد ملف</button></div><input type="file" id="file" accept=".json" hidden></div>
  ${dupCard()}${syncCard()}<div class="g card"><button class="bad" style="width:100%" data-a="reset">مسح كل البيانات</button></div>`}
-let lastT='';
-function animView(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;[...$('#v').children].forEach((el,i)=>{el.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:340,delay:Math.min(i*45,250),easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'})})}
-function render(){nav();$('#v').innerHTML={today:vToday,lib:vLib,add:vAdd,quiz:vQuiz,chat:vChat,set:vSet}[T]();if(T!==lastT){lastT=T;animView()}window.scrollTo(0,T==='chat'&&CH.stage==='chat'?1e9:0);
+let lastT='',RIO=null;
+function initReveal(){if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
+ const els=[...$('#v').children];if(!els.length)return;
+ if(RIO)RIO.disconnect();
+ RIO=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');RIO.unobserve(en.target)}})},{rootMargin:'0px 0px -6% 0px',threshold:.05});
+ els.forEach((el,i)=>{el.classList.add('rv');el.style.setProperty('--rd',(i<3?i*80:0)+'ms');RIO.observe(el)})}
+function render(){nav();$('#v').innerHTML={today:vToday,lib:vLib,add:vAdd,quiz:vQuiz,chat:vChat,set:vSet}[T]();if(T!==lastT){lastT=T;initReveal()}window.scrollTo(0,T==='chat'&&CH.stage==='chat'?1e9:0);
  if(T==='today'){countUp();if(!TP.loaded&&AIc.key.trim()){TP.loaded=1;newTip()}}}
 /* ---------- المرحلة 1: المراجعة ---------- */
 let SS=null;
@@ -373,12 +389,15 @@ function rvPaint(){const cs=todayCards(),sh=$('#sheet');
  ${cs.map(c=>`<div class="g item"><span class="dot ${status(c)}"></span><div class="t"><b>${esc(c.en)}</b><small class="${RV.hide?'mask':''}" ${RV.hide?'data-a="rvmask"':''}>${esc(c.ar)}</small>${c.ex?`<small style="direction:ltr;text-align:right;font-style:italic">${esc(c.ex)}</small>`:''}</div><button class="ib" data-a="spk" data-w="${esc(c.en)}">${ic('spk')}</button></div>`).join('')}`:'<div class="g card tip" style="text-align:center;margin-top:12px">لم تراجع أي كلمات اليوم بعد.</div>'}
  <button style="width:100%;margin-top:6px" data-a="close">تم</button></div>`}
 /* ---------- المرحلة 2: فقرة بالذكاء الاصطناعي ---------- */
-let ST={busy:0,err:'',gen:0,ar:0};
+let ST={busy:0,err:'',gen:0,ar:0,sel:null};
+let CUST=null,CUST_T='';
 /* الضغط على أي كلمة في النص/المحادثة = نطق + ترجمة (data-a="wtr") */
 const hl=t=>t.split(/(\*\*[^*]+\*\*)/).map(p=>{const m=/^\*\*([^*]+)\*\*$/.exec(p);const x=m?m[1]:p.replace(/\*\*/g,'');const h=x.split(/([A-Za-z][A-Za-z'’-]*)/).map((w,i)=>i%2?`<span data-a="wtr" data-w="${esc(w)}">${esc(w)}</span>`:esc(w)).join('');return m?`<mark>${h}</mark>`:h}).join('');
 const plain=t=>t.replace(/\*\*/g,'');
 /* كل الكلمات التي روجعت اليوم (بدون اختيار عشوائي وبدون حد) */
 const wordCards=()=>todayCards();
+const selCards=()=>wordCards().filter(c=>!ST.sel||ST.sel.has(c.id));
+const spText=()=>CUST||lg().story;
 const mkPrompt=(cs,topic)=>{const n=cs.length,big=n>12,len=Math.max(120,n*16);return `You are an English teacher for an Arabic-speaking learner (level B1-B2).
 Write ONE realistic passage of about ${len} words${big?` (split it into short paragraphs separated by a blank line, "\\n\\n" inside the JSON string)`:' (6-9 sentences)'} about ${topic?`this topic: "${topic}"`:'a real-world topic (pick one: news, work, travel, health, technology, money, daily life)'}.
 Use ALL ${n} of these target words, EVERY one of them, naturally and each exactly once (inflections allowed; do not skip any and do not repeat a target word):
@@ -412,7 +431,7 @@ function setStory(raw,cs){let j;try{j=jparse(raw)}catch(e){j={title:'Practice pa
  if(!j.text||!String(j.text).trim())throw new Error('empty');
  lg().story={title:String(j.title||'Practice passage'),topic:String(j.topic||''),text:String(j.text).trim(),ar:String(j.ar||''),words:cs.map(c=>c.en),ts:Date.now()};delete lg().sp;save()}
 function openSheet(){const sh=$('#sheet');sh.classList.add('open');SS=null}
-function story(){openSheet();ST.err='';ST.gen=!lg().story;rstory()}
+function story(){openSheet();ST.err='';ST.sel=null;CUST=null;CUST_T='';ST.gen=!lg().story;rstory()}
 function rstory(){const sh=$('#sheet'),l=lg(),s=l.story;
  const head=`<div class="wrap"><div class="row" style="gap:14px;margin-bottom:6px"><button class="ib" data-a="close" style="flex:none">${ic('x')}</button><b style="flex:1;font-size:18px">المرحلة ٢ — القراءة في سياق</b></div>`;
  if(ST.busy){sh.innerHTML=head+`<div class="g card" style="text-align:center;margin-top:16px;padding:40px 18px"><p class="sub" style="margin-top:10px">جاري كتابة فقرة بكلماتك…</p></div></div>`;return}
@@ -421,15 +440,19 @@ function rstory(){const sh=$('#sheet'),l=lg(),s=l.story;
  <p class="tip" style="margin-bottom:12px">اضغط على أي كلمة لسماع نطقها ومعرفة معناها. الكلمات المظلّلة هي كلمات اليوم (${s.words.length} كلمة).</p>
  <button class="pri big" data-a="speak">المرحلة ٣ ← اختبار النطق</button>
  <button style="width:100%;margin-top:10px" data-a="regen">فقرة جديدة بموضوع آخر</button></div>`;return}
- const cs=wordCards(),noKey=!AIc.key.trim();
- sh.innerHTML=head+`<div class="g card" style="margin-top:16px"><b>كلمات اليوم (${cs.length}) — كل ما راجعته سيظهر مرة واحدة في الفقرة</b><div style="margin:8px 0">${cs.map(c=>`<span class="chip">${esc(c.en)}</span>`).join('')}</div><label>موضوع الفقرة (اختياري)</label><input id="st-t" placeholder="مثلاً: مقابلة عمل، رحلة سفر، أخبار تقنية…">${ST.err?`<p class="tip" style="color:var(--bad);margin-top:10px;direction:ltr;text-align:left">${esc(ST.err)}</p>`:''}
- ${noKey?`<p class="tip" style="margin-top:10px">لم تُضف مفتاح API بعد (الإعدادات ← الذكاء الاصطناعي). أو انسخ الطلب لأي ذكاء اصطناعي والصق النتيجة بالأسفل.</p><button style="width:100%;margin-top:8px" data-a="cpp">نسخ الطلب</button><textarea id="st-m" dir="ltr" placeholder="الصق الرد هنا (JSON أو نص الفقرة)" style="margin-top:10px"></textarea><button class="pri big" style="margin-top:10px" data-a="stpaste">استخدم هذا النص</button>`:`<button class="pri big" style="margin-top:14px" data-a="gen"><span class="btn-ic">${ic('pen')}</span>ولّد الفقرة</button>`}
+ const all=wordCards(),noKey=!AIc.key.trim();
+ const selN=c=>!ST.sel||ST.sel.has(c.id);
+ const cs=all.filter(selN);
+ sh.innerHTML=head+`<div class="g card" style="margin-top:16px"><div class="row" style="margin-bottom:6px"><b style="flex:1;min-width:0">اختار الكلمات (${cs.length} من ${all.length})</b><button style="flex:none;min-height:36px;font-size:13px" data-a="wsa">${ST.sel&&ST.sel.size?'تحديد الكل':'إلغاء التحديد'}</button></div><p class="tip" style="margin:0 4px 8px">دوس على أي كلمة لتحديدها أو إلغائها — الفقرة هتتبني على المحدد فقط.</p><div style="margin:8px 0">${all.map(c=>`<span class="chip ${selN(c)?'':'off'}" data-a="wsel" data-id="${c.id}" style="cursor:pointer">${esc(c.en)}</span>`).join('')}</div><label>موضوع الفقرة (اختياري)</label><input id="st-t" placeholder="مثلاً: مقابلة عمل، رحلة سفر، أخبار تقنية…">${ST.err?`<p class="tip" style="color:var(--bad);margin-top:10px;direction:ltr;text-align:left">${esc(ST.err)}</p>`:''}
+ ${noKey?`<p class="tip" style="margin-top:10px">لم تُضف مفتاح API بعد (الإعدادات ← الذكاء الاصطناعي). أو انسخ الطلب لأي ذكاء اصطناعي والصق النتيجة بالأسفل.</p><button style="width:100%;margin-top:8px" data-a="cpp">نسخ الطلب</button><textarea id="st-m" dir="ltr" placeholder="الصق الرد هنا (JSON أو نص الفقرة)" style="margin-top:10px"></textarea><button class="pri big" style="margin-top:10px" data-a="stpaste">استخدم هذا النص</button>`:`<button class="pri big" style="margin-top:14px" data-a="gen" ${cs.length?'':'disabled'}><span class="btn-ic">${ic('pen')}</span>ولّد الفقرة</button>`}
  ${s?`<button style="width:100%;margin-top:10px" data-a="cgen">إلغاء</button>`:''}</div></div>`}
-async function gen(){const cs=wordCards();if(!cs.length)return toast('راجع بعض الكلمات أولًا');const topic=(($('#st-t')||{}).value||'').trim();ST.busy=1;ST.err='';rstory();
+async function gen(){const cs=selCards();if(!cs.length)return toast('اختار كلمة واحدة على الأقل');const topic=(($('#st-t')||{}).value||'').trim();ST.busy=1;ST.err='';rstory();
  try{setStory(await ai(mkPrompt(cs,topic),3500+cs.length*110),cs);ST.gen=0}catch(e){ST.err=e.message==='nokey'?'أضف مفتاح API من الإعدادات':'تعذّر التوليد: '+e.message}
  ST.busy=0;rstory()}
 /* ---------- المرحلة 3: اختبار النطق (الفقرة كاملة + تحليل AI + سجل) ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let SP=null;
+let TSP=130;try{TSP=+(localStorage.getItem('vocab.tpw'))||130}catch(e){}
+const saveTpw=v=>{TSP=v||130;try{localStorage.setItem('vocab.tpw',String(TSP))}catch(e){}}
 const norm=w=>w.toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9']/g,'');
 const toks=s=>{const o=[];s.split(/(\*\*[^*]+\*\*)/).forEach(p=>{const t=/^\*\*/.test(p);p.replace(/\*\*/g,'').split(/\s+/).forEach(w=>{const n=norm(w);if(n)o.push({w,n,t})})});return o};
 function evalS(s,heard){const E=toks(s),H=heard.split(/\s+/).map(norm).filter(Boolean),n=E.length,m=H.length;
@@ -448,11 +471,11 @@ ${heard}
 Automatic word-match: ${acc}%. Words not matched: ${miss.join(', ')||'(none)'}.
 Evaluate the reading. Give an overall score 0-100, an estimated reading-aloud level (A2, B1, B2 or C1), and ONLY the real mistakes: skipped words, replaced words, or likely mispronounced words (max 10, most important first). For each mistake give a short Arabic tip on how to pronounce it, with simple phonetics when helpful (e.g. /rɪˈliːst/).
 Return ONLY valid JSON, no markdown fences: {"score":0,"level":"B1","summary":"Arabic, 2 sentences evaluating the reading","mistakes":[{"word":"expected word","heard":"what was heard or 'skipped'","tip":"Arabic tip"}],"strengths":"Arabic, one sentence","advice":"Arabic, one or two practical tips for next time"}`;
-function startSpeak(){const s=lg().story;if(!s)return;openSheet();SP={on:0,heard:'',base:'',r:null,ai:null,busy:0,err:'',keep:0,fails:0,rec:null,score:0,level:''};rspeak()}
-function missCards(){const W=lg().story.words.map(e=>S.cards.find(c=>c.en===e)).filter(Boolean),miss=SP&&SP.r?SP.r.E.filter(x=>!x.ok&&x.t):[];
+function startSpeak(){const s=spText();if(!s||!String(s.text||'').trim())return;openSheet();SP={on:0,heard:'',base:'',r:null,ai:null,busy:0,err:'',keep:0,fails:0,rec:null,score:0,level:''};rspeak()}
+function missCards(){const st=spText(),W=((st&&st.words)||[]).map(e=>S.cards.find(c=>c.en===e)).filter(Boolean),miss=SP&&SP.r?SP.r.E.filter(x=>!x.ok&&x.t):[];
  return W.filter(c=>c.en.split(/\s+/).map(norm).filter(t=>t.length>2).some(t=>miss.some(m=>m.n.startsWith(t.slice(0,Math.max(3,t.length-2))))))}
 const aiBlock=j=>`<div class="g card"><b>تقييم المدرّب</b><p style="margin:8px 0;line-height:1.8">${esc(j.summary||'')}</p>${j.strengths?`<p class="tip">✓ ${esc(j.strengths)}</p>`:''}</div>${Array.isArray(j.mistakes)&&j.mistakes.length?`<div class="g card"><b>الكلمات التي أخطأت فيها</b>${j.mistakes.map(m=>`<div class="step"><div class="t"><b dir="ltr" style="display:block;text-align:right;font-size:18px">${esc(m.word)}</b>${m.heard?`<small dir="ltr" style="text-align:right">سُمعت: ${esc(m.heard)}</small>`:''}<small>${esc(m.tip||'')}</small></div><button class="ib" data-a="spk" data-w="${esc(String(m.word||'').replace(/[^A-Za-z' ]/g,''))}">${ic('spk')}</button></div>`).join('')}</div>`:''}${j.advice?`<div class="g card tip">${esc(j.advice)}</div>`:''}`;
-function rspeak(){const sh=$('#sheet'),s=lg().story,head=`<div class="wrap"><div class="row" style="gap:14px;margin-bottom:6px"><button class="ib" data-a="close" style="flex:none">${ic('x')}</button><b style="flex:1;font-size:18px">المرحلة ٣ — اختبار النطق</b></div>`;
+function rspeak(){const sh=$('#sheet'),s=spText(),head=`<div class="wrap"><div class="row" style="gap:14px;margin-bottom:6px"><button class="ib" data-a="close" style="flex:none">${ic('x')}</button><b style="flex:1;font-size:18px">${CUST?'اختبار النطق — قراءة مخصصة':'المرحلة ٣ — اختبار النطق'}</b></div>`;
  if(SP.busy){sh.innerHTML=head+`<div class="g card" style="text-align:center;margin-top:16px;padding:40px 18px"><p class="sub" style="margin-top:10px">الذكاء الاصطناعي يحلّل قراءتك…</p></div></div>`;return}
  if(SP.r&&!SP.on){const r=SP.r,prev=S.sph[S.sph.length-2],d=prev&&SP.rec&&S.sph[S.sph.length-1]===SP.rec?SP.score-prev.score:null,j=SP.ai,mc=missCards();
   sh.innerHTML=head+`<div class="g card" style="text-align:center;margin-top:14px"><div class="pop" style="font-size:54px;font-weight:800">${SP.score}%</div><p class="sub" style="margin:0">${SP.level?'المستوى التقريبي: <b dir="ltr">'+esc(SP.level)+'</b> · ':''}${SP.score>=90?'نطق ممتاز!':SP.score>=70?'جيد جدًا':'تدرّب أكثر وستتحسن'}</p>${d===null?'':`<p class="tip" style="margin-top:6px;color:var(--${d>=0?'ok':'bad'})">${d>=0?'▲ +':'▼ -'}${Math.abs(d)} عن المرة السابقة</p>`}</div>
@@ -463,8 +486,9 @@ function rspeak(){const sh=$('#sheet'),s=lg().story,head=`<div class="wrap"><div
  const hv=SP.on||SP.heard?`<div class="g card" style="direction:ltr;text-align:center;margin-top:12px"><small class="tip">سمعتك:</small><div id="heard" style="font-size:16px;max-height:140px;overflow:auto">${esc(SP.heard)||'…'}</div></div>`:'';
  sh.innerHTML=head+`<div class="g card" style="margin-top:12px"><div class="pos" style="text-align:right">${esc(s.topic)}</div><b style="font-size:21px;direction:ltr;display:block;text-align:left;margin:4px 0 8px">${esc(s.title)}</b><div class="rd" id="rdbox" style="font-size:21px;line-height:2.1"><div id="rdslide">${hl(s.text)}</div></div></div>
  <div class="row" style="margin-top:12px"><button data-a="spkall" data-r=".9">${ic('spk')} استمع</button><button data-a="spkall" data-r=".65">ببطء</button></div>${hv}
- <div class="g sbar"><button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="margin-top:10px">${SP.on?'اقرأ الفقرة كاملة بصوت واضح… ثم اضغط للإيقاف وسيبدأ التحليل':'اقرأ الفقرة كاملة مرة واحدة: اضغط الميكروفون وابدأ، وعند الانتهاء اضغط للإيقاف'}</p></div></div>`}
-async function analyze(){const s=lg().story,r=evalS(s.text,SP.heard),miss=r.E.filter(x=>!x.ok).map(x=>x.w.replace(/[^A-Za-z']/g,'')).filter(Boolean);
+ <div class="seg" style="max-width:300px;margin:14px auto 0">${[['90','بطيء'],['130','عادي'],['180','سريع']].map(([v,l])=>`<button data-a="tspd" data-k="${v}" class="${+v===TSP?'on':''}">${l}</button>`).join('')}</div>
+ <div class="g sbar"><button class="mic ${SP.on?'on':''}" data-a="mic">${ic(SP.on?'stop':'mic')}</button><p class="tip" style="margin-top:10px">${SP.on?'اقرأ الفقرة كاملة بصوت واضح… ثم اضغط للإيقاف وسيبدأ التحليل':'اقرأ الفقرة كاملة مرة واحدة: اضغط الميكروفون وابدأ، وعند الانتهاء اضغط للإيقاف — وتقدر تغيّر سرعة التمرير من الأزرار فوق الميكروفون'}</p></div></div>`}
+async function analyze(){const s=spText(),r=evalS(s.text,SP.heard),miss=r.E.filter(x=>!x.ok).map(x=>x.w.replace(/[^A-Za-z']/g,'')).filter(Boolean);
  SP.r=r;SP.ai=null;SP.err='';
  if(!SP.rec){SP.rec={at:Date.now(),title:String(s.title||''),n:r.E.length};S.sph.push(SP.rec)}
  const rec=SP.rec;rec.acc=r.acc;rec.miss=miss.length;rec.score=r.acc;rec.level='';SP.score=r.acc;SP.level='';
@@ -472,7 +496,7 @@ async function analyze(){const s=lg().story,r=evalS(s.text,SP.heard),miss=r.E.fi
   try{const j=jparse(await ai(mkSpeakPrompt(s.text,SP.heard,r.acc,miss)));if(!SP)return;SP.ai=j;rec.score=Math.max(0,Math.min(100,Math.round(+j.score)||r.acc));rec.level=String(j.level||'').slice(0,4);SP.score=rec.score;SP.level=rec.level}
   catch(e){if(!SP)return;SP.err=e.message==='nokey'?'nokey':e.message}
   SP.busy=0}
- lg().sp={acc:SP.score,at:rec.at};save();rspeak()}
+ if(!CUST)lg().sp={acc:SP.score,at:rec.at};save();rspeak()}
 /* ---------- سجل تقييم النطق ---------- */
 function hist(){openSheet();SP=null;const h=S.sph.slice(),sc=h.map(x=>x.score),n=Math.min(3,Math.floor(h.length/2)),avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0,best=sc.length?Math.max(...sc):0;
  $('#sheet').innerHTML=`<div class="wrap"><div class="row" style="gap:14px;margin-bottom:6px"><button class="ib" data-a="close" style="flex:none">${ic('x')}</button><b style="flex:1;font-size:18px">سجل تقييم النطق</b></div>
@@ -498,11 +522,11 @@ function listen(onText,onEnd,cont,lang){if(!SR){toast('المتصفح لا يد�
 function stopListen(){if(!RI||!RS){recFin();return}try{RI.stop()}catch(e){}setTimeout(()=>{if(CB&&RS){RS=0;RI=null;recFin()}},1500)}
 function abortListen(){CB=null;PEND=0;clearTimeout(RT);if(RI&&RS){try{RI.abort()}catch(e){}}}
 const micMsg=e=>e==='not-allowed'||e==='service-not-allowed'?'اسمح للميكروفون من إعدادات المتصفح':'لم أسمع شيئًا — حاول مرة أخرى';
-function rollStart(){const box=$('#rdbox'),sl=$('#rdslide');if(!box||!sl)return;const dist=sl.offsetHeight-box.clientHeight;if(dist<=0)return;
+function rollStart(sp=0){const box=$('#rdbox'),sl=$('#rdslide');if(!box||!sl)return;const dist=sl.offsetHeight-box.clientHeight;if(dist<=0)return;
  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- const id=++TLID,txt=(sl.textContent||'').replace(/\*\*/g,'').replace(/\s+/g,' ').trim(),dur=Math.max(25,Math.min(240,txt.split(' ').length/130*60)),t0=performance.now();TLrun=1;
+ const id=++TLID,txt=(sl.textContent||'').replace(/\*\*/g,'').replace(/\s+/g,' ').trim(),dur=Math.max(25,Math.min(240,txt.split(' ').length/TSP*60)),t0=performance.now()-sp*dur*1000;TLrun=1;
  const step=t=>{if(id!==TLID||!TLrun)return;if(!SP||!SP.on){TLrun=0;return}
-  const p=Math.min(1,(t-t0)/(dur*1000));sl.style.transform='translateY('+(-dist*p).toFixed(1)+'px)';
+  const p=Math.min(1,sp+(t-t0)/(dur*1000));sl.style.transform='translateY('+(-dist*p).toFixed(1)+'px)';
   if(p<1)requestAnimationFrame(step)};
  requestAnimationFrame(step)}
 function rollStop(){TLID++;TLrun=0;const sl=$('#rdslide');if(sl)sl.style.transform=''}
@@ -514,7 +538,7 @@ function mic(){if(SP.on){SP.keep=0;stopListen();rollStop();return}
    SP.on=0;SP.keep=0;SP.heard=SP.base;if(SP.heard.split(/\s+/).filter(Boolean).length<3){toast(micMsg(err));rspeak()}else analyze()},1);
   if(!ok){SP.on=0;SP.keep=0;rspeak()}};
  run();rspeak();rollStart()}
-function closeSheet(){rollStop();abortListen();try{stopS()}catch(e){}SP=null;SS=null;$('#sheet').classList.remove('open');render()}
+function closeSheet(){rollStop();CUST=null;abortListen();try{stopS()}catch(e){}SP=null;SS=null;$('#sheet').classList.remove('open');render()}
 /* ---------- محادثة مع الذكاء الاصطناعي (محادثة حرة + شرح الكلمات) ---------- */
 const CH0=()=>({mode:'talk',stage:'setup',topic:'',cw:'',src:'learning',words:[],msgs:[],used:new Set(),draft:'',busy:0,on:0,err:'',auto:true});
 let CH=CH0();
@@ -571,6 +595,12 @@ function cmic(){if(CH.on){stopListen();return}
  const end=()=>{CH.on=0;const b=$('#cmic');if(b){b.classList.remove('on');b.innerHTML=ic('mic')}};
  if(!listen(t=>{CH.draft=t;const i=$('#ci');if(i)i.value=t},(t,err)=>{end();if(!t)toast(micMsg(err))},0,CH.mode==='explain'?'ar-EG':'en-US'))end()}
 /* ---------- quiz ---------- */
+async function qspkGen(){if(!AIc.key.trim())return toast('أضف مفتاح API من الإعدادات أولًا');const b=document.querySelector('[data-a=qspkgen]');if(b){b.disabled=1;b.textContent='جاري التوليد…'}
+ const topics=['daily life','travel','work','technology','health','sports','food'],tp=topics[Math.floor(Math.random()*topics.length)];
+ try{const j=jparse(await ai(`Write a short English passage (70-100 words) for reading-aloud practice by an Arabic-speaking learner (level B1-B2). Natural everyday English about "${tp}". Short-to-medium sentences that are easy to read aloud. Return ONLY valid JSON, no markdown fences: {"title":"short English title","text":"the passage"}`,1200));
+  const t=$('#cst');if(t)t.value=String(j.text||'').trim();CUST_T=String(j.title||'').trim()||'قراءة مخصصة';toast('تم توليد النص ✓')}catch(e){toast('تعذّر التوليد: '+(e.message==='nokey'?'أضف مفتاح API':e.message),0,2500)}
+ if(b){b.disabled=0;b.textContent='ولّد نصًا'}}
+function qspkStart(){const t=(($('#cst')||{}).value||'').trim();if(t.split(/\s+/).filter(Boolean).length<10)return toast('اكتب نصًا أطول قليلًا (١٠ كلمات على الأقل)');CUST={title:CUST_T||'قراءة مخصصة',topic:'',text:t,ar:'',words:[]};startSpeak()}
 function qnext(){QZ.i++;QZ.fb=null;QZ.hint='';QZ.draft='';QZ.busy=0;if(QZ.i>=QZ.items.length){QZ.stage='done';save()}render()}
 function qans(ok,c){if(ok)QZ.score++;else{QZ.wrong.push(c.en);const k=S.cards.findIndex(x=>x.id===c.id);S.cards[k]=apply(S.cards[k],0);save()}}
 /* ---------- events ---------- */
@@ -594,13 +624,16 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='regen'){ST.gen=1;ST.err='';rstory()}
  else if(a==='cgen'){ST.gen=0;rstory()}
  else if(a==='tr'){ST.ar=!ST.ar;rstory()}
- else if(a==='spkall'){const s=lg().story;if(s)speak(plain(s.text),+b.dataset.r)}
- else if(a==='cpp'){const cs=wordCards(),p=mkPrompt(cs,(($('#st-t')||{}).value||'').trim());try{await navigator.clipboard.writeText(p);toast('تم نسخ الطلب ✓')}catch(x){toast('تعذّر النسخ')}}
- else if(a==='stpaste'){const v=($('#st-m')||{}).value||'';if(!v.trim())return toast('الصق النص أولًا');try{setStory(v,wordCards());ST.gen=0;rstory()}catch(x){toast('النص غير صالح')}}
- else if(a==='speak')startSpeak();
+ else if(a==='spkall'){const s=spText();if(s)speak(plain(s.text),+b.dataset.r)}
+ else if(a==='cpp'){const cs=selCards(),p=mkPrompt(cs,(($('#st-t')||{}).value||'').trim());try{await navigator.clipboard.writeText(p);toast('تم نسخ الطلب ✓')}catch(x){toast('تعذّر النسخ')}}
+ else if(a==='stpaste'){const v=($('#st-m')||{}).value||'';if(!v.trim())return toast('الصق النص أولًا');try{setStory(v,selCards());ST.gen=0;rstory()}catch(x){toast('النص غير صالح')}}
+ else if(a==='wsel'){const id=+b.dataset.id;ST.sel=ST.sel||new Set(wordCards().map(c=>c.id));if(ST.sel.has(id))ST.sel.delete(id);else ST.sel.add(id);if(ST.sel.size>=wordCards().length)ST.sel=null;rstory()}
+ else if(a==='wsa'){ST.sel=(ST.sel&&ST.sel.size)?null:new Set();rstory()}
+ else if(a==='speak'){CUST=null;startSpeak()}
  else if(a==='mic'&&SP)mic();
  else if(a==='sptry'&&SP){SP.r=null;SP.ai=null;SP.heard='';SP.base='';SP.rec=null;SP.err='';rspeak()}
  else if(a==='spre'&&SP)analyze();
+ else if(a==='tspd'){saveTpw(+b.dataset.k);let p=0;const sl=$('#rdslide'),box=$('#rdbox');if(SP&&SP.on&&sl&&box){const dist=sl.offsetHeight-box.clientHeight;if(dist>0){const m=/([\d.]+)/.exec((sl.style.transform||'').replace('translateY(',''));if(m)p=Math.min(1,+m[1]/dist)}}if(SP&&SP.on){rspeak();rollStart(p)}else rspeak()}
  else if(a==='sphist')hist();
  else if(a==='requeue'&&SP){const ids=new Set(missCards().map(c=>c.id)),n=Date.now();S.cards=S.cards.map(c=>ids.has(c.id)?Object.assign({},c,{due:n,u:n}):c);save();toast('تمت إعادتها لمراجعة اليوم ✓');b.disabled=true}
  else if(a==='aip'){AIc.p=b.dataset.k;saveAI();render()}
@@ -637,6 +670,9 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
  else if(a==='qm'){QZ.mode=b.dataset.k;render()}else if(a==='qn'){QZ.n=+b.dataset.k;render()}
  else if(a==='qstart'){if(S.cards.length<(QZ.mode==='spell'||QZ.mode==='sent'?1:4))return toast('أضف 4 كلمات على الأقل');QZ={...QZ,stage:'run',items:shuf(S.cards).slice(0,QZ.n),i:0,score:0,wrong:[],fb:null,hint:'',draft:'',busy:0};render();if(QZ.mode==='spell')speak(QZ.items[0].en)}
  else if(a==='qreset'){QZ.stage='setup';render()}
+ else if(a==='qspkgen')qspkGen();
+ else if(a==='qspkstory'){const s=lg().story;if(!s)return toast('ولّد فقرة من رحلة اليوم أولًا');const t=$('#cst');if(t)t.value=plain(s.text);CUST_T=s.title||'قراءة مخصصة';toast('تم تحميل الفقرة ✓')}
+ else if(a==='qspkstart')qspkStart();
  else if(a==='opt'){const c=QZ.items[QZ.i],f=QZ.mode==='en-ar'?'ar':'en',ok=b.dataset.v===c[f];document.querySelectorAll('.opt').forEach(o=>{o.disabled=true;if(o.dataset.v===c[f])o.classList.add('right');else if(o===b)o.classList.add('wrong')});qans(ok,c);setTimeout(qnext,900)}
  else if(a==='spcheck'){const c=QZ.items[QZ.i],ok=$('#sp').value.trim().toLowerCase()===c.en.toLowerCase();qans(ok,c);toast(ok?'صحيح ✓':'الصحيح: '+c.en);setTimeout(()=>{qnext();if(QZ.stage==='run')speak(QZ.items[QZ.i].en)},ok?600:1800)}
  else if(a==='snhint'){const c=QZ.items[QZ.i];QZ.draft=(($('#sn')||{}).value||'');if(!AIc.key.trim())return toast('أضف مفتاح API من الإعدادات أولًا');QZ.busy=1;render();
@@ -656,6 +692,7 @@ Judge whether the word is used correctly in meaning and grammar, and whether the
  else if(a==='bgt'){BG.t=b.dataset.k;if(BG.t==='color'&&!BG.c)BG.c=BGP[0].slice();if(b.classList.contains('bad'))BG.img='';applyBg();saveBG();render()}
  else if(a==='bgp'){BG.c=BGP[+b.dataset.i].slice();BG.t='color';applyBg();saveBG();render()}
  else if(a==='bgimg'){const f=$('#bgf');if(f)f.click()}
+ else if(a==='avapick'){const f=$('#avaf');if(f)f.click()}
  else if(a==='auto'){S.set.auto=b.dataset.k==='1';save();render()}
  else if(a==='exp'){const u=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='kalimati-backup-'+today()+'.json';l.click();URL.revokeObjectURL(u)}
  else if(a==='imp')$('#file').click();
@@ -666,7 +703,7 @@ document.addEventListener('input',e=>{const id=e.target.id;if(id==='q'){Q=e.targ
  else if(id==='bgc0'||id==='bgc1'||id==='bgc2'){const v=['#bgc0','#bgc1','#bgc2'].map(s=>$(s).value);BG.c=[v[0],v[1],v[2],v[1]];BG.t='color';applyBg();saveBG()}
  else if(id==='bgd'){BG.dim=+e.target.value;applyBg()}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp')document.querySelector('[data-a=spcheck]').click();if(e.key==='Enter'&&e.target.id==='ci'){const t=e.target.value.trim();if(t)csend(t)}});
-document.addEventListener('change',e=>{if(e.target.id==='bgf')return bgFile(e.target);if(e.target.id==='bgd')return saveBG();if(e.target.id!=='file')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let n=0;if(d.cards&&d.set){const ids=new Set(S.cards.map(c=>c.en.toLowerCase()));d.cards.forEach(c=>{if(!ids.has(c.en.toLowerCase())){S.cards.push(c);n++}});Object.assign(S.log,d.log||{});if(Array.isArray(d.sph)){const have=new Set(S.sph.map(x=>x.at));d.sph.forEach(x=>{if(x&&!have.has(x.at))S.sph.push(x)});S.sph.sort((a,b)=>a.at-b.at)}}else{(Array.isArray(d)?d:d.words||[]).forEach(w=>{const en=w.english||w.en,ar=w.arabic||w.ar;if(en&&ar&&!S.cards.some(c=>c.en.toLowerCase()===en.toLowerCase())){S.cards.push(newCard(en,ar,w.example||w.ex||'','',(w.topics&&w.topics[0])||w.topic||''));n++}})}save();render();toast(`تم استيراد ${n} كلمة`)}catch(x){toast('ملف غير صالح')}};r.readAsText(f)});
+document.addEventListener('change',e=>{if(e.target.id==='avaf')return avaFile(e.target);if(e.target.id==='bgf')return bgFile(e.target);if(e.target.id==='bgd')return saveBG();if(e.target.id!=='file')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let n=0;if(d.cards&&d.set){const ids=new Set(S.cards.map(c=>c.en.toLowerCase()));d.cards.forEach(c=>{if(!ids.has(c.en.toLowerCase())){S.cards.push(c);n++}});Object.assign(S.log,d.log||{});if(Array.isArray(d.sph)){const have=new Set(S.sph.map(x=>x.at));d.sph.forEach(x=>{if(x&&!have.has(x.at))S.sph.push(x)});S.sph.sort((a,b)=>a.at-b.at)}}else{(Array.isArray(d)?d:d.words||[]).forEach(w=>{const en=w.english||w.en,ar=w.arabic||w.ar;if(en&&ar&&!S.cards.some(c=>c.en.toLowerCase()===en.toLowerCase())){S.cards.push(newCard(en,ar,w.example||w.ex||'','',(w.topics&&w.topics[0])||w.topic||''));n++}})}save();render();toast(`تم استيراد ${n} كلمة`)}catch(x){toast('ملف غير صالح')}};r.readAsText(f)});
 /* ---------- Firebase ---------- */
 const FB=typeof firebase!=='undefined';
 if(FB){try{firebase.initializeApp({apiKey:"AIzaSyBMXP-TAS2eBKq8C-dRlPJ2N2He5mTsRpo",authDomain:"kalmat-264f2.firebaseapp.com",databaseURL:"https://kalmat-264f2-default-rtdb.firebaseio.com",projectId:"kalmat-264f2",storageBucket:"kalmat-264f2.appspot.com",messagingSenderId:"654701224401",appId:"1:654701224401:web:671bd7619ac622a75f80f0"});
